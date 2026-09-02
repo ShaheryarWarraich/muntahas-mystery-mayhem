@@ -2290,8 +2290,8 @@ const CASES = [
       innocentGiggle:'What?! Not me! I don’t even LIKE frosting. …Okay, I love frosting. But I didn’t do it!',
       testimony:[
         {id:'m1', text:'I dropped off the flour sacks at five, then loaded up my bike out front.',
-         press:'Baba Yaqoob next door waved at me the whole time. You can ask him!',
-         pressNote:'Bilal’s alibi checks out — Baba Yaqoob saw him outside. ✔'},
+         press:'Chacha Khalid next door waved at me the whole time. You can ask him!',
+         pressNote:'Bilal’s alibi checks out — Chacha Khalid saw him outside. ✔'},
         {id:'m2', text:'I never even went behind the counter. Pinky promise!',
          press:'The counter is for bakers only. I follow the rules!'}
       ]},
@@ -2370,11 +2370,11 @@ const CASES = [
         ],
         needsClue:'fabric', gives:['receipt'] }]},
     { id:'depot', name:'Speedy Couriers', icon:'📦', mapX:352, mapY:342, set:'yard', deco:'#f0a832', mud:true,
-      npcs:[{ id:'tom', name:'Baba Yaqoob', role:'the chowkidar', grown:true,
+      npcs:[{ id:'tom', name:'Chacha Khalid', role:'the chowkidar', grown:true,
         look:{skin:2, hair:'curly', hairColor:'#e8e8ee', outfit:'overalls', outfitColor:'#8a6a4a', acc:'none', accColor:'', boy:true, mustache:'#e8e8ee', eyes:'sleepy', mouth:'shy'},
         talk:[
           {sp:'npc', mood:'smile', text:'Salaam, detective sahiba. I have watched this street for forty years.'},
-          {sp:'me',  mood:'ooh',   text:'Baba Yaqoob — did you see Bilal the delivery boy yesterday evening?'},
+          {sp:'me',  mood:'ooh',   text:'Chacha Khalid — did you see Bilal the delivery boy yesterday evening?'},
           {sp:'npc', mood:'happy', text:'Haan haan! The boy loaded his bike right in front of me till dark. Waved at him myself.'},
           {sp:'me',  mood:'ooh',   text:'And this muddy boot print — mud like the yard here?'},
           {sp:'npc', mood:'ooh',   text:'That’s our yard mud alright. And oh — BRUNO stomped straight through here at closing time, marching toward Y Block!'}
@@ -2473,11 +2473,11 @@ const CASES = [
       look:LOOKS.karim,
       motive:'The squeaky toy ruins his quiet afternoon chai.',
       hello:'Salaam, detective sahiba. The roses needed me all day, I saw nothing.',
-      innocentGiggle:'Me?! I have PRUNED all evening! Ask Baba Yaqoob — he heard my clippers!',
+      innocentGiggle:'Me?! I have PRUNED all evening! Ask Chacha Khalid — he heard my clippers!',
       testimony:[
         {id:'k1', text:'I trimmed the front hedge until the maghrib azaan.',
-         press:'Snip snip snip. Baba Yaqoob waved from his gate. Ask him!',
-         pressNote:'Mali Karim says Baba Yaqoob saw him pruning.'},
+         press:'Snip snip snip. Chacha Khalid waved from his gate. Ask him!',
+         pressNote:'Mali Karim says Chacha Khalid saw him pruning.'},
         {id:'k2', text:'That squeaky mouse! Squeak squeak while I plant my petunias!',
          press:'…But a quiet garden with a sad cat is worse. I admit it.'}
       ]}
@@ -2493,7 +2493,7 @@ const CASES = [
     ribboncut:{name:'Craft-table ribbon', icon:'receipt',
       desc:'Auntie Nasreen: “That’s MY craft ribbon. Hamza took a strip yesterday — said it was for something important.”'},
     wallwalk:{name:'The wall-walk sighting', icon:'note',
-      desc:'Baba Yaqoob: “At dusk I saw young Hamza balancing along Nano Jaan’s wall behind a little orange kitten.”'}
+      desc:'Chacha Khalid: “At dusk I saw young Hamza balancing along Nano Jaan’s wall behind a little orange kitten.”'}
   },
   locations:[
     { id:'petpalace', name:'Pet Palace', icon:'🐹', mapX:330, mapY:196, set:'shop', deco:'#5fe0b0',
@@ -2517,11 +2517,11 @@ const CASES = [
         ],
         gives:['ribboncut'], names:['alina'], clears:'alina' }]},
     { id:'depot', name:'Speedy Couriers', icon:'📦', mapX:96, mapY:420, set:'yard', deco:'#f0a832',
-      npcs:[{ id:'tom', name:'Baba Yaqoob', role:'the chowkidar', grown:true,
+      npcs:[{ id:'tom', name:'Chacha Khalid', role:'the chowkidar', grown:true,
         look:LOOKS.yaqoob,
         talk:[
           {sp:'npc', mood:'smile', text:'Salaam, detective sahiba! More mysteries on my street?'},
-          {sp:'me',  mood:'ooh',   text:'Muddy paw prints, Baba Yaqoob. Did you see any cats on parade?'},
+          {sp:'me',  mood:'ooh',   text:'Muddy paw prints, Chacha Khalid. Did you see any cats on parade?'},
           {sp:'npc', mood:'giggle',text:'A parade indeed! An orange kitten marching along Nano Jaan’s wall — and young Hamza wobbling after it!'},
           {sp:'npc', mood:'happy', text:'And Mali Karim? Snip snip snip until the azaan. My ears can vouch for HIM.'}
         ],
@@ -2606,11 +2606,11 @@ const CASES = [
       look:LOOKS.majeed,
       motive:'Paint spills make his floors “a national tragedy.”',
       hello:'Salaam. Whoever mixed those paints also DRIPPED on my clean floor.',
-      innocentGiggle:'ME? I MOP paint, I do not MIX it! Baba Yaqoob drank chai with me till dark!',
+      innocentGiggle:'ME? I MOP paint, I do not MIX it! Chacha Khalid drank chai with me till dark!',
       testimony:[
         {id:'m1', text:'After school I polished the corridor, then had chai at the couriers yard.',
-         press:'Baba Yaqoob poured. Two cups each. Ask him about the biscuits too.',
-         pressNote:'Chacha Majeed says he had chai with Baba Yaqoob.'},
+         press:'Chacha Khalid poured. Two cups each. Ask him about the biscuits too.',
+         pressNote:'Chacha Majeed says he had chai with Chacha Khalid.'},
         {id:'m2', text:'I keep that art room SPOTLESS. Whoever did this respects nothing.',
          press:'Thirty years of floors, detective. THIRTY years.'}
       ]}
@@ -2626,7 +2626,7 @@ const CASES = [
     smockstain:{name:'Purple-stained smock', icon:'receipt',
       desc:'Master Rafiq: “I mended a small smock this morning — COVERED in fresh purple paint. Mahnoor’s smock.”'},
     gatesight:{name:'The gate sighting', icon:'note',
-      desc:'Baba Yaqoob: “Past closing, a girl with a sparkly headband slipped through the school gate. Glitter in the moonlight!”'}
+      desc:'Chacha Khalid: “Past closing, a girl with a sparkly headband slipped through the school gate. Glitter in the moonlight!”'}
   },
   locations:[
     { id:'townhall', name:'DHA Office', icon:'🏛️', mapX:330, mapY:196, set:'hall', deco:'#7cc4ff', banner:'🏛 DHA LAHORE OFFICE',
@@ -2646,7 +2646,7 @@ const CASES = [
         ],
         gives:['smockstain'] }]},
     { id:'depot', name:'Speedy Couriers', icon:'📦', mapX:352, mapY:342, set:'yard', deco:'#f0a832',
-      npcs:[{ id:'tom', name:'Baba Yaqoob', role:'the chowkidar', grown:true, look:LOOKS.yaqoob,
+      npcs:[{ id:'tom', name:'Chacha Khalid', role:'the chowkidar', grown:true, look:LOOKS.yaqoob,
         talk:[
           {sp:'npc', mood:'smile', text:'Detective sahiba! Majeed and I were just talking about you over chai.'},
           {sp:'npc', mood:'ooh',   text:'Last night, past closing — a girl with a SPARKLY headband slipped through the school gate.'},
@@ -2732,11 +2732,11 @@ const CASES = [
       look:{skin:3, hair:'bob', hairColor:'#2b2b33', outfit:'hoodie', outfitColor:'#5a8fd8', acc:'none', accColor:'', boy:true, eyes:'round', mouth:'grin'},
       motive:'Delivered heavy boxes to the library that very evening.',
       hello:'Detective! We meet again! I promise I delivered NOTHING suspicious!',
-      innocentGiggle:'Not me! Baba Yaqoob checked every box on my bike — twice!',
+      innocentGiggle:'Not me! Chacha Khalid checked every box on my bike — twice!',
       testimony:[
         {id:'b1', text:'I dropped off two boxes of new books and left before dark.',
-         press:'Baba Yaqoob signed for them. He checks EVERYTHING. Twice.',
-         pressNote:'Bilal’s delivery was checked by Baba Yaqoob.'},
+         press:'Chacha Khalid signed for them. He checks EVERYTHING. Twice.',
+         pressNote:'Bilal’s delivery was checked by Chacha Khalid.'},
         {id:'b2', text:'Heavy boxes IN, empty hands OUT. That’s my motto.',
          press:'Well, my second motto. The first is “ring the bell twice.”'}
       ]}
@@ -2752,7 +2752,7 @@ const CASES = [
     toffeehabit:{name:'The toffee habit', icon:'note',
       desc:'Auntie Kausar: “Chaudhry Sahab buys my special toffee daily — and BRAGS he must own every rare book in Lahore.”'},
     parcelsight:{name:'The heavy parcel', icon:'note',
-      desc:'Baba Yaqoob: “At closing, Chaudhry Sahab hurried past hugging a big flat parcel — hugging it like a baby!”'}
+      desc:'Chacha Khalid: “At closing, Chaudhry Sahab hurried past hugging a big flat parcel — hugging it like a baby!”'}
   },
   locations:[
     { id:'tailor', name:'Rafiq Tailors', icon:'🧵', mapX:96, mapY:420, set:'shop', deco:'#9b6dff',
@@ -2773,7 +2773,7 @@ const CASES = [
         ],
         gives:['toffeehabit'], names:['noor'], clears:'noor' }]},
     { id:'depot', name:'Speedy Couriers', icon:'📦', mapX:352, mapY:342, set:'yard', deco:'#f0a832',
-      npcs:[{ id:'tom', name:'Baba Yaqoob', role:'the chowkidar', grown:true, look:LOOKS.yaqoob,
+      npcs:[{ id:'tom', name:'Chacha Khalid', role:'the chowkidar', grown:true, look:LOOKS.yaqoob,
         talk:[
           {sp:'npc', mood:'smile', text:'Detective sahiba! Third case this month. DHA sleeps safe with you awake.'},
           {sp:'npc', mood:'ooh',   text:'Last evening? Chaudhry Sahab rushed past hugging a big flat parcel like a baby!'},
@@ -2838,7 +2838,7 @@ const CASES = [
         {id:'p1b', hidden:true, text:'That trowel has been lost for weeks. I was nowhere near the park last night.',
          press:'Weeks, I say! A gardener loses many trowels. It is the tragedy of our craft.',
          lieBrokenBy:'track', final:true,
-         brokenLine:'The barrow track… Baba Yaqoob’s barrow… which I borrowed… LAST NIGHT. Curses.'},
+         brokenLine:'The barrow track… Chacha Khalid’s barrow… which I borrowed… LAST NIGHT. Curses.'},
         {id:'p2', text:'Farhat’s roses win because of LUCK. A lucky gnome! Is that gardening?',
          press:'Five years! Five silver cups on HER shelf that belong on MINE!',
          pressNote:'Rana Sahab is bitterly jealous of the Garden Show cups.'}
@@ -2877,7 +2877,7 @@ const CASES = [
     trophyobsess:{name:'Five lost cups', icon:'list',
       desc:'Auntie Nasreen: “Rana Sahab — R.S.! — has lost Best Garden to Farhat five shows running. He filed a COMPLAINT about her lucky gnome.”'},
     barrowloan:{name:'The borrowed barrow', icon:'note',
-      desc:'Baba Yaqoob: “Rana Sahab borrowed my wheelbarrow at dusk — returned it at dawn, muddy and squeaking.”'},
+      desc:'Chacha Khalid: “Rana Sahab borrowed my wheelbarrow at dusk — returned it at dawn, muddy and squeaking.”'},
     petalpath:{name:'The petal path', icon:'note',
       desc:'Auntie Gul: “Crushed prize petals? Only one lane is lined with those roses — Rana Lane. The trail leads HOME, detective.”'}
   },
@@ -2891,7 +2891,7 @@ const CASES = [
         ],
         gives:['trophyobsess'], names:['rana','sana','munna'], clears:'sana' }]},
     { id:'depot', name:'Speedy Couriers', icon:'📦', mapX:352, mapY:342, set:'yard', deco:'#f0a832',
-      npcs:[{ id:'tom', name:'Baba Yaqoob', role:'the chowkidar', grown:true, look:LOOKS.yaqoob,
+      npcs:[{ id:'tom', name:'Chacha Khalid', role:'the chowkidar', grown:true, look:LOOKS.yaqoob,
         talk:[
           {sp:'npc', mood:'ooh',   text:'My wheelbarrow! Rana Sahab borrowed it at dusk — brought it back at dawn, muddy and SQUEAKING.'},
           {sp:'npc', mood:'happy', text:'And Munna the paperboy? Finished his whole route before dark. I set my watch by that boy.'}
@@ -3099,11 +3099,11 @@ const CASES = [
       look:{skin:3, hair:'pigtails', hairColor:'#2b2b33', outfit:'dress', outfitColor:'#ff5fae', acc:'bow', accColor:'#5fe0b0', eyes:'sparkle', mouth:'grin'},
       motive:'World-champion paper-plane folder. Always hunting paper.',
       hello:'Salaam! Wanna see my plane? It did THREE loops yesterday!',
-      innocentGiggle:'I fold SCRAP paper only! Baba Yaqoob checked my plane — it was a shopping list!',
+      innocentGiggle:'I fold SCRAP paper only! Chacha Khalid checked my plane — it was a shopping list!',
       testimony:[
         {id:'mi1', text:'I folded planes on the roof till the azaan, then came down for dinner.',
-         press:'My best plane landed in Baba Yaqoob’s yard. He threw it back. GREAT throw for his age.',
-         pressNote:'Mishal’s planes flew over Baba Yaqoob’s yard.'},
+         press:'My best plane landed in Chacha Khalid’s yard. He threw it back. GREAT throw for his age.',
+         pressNote:'Mishal’s planes flew over Chacha Khalid’s yard.'},
         {id:'mi2', text:'Bhai’s essay is boring anyway. No planes in it AT ALL.',
          press:'I listened to him practise nine times. NINE. I could recite it. I won’t.'}
       ]},
@@ -3131,7 +3131,7 @@ const CASES = [
     inkmatch:{name:'The violet ink bottle', icon:'receipt',
       desc:'Auntie Nasreen: “Violet ink? I sell one bottle a month — Hira bought one YESTERDAY. Very particular about violet.”'},
     porchsight:{name:'The porch sighting', icon:'note',
-      desc:'Baba Yaqoob: “Planes from the roof all evening — and later, the essay girl slipping onto Omar’s porch, quiet as a cat.”'}
+      desc:'Chacha Khalid: “Planes from the roof all evening — and later, the essay girl slipping onto Omar’s porch, quiet as a cat.”'}
   },
   locations:[
     { id:'school', name:'DHA Model School', icon:'🏫', mapX:330, mapY:196, set:'hall', deco:'#4fb8ff', banner:'🏫 DHA MODEL SCHOOL',
@@ -3150,7 +3150,7 @@ const CASES = [
         ],
         gives:['inkmatch'] }]},
     { id:'depot', name:'Speedy Couriers', icon:'📦', mapX:96, mapY:420, set:'yard', deco:'#f0a832',
-      npcs:[{ id:'tom', name:'Baba Yaqoob', role:'the chowkidar', grown:true, look:LOOKS.yaqoob,
+      npcs:[{ id:'tom', name:'Chacha Khalid', role:'the chowkidar', grown:true, look:LOOKS.yaqoob,
         talk:[
           {sp:'npc', mood:'giggle',text:'Paper planes rained on my yard all evening! One was a shopping list. Excellent wing design.'},
           {sp:'npc', mood:'ooh',   text:'And later — the essay girl, slipping onto Omar’s porch. Quiet as a cat. Cats, I notice.'}
@@ -3350,11 +3350,11 @@ const CASES = [
       look:LOOKS.brunoL,
       motive:'Once a recipe thief… old reputations stick.',
       hello:'Detective. Yes, I know how this looks. I keep HONEST hours now. Mostly flour-covered ones.',
-      innocentGiggle:'I bake at night — I do not BURGLE at night! My oven glowed till fajr, ask Baba Yaqoob!',
+      innocentGiggle:'I bake at night — I do not BURGLE at night! My oven glowed till fajr, ask Chacha Khalid!',
       testimony:[
         {id:'br1', text:'I proofed dough all night. My oven never went cold.',
-         press:'Baba Yaqoob buys my midnight naan. He saw the chimney smoking till dawn.',
-         pressNote:'Bruno’s oven ran all night — Baba Yaqoob can confirm.'},
+         press:'Chacha Khalid buys my midnight naan. He saw the chimney smoking till dawn.',
+         pressNote:'Bruno’s oven ran all night — Chacha Khalid can confirm.'},
         {id:'br2', text:'I ADMIRE Parveen’s naan khatai. Openly! With a signed apology on my wall!',
          press:'Framed. Next to my first fair-and-square Bake-Off ribbon. Third place. I am PROUD of it.'}
       ]},
@@ -3382,7 +3382,7 @@ const CASES = [
     scarfmatch:{name:'The blue scarf', icon:'receipt',
       desc:'Master Rafiq: “Soft blue wool — I knit that scarf for young Danish LAST WEEK. First wearing, first shedding.”'},
     hedgesight:{name:'The midnight hedge run', icon:'note',
-      desc:'Baba Yaqoob: “Past midnight — a tall boy in a blue scarf hurrying along Parveen’s hedge, jingling like a money box.”'}
+      desc:'Chacha Khalid: “Past midnight — a tall boy in a blue scarf hurrying along Parveen’s hedge, jingling like a money box.”'}
   },
   locations:[
     { id:'school', name:'DHA Model School', icon:'🏫', mapX:330, mapY:196, set:'hall', deco:'#4fb8ff', banner:'🏫 DHA MODEL SCHOOL',
@@ -3400,7 +3400,7 @@ const CASES = [
         ],
         names:['surraiya'], clears:'surraiya' }]},
     { id:'depot', name:'Speedy Couriers', icon:'📦', mapX:352, mapY:342, set:'yard', deco:'#f0a832',
-      npcs:[{ id:'tom', name:'Baba Yaqoob', role:'the chowkidar', grown:true, look:LOOKS.yaqoob,
+      npcs:[{ id:'tom', name:'Chacha Khalid', role:'the chowkidar', grown:true, look:LOOKS.yaqoob,
         talk:[
           {sp:'npc', mood:'ooh',   text:'Past midnight — a tall boy in a blue scarf hurried along Parveen’s hedge, jingling like a money box!'},
           {sp:'npc', mood:'happy', text:'And Bruno? His chimney smoked till fajr. I bought midnight naan at two. Warm as a hug.'}
@@ -3487,7 +3487,7 @@ const CASES = [
         {id:'sm2', text:'The “wants a friend” rumour is SLANDER. Naagin has me.',
          press:'And a heat lamp. And a rock called Kamran. She is fully socialised.'}
       ]},
-    { id:'tomS', name:'Baba Yaqoob', role:'the chowkidar', grown:true,
+    { id:'tomS', name:'Chacha Khalid', role:'the chowkidar', grown:true,
       look:LOOKS.yaqoob,
       motive:'Nibbles’ squeaky wheel keeps the whole street awake.',
       hello:'Salaam, detective sahiba. Yes, yes — the wheel squeaks. No, I did not hamster-nap anyone.',
@@ -3495,7 +3495,7 @@ const CASES = [
       testimony:[
         {id:'ty1', text:'I attended the DHA council meeting and… rested my eyes through most of it.',
          press:'Auntie Nasreen kept minutes. My snores are IN the minutes.',
-         pressNote:'Baba Yaqoob slept through the council meeting.'},
+         pressNote:'Chacha Khalid slept through the council meeting.'},
         {id:'ty2', text:'That wheel! Squeak-squeak at three in the morning! But the little captain… he waves at me.',
          press:'Every dawn. A tiny wave. We are, against my will, friends.'}
       ]}
@@ -3533,7 +3533,7 @@ const CASES = [
     { id:'townhall', name:'DHA Office', icon:'🏛️', mapX:352, mapY:342, set:'hall', deco:'#7cc4ff', banner:'🏛 DHA LAHORE OFFICE',
       npcs:[{ id:'ledger', name:'Auntie Nasreen', role:'office clerk', grown:true, look:LOOKS.nasreen,
         talk:[
-          {sp:'npc', mood:'giggle',text:'Baba Yaqoob at the council meeting? Beta, he snored through THREE agenda items. It is in the minutes. Officially.'}
+          {sp:'npc', mood:'giggle',text:'Chacha Khalid at the council meeting? Beta, he snored through THREE agenda items. It is in the minutes. Officially.'}
         ],
         names:['tomS'], clears:'tomS' }]},
     { id:'chaikhokha', name:'Chacha’s Chai Khokha', icon:'☕', mapX:300, mapY:492, set:'yard', deco:'#c96a4a',
@@ -3546,7 +3546,7 @@ const CASES = [
   ],
   truth:{ mehak:{ motive:'mysteryentry', means:'pinmatch', opp:'wagonsight' } },
   gather:[
-    {sp:'me',    mood:'smile', text:'Saad, Sameer, Baba Yaqoob, Mehak — welcome back to Pet Palace.'},
+    {sp:'me',    mood:'smile', text:'Saad, Sameer, Chacha Khalid, Mehak — welcome back to Pet Palace.'},
     {sp:'me',    mood:'ooh',   text:'A bent hairpin. A seed trail. One squeaking wagon at dawn. The Parade starts early this year.'},
     {sp:'mehak', mood:'nervous', text:'Prince needs his pre-parade blow-dry! This is ANIMAL CRUELTY!'},
     {sp:'me',    mood:'smile', text:'One champion first, Mehak. The fluffy one you borrowed.'}
