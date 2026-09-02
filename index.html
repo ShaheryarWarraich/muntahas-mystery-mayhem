@@ -496,8 +496,8 @@ const SKINS = ['#ffe3cc','#ffd2b0','#eab98f','#c98a5e','#a06a42','#7a4b2c'];
 const HAIRSTYLES = ['ponytail','pigtails','buns','braids','long','bob','curly','wavy'];
 const HAIRNAMES  = {ponytail:'Ponytail', pigtails:'Pigtails', buns:'Space Buns', braids:'Braids', long:'Long', bob:'Bob', curly:'Curly', wavy:'Wavy'};
 const HAIRCOLORS = ['#2b2b33','#4a3320','#7a5230','#a3502e','#e8c46a','#ff8fc7','#a78bfa','#7cc4ff'];
-const OUTFITS = ['trench','dress','hoodie','overalls','sweater','sparkle'];
-const OUTFITNAMES = {trench:'Trench Coat', dress:'Twirl Dress', hoodie:'Hoodie + Skirt', overalls:'Overalls', sweater:'Cozy Sweater', sparkle:'Sparkle Top'};
+const OUTFITS = ['trench','dress','hoodie','overalls','sweater','sparkle','shalwar'];
+const OUTFITNAMES = {trench:'Trench Coat', dress:'Twirl Dress', hoodie:'Hoodie + Skirt', overalls:'Overalls', sweater:'Cozy Sweater', sparkle:'Sparkle Top', shalwar:'Shalwar Kameez'};
 const OUTFITCOLORS = ['#ff8fc7','#e2699e','#a78bfa','#7c5cbf','#7cc4ff','#5a8fd8','#8fe3c0','#ffd166'];
 const ACCS = ['none','hat','bow','headband','glasses','flower'];
 const EYESTYLES = ['sparkle','gentle','round','sleepy','starry'];
@@ -665,7 +665,7 @@ function drawHead(x, y, r, ch, mood, o){
           ctx.lineTo(x+g*(ex + r*0.2), ey - r*(0.16 + li*0.07));
           ctx.stroke();
         }
-      } else { /* sparkle */
+        } else { /* sparkle */
         ell(x+g*ex, ey, r*0.125, r*0.16, '#3a3048');
         ell(x+g*ex - r*0.045, ey - r*0.055, r*0.048, r*0.058, '#fff');
         if(!ch.boy) ell(x+g*ex + r*0.05, ey + r*0.04, r*0.022, r*0.026, 'rgba(255,255,255,0.85)');
@@ -806,15 +806,21 @@ function drawDetective(x, y, ch, s, o){
   drawHairBehind(x, hy, headR, ch, o);
   /* hips + legs — a lower garment ALWAYS covers the hip zone (no gaps, ever) */
   const legCol = (of==='overalls'||of==='hoodie') ? shade(oc,0.72)
-               : (of==='sweater') ? shade(oc,0.55) : skin;
+               : (of==='sweater') ? shade(oc,0.55)
+               : (of==='shalwar') ? shade(oc,1.45) : skin;
   const hipCol = (of==='sweater') ? shade(oc,0.55)
                : (of==='overalls'||of==='hoodie') ? shade(oc,0.72)
+               : (of==='shalwar') ? shade(oc,1.45)
                : shade(oc,0.8);
   fillRR(x-15*u, hipY-20*u, 30*u, 34*u, 9*u, hipCol);
   ctx.lineCap = 'round';
-  ctx.strokeStyle = legCol; ctx.lineWidth = 10.5*u;
+  ctx.strokeStyle = legCol; ctx.lineWidth = (of==='shalwar' ? 13 : 10.5)*u;
   ctx.beginPath(); ctx.moveTo(x-9*u, hipY+10*u); ctx.lineTo(x-10*u, y-8*u+walk*0.4); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(x+9*u, hipY+10*u); ctx.lineTo(x+10*u, y-8*u-walk*0.4); ctx.stroke();
+  if(of==='shalwar'){ /* ankle gathers */
+    ell(x-10*u, y-9*u+walk*0.4, 7.5*u, 4*u, shade(oc,1.2));
+    ell(x+10*u, y-9*u-walk*0.4, 7.5*u, 4*u, shade(oc,1.2));
+  }
   /* glossy mary-jane shoes */
   for(const g of [-1,1]){
     const sy2 = y-4*u + walk*0.4*(-g);
@@ -880,6 +886,27 @@ function drawDetective(x, y, ch, s, o){
     for(let i=0;i<3;i++){ ctx.strokeStyle = shade(oc,1.18); ctx.lineWidth = 2*u;
       ctx.beginPath(); ctx.moveTo(x-18*u, shY+12*u+i*10*u); ctx.lineTo(x+18*u, shY+12*u+i*10*u); ctx.stroke(); }
     fillRR(x-20*u, shY+bodyH*0.66, 40*u, 6*u, 3*u, shade(oc,0.8));
+  } else if(of === 'shalwar'){
+    /* long kameez to below the hips */
+    ctx.fillStyle = og;
+    ctx.beginPath();
+    ctx.moveTo(x-17*u, shY+3*u);
+    ctx.lineTo(x-23*u, hipY+26*u); ctx.lineTo(x+23*u, hipY+26*u); ctx.lineTo(x+17*u, shY+3*u);
+    ctx.closePath(); ctx.fill();
+    softShadow(false);
+    fillRR(x-23*u, hipY+22*u, 46*u, 5*u, 2.5*u, shade(oc,1.22));
+    ctx.strokeStyle = shade(oc,0.8); ctx.lineWidth = 1.6*u;
+    ctx.beginPath(); ctx.moveTo(x-21*u, hipY+12*u); ctx.lineTo(x-22.5*u, hipY+24*u);
+    ctx.moveTo(x+21*u, hipY+12*u); ctx.lineTo(x+22.5*u, hipY+24*u); ctx.stroke();
+    ell(x, shY+9*u, 6*u, 4.5*u, shade(oc,1.28));
+    ell(x, shY+9*u, 3.5*u, 2.6*u, oc);
+    const dp = (ch.accColor && ch.accColor[0]==='#') ? ch.accColor : C('gold');
+    ctx.save(); ctx.globalAlpha = 0.92;
+    quadf(x+9*u, shY+2*u, x+19*u, shY+7*u, x-14*u, hipY+8*u, x-22*u, hipY+1*u, dp);
+    ell(x+15*u, shY+6*u, 6*u, 4*u, dp);
+    ctx.globalAlpha = 0.5;
+    quadf(x+11*u, shY+4*u, x+15*u, shY+6*u, x-16*u, hipY+5*u, x-19*u, hipY+3*u, '#fff');
+    ctx.restore();
   } else { /* sparkle */
     ctx.fillStyle = og;
     rr(x-17*u, shY+2*u, 34*u, bodyH*0.55, 9*u); ctx.fill();
@@ -899,6 +926,7 @@ function drawDetective(x, y, ch, s, o){
   /* ---- arms ---- */
   ctx.strokeStyle = (of==='dress'||of==='sparkle'||of==='overalls') ? skin
                   : (of==='trench') ? shade(oc,1.02) : oc;
+  if(of==='shalwar') ctx.strokeStyle = oc;
   ctx.lineWidth = 9*u; ctx.lineCap = 'round';
   const armY = shY + 10*u;
   if(o.pose === 'point'){
@@ -1077,7 +1105,7 @@ function drawTitle(){
   drawButton('🛍 Shop', 175, 700, 130, 46, ()=>{ state='shop'; }, {size:15, c1:'#7fd0ff', c2:'#3aa4f0'});
   drawButton('👧 Squad', 320, 700, 130, 46, ()=>{ state='gallery'; }, {size:15, c1:'#8ff0c8', c2:'#45cf96'});
   drawMuteButtons();
-  txt('☕ Detective Agency est. 2026 · Maple Street', W/2, H-18, 12, {color:'#8878ad'});
+  txt('☕ Detective Agency est. 2026 · DHA Lahore', W/2, H-18, 12, {color:'#8878ad'});
 }
 function drawMuteButtons(){
   drawButton(save.musicMuted?'🎵✖':'🎵', W-52, 16, 40, 40, ()=>{ save.musicMuted=!save.musicMuted; persist(); }, {size:15, c1:'#fff', c2:'#efe6ff', r:14});
@@ -1272,7 +1300,7 @@ function drawClueIcon(id, x, y, s){
     txt('BAKE', 0, -6*s, 5.5*s, {bold:true, color:'#e2699e'});
     txt('OFF!', 0, 0, 5.5*s, {bold:true, color:'#e2699e'});
     txt('beat', 0, 7*s, 4.5*s, {color:'#b3556e'});
-    txt('Plum!', 0, 12*s, 4.5*s, {color:'#b3556e'});
+    txt('Parveen!', 0, 12*s, 4*s, {color:'#b3556e'});
     ctx.restore();
   } else if(id === 'note'){
     ctx.save(); ctx.translate(x,y); ctx.rotate(0.1);
@@ -1309,6 +1337,103 @@ function drawClueIcon(id, x, y, s){
   } else if(id === 'star'){
     star(x, y, 11*s, C('gold'), 0.2);
     star(x, y, 5*s, '#fff3c9', 0.2);
+  } else if(id === 'fluff'){
+    ell(x, y, 9*s, 7*s, '#f0a45e');
+    ell(x-6*s, y-4*s, 5*s, 4*s, '#f7b877');
+    ell(x+6*s, y-3*s, 5*s, 4*s, '#e8964a');
+    ell(x-2*s, y+5*s, 4*s, 3*s, '#f7b877');
+  } else if(id === 'bow'){
+    ell(x-7*s, y, 7*s, 5*s, C('pink'));
+    ell(x+7*s, y, 7*s, 5*s, C('pink'));
+    ell(x, y, 3.5*s, 3.5*s, shade(C('pink'),0.75));
+    ctx.strokeStyle = C('pink'); ctx.lineWidth = 2*s;
+    ctx.beginPath(); ctx.moveTo(x-2*s, y+3*s); ctx.lineTo(x-5*s, y+10*s);
+    ctx.moveTo(x+2*s, y+3*s); ctx.lineTo(x+5*s, y+10*s); ctx.stroke();
+  } else if(id === 'hand'){
+    ell(x, y+3*s, 7*s, 8*s, '#9b6dff');
+    for(let i=0;i<4;i++) ell(x-5*s+i*3.4*s, y-6*s, 1.7*s, 4*s, '#9b6dff');
+    ell(x-8*s, y+1*s, 1.8*s, 3.4*s, '#9b6dff');
+  } else if(id === 'sparkles'){
+    sparkle4(x-4*s, y-4*s, 6*s, C('gold'), 1);
+    sparkle4(x+6*s, y, 4*s, C('pink'), 1);
+    sparkle4(x-2*s, y+7*s, 3.5*s, C('blue'), 1);
+  } else if(id === 'bead'){
+    ell(x, y, 7*s, 7*s, '#fdfaf2');
+    ell(x-2*s, y-2*s, 2.5*s, 2*s, '#fff');
+    for(let i=0;i<4;i++){ const a2=i*Math.PI/2+0.4; ell(x+Math.cos(a2)*3.5*s, y+Math.sin(a2)*3.5*s, 1*s, 1*s, '#c9c2b0'); }
+  } else if(id === 'candy'){
+    ell(x, y, 8*s, 6*s, C('gold'));
+    ctx.fillStyle = C('goldDeep');
+    ctx.beginPath(); ctx.moveTo(x-8*s, y); ctx.lineTo(x-14*s, y-5*s); ctx.lineTo(x-14*s, y+5*s); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(x+8*s, y); ctx.lineTo(x+14*s, y-5*s); ctx.lineTo(x+14*s, y+5*s); ctx.closePath(); ctx.fill();
+    ell(x-2*s, y-2*s, 2.4*s, 1.6*s, '#fff3c9');
+  } else if(id === 'trowel'){
+    ctx.save(); ctx.translate(x,y); ctx.rotate(0.6);
+    fillRR(-2*s, -12*s, 4*s, 10*s, 2*s, '#9a6b4a');
+    ctx.beginPath(); ctx.moveTo(-6*s, -2*s); ctx.lineTo(6*s, -2*s); ctx.lineTo(0, 12*s); ctx.closePath();
+    ctx.fillStyle = '#b9b9c4'; ctx.fill();
+    ctx.restore();
+  } else if(id === 'petals'){
+    [[-6,-4,'#ff5fae'],[5,-6,'#e2429a'],[0,4,'#ff9ed2'],[8,3,'#ff5fae']].forEach(p2=>{
+      ctx.save(); ctx.translate(x+p2[0]*s, y+p2[1]*s); ctx.rotate(p2[0]);
+      ell(0, 0, 4.5*s, 3*s, p2[2]); ctx.restore();
+    });
+  } else if(id === 'threadIcon'){
+    ctx.strokeStyle = '#4fb8ff'; ctx.lineWidth = 2*s; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(x-8*s, y+6*s);
+    ctx.bezierCurveTo(x-2*s, y-10*s, x+4*s, y+10*s, x+9*s, y-6*s); ctx.stroke();
+    ell(x-8*s, y+6*s, 2*s, 2*s, '#2f8fe0');
+  } else if(id === 'charmZ'){
+    ell(x, y, 8*s, 8*s, C('gold'));
+    ell(x, y-8*s, 2.4*s, 2.4*s, C('goldDeep'));
+    txt('Z', x, y+0.5*s, 9*s, {bold:true, color:'#7a5a12'});
+  } else if(id === 'eraserIcon'){
+    ctx.save(); ctx.translate(x,y); ctx.rotate(-0.2);
+    fillRR(-9*s, -5*s, 18*s, 10*s, 3*s, '#ff9ed2');
+    fillRR(-9*s, -5*s, 7*s, 10*s, 3*s, '#4fb8ff');
+    txt('H', 2*s, 0, 7*s, {bold:true, color:'#8d3d55'});
+    ctx.restore();
+  } else if(id === 'plane'){
+    ctx.fillStyle = '#fffdf4';
+    ctx.beginPath(); ctx.moveTo(x-10*s, y+5*s); ctx.lineTo(x+11*s, y-6*s); ctx.lineTo(x-2*s, y+2*s); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(x-2*s, y+2*s); ctx.lineTo(x+11*s, y-6*s); ctx.lineTo(x+2*s, y+8*s); ctx.closePath();
+    ctx.fillStyle = '#e8e2d0'; ctx.fill();
+  } else if(id === 'ink'){
+    ell(x, y, 7*s, 8*s, '#7a4fd8');
+    ell(x-7*s, y-6*s, 3*s, 3*s, '#7a4fd8');
+    ell(x+7*s, y+5*s, 2*s, 2*s, '#7a4fd8');
+    ell(x-2*s, y-3*s, 2*s, 2.5*s, '#a78bfa');
+  } else if(id === 'pinIcon'){
+    ell(x, y, 7.5*s, 7.5*s, C('blueDeep'));
+    ell(x, y, 5*s, 5*s, '#fff');
+    txt('🍲', x, y+0.5*s, 6.5*s);
+  } else if(id === 'crumbs'){
+    [[-8,-2],[-3,4],[2,-5],[6,2],[9,-3],[0,8]].forEach(c2=>ell(x+c2[0]*s, y+c2[1]*s, 2.2*s, 1.8*s, '#c99a4a'));
+  } else if(id === 'pouchIcon'){
+    ctx.beginPath(); ctx.moveTo(x-7*s, y-4*s);
+    ctx.quadraticCurveTo(x-10*s, y+8*s, x, y+9*s);
+    ctx.quadraticCurveTo(x+10*s, y+8*s, x+7*s, y-4*s); ctx.closePath();
+    ctx.fillStyle = '#9a6b4a'; ctx.fill();
+    fillRR(-7*s+x, y-6*s, 14*s, 3.5*s, 1.5*s, '#7a5230');
+    txt('₨', x, y+3*s, 7*s, {bold:true, color:'#f0d9a8'});
+  } else if(id === 'hairpinIcon'){
+    ctx.strokeStyle = '#b9b9c4'; ctx.lineWidth = 2.2*s; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(x-8*s, y-5*s); ctx.quadraticCurveTo(x+10*s, y-8*s, x+8*s, y+2*s); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x-8*s, y+1*s); ctx.quadraticCurveTo(x+6*s, y-1*s, x+7*s, y+6*s); ctx.stroke();
+    ell(x-8*s, y-2*s, 3*s, 3*s, C('pink'));
+  } else if(id === 'seedsIcon'){
+    [[-7,-3,-0.5],[-1,2,0.3],[5,-4,0.9],[8,3,-0.2],[0,-8,0.1]].forEach(sd=>{
+      ctx.save(); ctx.translate(x+sd[0]*s, y+sd[1]*s); ctx.rotate(sd[2]);
+      ell(0, 0, 2*s, 3.2*s, '#5a4632');
+      ctx.strokeStyle = '#f0d9a8'; ctx.lineWidth = 0.7*s;
+      ctx.beginPath(); ctx.moveTo(0, -2.5*s); ctx.lineTo(0, 2.5*s); ctx.stroke();
+      ctx.restore();
+    });
+  } else if(id === 'rosetteIcon'){
+    for(let i=0;i<8;i++){ const a2 = i*Math.PI/4; ell(x+Math.cos(a2)*6*s, y+Math.sin(a2)*6*s, 3*s, 3*s, C('pink')); }
+    ell(x, y, 4.5*s, 4.5*s, C('gold'));
+    fillRR(x-4*s, y+6*s, 3*s, 8*s, 1.5*s, C('pinkDeep'));
+    fillRR(x+1*s, y+6*s, 3*s, 8*s, 1.5*s, C('pinkDeep'));
   } else if(id === 'paw'){
     ell(x, y+3*s, 7*s, 6*s, C('gold'));
     for(let i=0;i<3;i++) ell(x-6*s+i*6*s, y-6*s, 2.6*s, 3*s, C('gold'));
@@ -1336,8 +1461,497 @@ const BAKERY_SPOTS = [
 ];
 let spotAnim = {};   // id -> 0..1 open animation
 
-function sceneW(){ return BAKERY_W; }
-function spotList(){ return BAKERY_SPOTS; }
+/* ============================================================
+   GENERIC SCENE TEMPLATES (DHA Lahore) — background art only;
+   hiding-spot furniture is drawn by the generic cover system.
+   ============================================================ */
+function sceneBase(cx, o){
+  /* wall */
+  ctx.fillStyle = vGrad(0, 0, HORIZON, o.wall1, o.wall2); ctx.fillRect(0, 0, W, HORIZON);
+  if(o.stripes){
+    ctx.fillStyle = 'rgba(255,255,255,'+(o.stripeA || 0.35)+')';
+    for(let k=0;k<26;k++){ const x = k*56 - (cx*0.85 % 56); ctx.fillRect(x, 0, 24, HORIZON-56); }
+  }
+  fillRR(-10, HORIZON-58, W+20, 62, 0, o.wainscot); 
+  ctx.fillStyle = 'rgba(90,40,90,0.18)'; ctx.fillRect(-10, HORIZON-58, W+20, 4);
+  floorPlanks(cx, o.floor1, o.floor2, o.tile);
+  /* light pool */
+  ctx.save(); ctx.globalAlpha = 0.2;
+  quadf(o.lightX - cx*0.85, HORIZON, o.lightX+150 - cx*0.85, HORIZON, o.lightX+330 - cx, H-40, o.lightX-80 - cx, H-40, '#fff6d8');
+  ctx.restore();
+}
+function sceneOutdoorBase(cx, o){
+  ctx.fillStyle = vGrad(0, 0, HORIZON, o.sky1 || '#bfe4ff', o.sky2 || '#e6f4ff'); ctx.fillRect(0, 0, W, HORIZON);
+  ell(90 - cx*0.3, 74, 28, 28, '#fff3c9');
+  /* far houses (DHA rooftops) */
+  for(let k=0;k<8;k++){
+    const bx2 = k*160 - cx*0.6;
+    fillRR(bx2, HORIZON-120, 110, 122, 6, k%2 ? '#efe0d0' : '#e8d5c0');
+    ctx.beginPath(); ctx.moveTo(bx2-8, HORIZON-118); ctx.lineTo(bx2+55, HORIZON-150); ctx.lineTo(bx2+118, HORIZON-118);
+    ctx.closePath(); ctx.fillStyle = '#c96a4a'; ctx.fill();
+    fillRR(bx2+38, HORIZON-90, 32, 40, 4, '#b98a5f');
+  }
+  /* hedge line */
+  for(let k=0;k<20;k++){ const hx = k*90 - cx*0.85; ell(hx, HORIZON-16, 55, 34, k%2 ? '#6ab475' : '#7cc487'); }
+  /* grass */
+  ctx.fillStyle = vGrad(0, HORIZON, H-HORIZON, o.grass1 || '#bfe6c8', o.grass2 || '#9cd2a9'); ctx.fillRect(0, HORIZON, W, H-HORIZON);
+  ctx.strokeStyle = 'rgba(60,120,80,0.15)'; ctx.lineWidth = 2;
+  for(let i=0;i<6;i++){ const t = Math.pow(i/5,1.6), y = HORIZON+14+t*(H-HORIZON-14);
+    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+  /* path */
+  ctx.fillStyle = '#f0e2c8';
+  quadf(300-cx, HORIZON, 420-cx, HORIZON, 620-cx, H, 180-cx, H, '#f0e2c8');
+}
+function sceneVignette(){
+  const vg3 = ctx.createRadialGradient(W/2, H/2, H*0.45, W/2, H/2, H*0.78);
+  vg3.addColorStop(0, 'rgba(60,30,80,0)'); vg3.addColorStop(1, 'rgba(60,30,80,0.14)');
+  ctx.fillStyle = vg3; ctx.fillRect(0, 0, W, H);
+}
+
+/* ---- cottage / house interior (cases 2, 7, 9) ---- */
+function drawCottage(cx){
+  const v = sceneVariant();
+  sceneBase(cx, { wall1:v.wall1||'#ffe7d6', wall2:v.wall2||'#ffd3bd', wainscot:v.wainscot||'#f0b894',
+    stripes:true, stripeA:0.3, floor1:v.floor1||'#efdcc8', floor2:v.floor2||'#ddc0a0', tile:'#f8ecd8', lightX:560 });
+  const bx2 = wx => wx - cx*0.85;
+  /* window with garden view */
+  softShadow(true, 10);
+  fillRR(bx2(430), 76, 168, 190, 14, '#fff');
+  softShadow(false);
+  fillRR(bx2(438), 84, 152, 174, 10, '#bfe4ff');
+  ctx.save(); rr(bx2(438), 84, 152, 174, 10); ctx.clip();
+  ell(bx2(478), 250, 90, 44, '#a9dcb5');
+  ell(bx2(560), 240, 80, 40, '#98d0a6');
+  ell(bx2(520), 150, 22, 22, '#fff3c9');
+  ctx.restore();
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 6;
+  ctx.beginPath(); ctx.moveTo(bx2(514), 84); ctx.lineTo(bx2(514), 258);
+  ctx.moveTo(bx2(438), 170); ctx.lineTo(bx2(590), 170); ctx.stroke();
+  /* framed family photos */
+  [[120,110],[200,90],[260,130]].forEach((f,i)=>{
+    softShadow(true, 6);
+    fillRR(bx2(f[0]), f[1], 56, 46, 6, '#fffdfe');
+    softShadow(false);
+    fillRR(bx2(f[0])+6, f[1]+6, 44, 34, 3, [C('pinkPale'),C('bluePale'),C('purplePale')][i]);
+    txt(['👵','🐈','👧'][i], bx2(f[0])+28, f[1]+24, 18);
+  });
+  /* wall clock + shelf with brass pots (Lahori touch) */
+  ell(bx2(680), 120, 26, 26, '#fffdfe');
+  ell(bx2(680), 120, 21, 21, '#fff8ec');
+  txt('🕰', bx2(680), 120, 20);
+  softShadow(true, 6);
+  fillRR(bx2(760), 150, 150, 9, 4, '#c99a66');
+  softShadow(false);
+  for(let k=0;k<3;k++){ ell(bx2(786)+k*46, 138, 15, 12, '#e8b04a'); ell(bx2(786)+k*46, 130, 8, 5, '#f0c069'); }
+  /* sofa (big, mid) */
+  softShadow(true, 10);
+  fillRR(340 - cx, 470, 250, 110, 22, v.sofa||'#e2699e');
+  softShadow(false);
+  fillRR(325 - cx, 455, 34, 115, 14, shade(v.sofa||'#e2699e',1.12));
+  fillRR(571 - cx, 455, 34, 115, 14, shade(v.sofa||'#e2699e',1.12));
+  /* cat tree */
+  fillRR(700 - cx, 430, 14, 160, 6, '#c99a66');
+  ell(707 - cx, 428, 44, 16, C('purplePale'));
+  ell(707 - cx, 520, 34, 12, C('purplePale'));
+  /* side table with lamp */
+  box3d(120 - cx, 500, 90, 70, 16, '#c99be0', '#e0c3f0', 8);
+  ell(165 - cx, 470, 26, 12, C('gold'), 0.9);
+  fillRR(160 - cx, 476, 8, 26, 3, '#8a6cc0');
+  sceneVignette();
+}
+
+/* ---- school room (cases 3, 8) ---- */
+function drawSchool(cx){
+  const v = sceneVariant();
+  sceneBase(cx, { wall1:v.wall1||'#dceefc', wall2:v.wall2||'#c8e2f5', wainscot:v.wainscot||'#a9cfe8',
+    stripes:false, floor1:v.floor1||'#e8ddc8', floor2:v.floor2||'#d5c4a5', tile:'#f2ead8', lightX:120 });
+  const bx2 = wx => wx - cx*0.85;
+  /* big chalkboard */
+  softShadow(true, 10);
+  fillRR(bx2(120), 70, 340, 170, 12, '#c99a66');
+  softShadow(false);
+  fillRR(bx2(132), 82, 316, 146, 8, '#2e6b52');
+  txt(v.board1 || 'DHA Model School', bx2(290), 120, 17, {bold:true, color:'#eaf6ee'});
+  txt(v.board2 || 'Art Week!  ✏️ 🎨', bx2(290), 156, 14, {color:'#cfe8d8'});
+  ctx.strokeStyle = 'rgba(234,246,238,0.4)'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(bx2(160), 190); ctx.lineTo(bx2(420), 190); ctx.stroke();
+  /* alphabet frieze + clock */
+  for(let k=0;k<10;k++){
+    fillRR(bx2(500)+k*44, 84, 36, 36, 8, [C('pinkPale'),C('bluePale'),C('purplePale')][k%3]);
+    txt('ابپADB'[k%6], bx2(518)+k*44, 103, 16, {bold:true, color:C('purpleDeep')});
+  }
+  /* teacher desk */
+  box3d(560 - cx, 430, 200, 100, 22, '#c99be0', '#e0c3f0', 10);
+  fillRR(560 - cx + 20, 408, 60, 26, 5, '#fffdf4');
+  txt('🍎', 720 - cx, 452, 22);
+  /* easel */
+  ctx.strokeStyle = '#9a6b4a'; ctx.lineWidth = 7;
+  ctx.beginPath(); ctx.moveTo(160 - cx, 620); ctx.lineTo(200 - cx, 440); ctx.lineTo(240 - cx, 620);
+  ctx.moveTo(200 - cx, 470); ctx.lineTo(200 - cx, 600); ctx.stroke();
+  /* globe */
+  ell(850 - cx, 470, 30, 30, C('blue'));
+  ell(842 - cx, 462, 12, 8, C('mint'));
+  ell(860 - cx, 478, 14, 9, C('mint'));
+  fillRR(844 - cx, 498, 12, 18, 4, '#9a6b4a');
+  sceneVignette();
+}
+
+/* ---- library (case 4) ---- */
+function drawLibrary(cx){
+  const v = sceneVariant();
+  sceneBase(cx, { wall1:v.wall1||'#efe4d2', wall2:v.wall2||'#e2d2b8', wainscot:v.wainscot||'#c9ab7e',
+    stripes:false, floor1:'#d9c0a0', floor2:'#c3a37c', tile:'#e8d8bc', lightX:340 });
+  const bx2 = wx => wx - cx*0.85;
+  /* tall shelves */
+  for(const sx3 of [70, 300, 640, 860]){
+    softShadow(true, 8);
+    fillRR(bx2(sx3), 60, 180, 212, 8, '#a97c4f');
+    softShadow(false);
+    for(let r2=0;r2<4;r2++){
+      fillRR(bx2(sx3)+10, 74+r2*50, 160, 8, 3, '#8a6238');
+      for(let k=0;k<6;k++){
+        fillRR(bx2(sx3)+14+k*26, 38+r2*50+38, 20, 34, 2,
+          [C('pinkDeep'),C('blueDeep'),C('purpleDeep'),C('mint'),C('goldDeep')][ (k+r2)%5 ]);
+      }
+    }
+  }
+  /* ladder */
+  ctx.strokeStyle = '#8a6238'; ctx.lineWidth = 6;
+  ctx.beginPath(); ctx.moveTo(560 - cx*0.85, 60); ctx.lineTo(520 - cx*0.85, 280);
+  ctx.moveTo(600 - cx*0.85, 60); ctx.lineTo(560 - cx*0.85, 280); ctx.stroke();
+  for(let k=0;k<5;k++){ ctx.beginPath(); ctx.moveTo(552-k*8 - cx*0.85, 90+k*40); ctx.lineTo(592-k*8 - cx*0.85, 90+k*40); ctx.stroke(); }
+  /* reading table with lamp */
+  box3d(380 - cx, 470, 240, 100, 24, '#b98a5f', '#d4a877', 10);
+  ell(450 - cx, 448, 24, 11, C('mint'), 0.9);
+  fillRR(446 - cx, 452, 8, 22, 3, '#8a6238');
+  fillRR(520 - cx, 445, 54, 14, 3, '#fffdf4');
+  fillRR(528 - cx, 438, 54, 14, 3, '#f4ead0');
+  /* glass display case (the Atlas lived here) */
+  softShadow(true, 8);
+  fillRR(760 - cx, 430, 150, 90, 10, 'rgba(190,230,255,0.5)');
+  softShadow(false);
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 3;
+  rr(760 - cx, 430, 150, 90, 10); ctx.stroke();
+  txt('؟', 835 - cx, 476, 34, {color:'#b8ab98', bold:true});
+  sceneVignette();
+}
+
+/* ---- park / garden (cases 5, 6) ---- */
+function drawPark(cx){
+  const v = sceneVariant();
+  sceneOutdoorBase(cx, v);
+  /* fountain */
+  ell(480 - cx, 500, 120, 42, '#b9d8e8');
+  ell(480 - cx, 494, 104, 34, '#8fc4e0');
+  fillRR(470 - cx, 420, 20, 70, 8, '#d5c4a5');
+  ell(480 - cx, 418, 34, 12, '#d5c4a5');
+  for(let k=0;k<5;k++){
+    const a2 = time*2 + k;
+    ell(480 - cx + Math.sin(a2)*20, 440 + (a2*37 % 50), 3, 5, '#cfeaff', 0.8);
+  }
+  /* bench */
+  fillRR(120 - cx, 480, 130, 12, 6, '#c99a66');
+  fillRR(126 - cx, 448, 118, 10, 5, '#c99a66');
+  fillRR(128 - cx, 490, 10, 34, 3, '#8a6238');
+  fillRR(232 - cx, 490, 10, 34, 3, '#8a6238');
+  /* flower beds */
+  for(const fx2 of [640, 800]){
+    ell(fx2 - cx, 620, 90, 30, '#8a6a4a');
+    for(let k=0;k<5;k++){
+      ell(fx2-64 - cx + k*32, 606, 8, 8, [C('pink'),C('gold'),C('purple'),'#fff',C('blue')][k]);
+      fillRR(fx2-66 - cx + k*32, 610, 4, 14, 2, '#5ba368');
+    }
+  }
+  /* gnome pedestal (empty!) */
+  if(!v.noPedestal){
+    box3d(300 - cx, 560, 70, 40, 12, '#d5c4a5', '#e8dcc0', 6);
+    txt('؟', 335 - cx, 585, 22, {color:'#a89878', bold:true});
+  }
+  /* kites in the sky (Lahore!) */
+  [[160,90,C('pink')],[420,60,C('blue')],[720,110,C('gold')]].forEach(k2=>{
+    const kx = k2[0] - cx*0.4, ky = k2[1] + Math.sin(time+k2[0])*6;
+    ctx.beginPath(); ctx.moveTo(kx, ky-16); ctx.lineTo(kx+12, ky); ctx.lineTo(kx, ky+16); ctx.lineTo(kx-12, ky);
+    ctx.closePath(); ctx.fillStyle = k2[2]; ctx.fill();
+    ctx.strokeStyle = 'rgba(90,60,120,0.3)'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(kx, ky+16); ctx.quadraticCurveTo(kx-20, ky+60, kx-10, ky+110); ctx.stroke();
+  });
+  sceneVignette();
+}
+
+/* ---- pet shop (case 10) ---- */
+function drawPetshop(cx){
+  const v = sceneVariant();
+  sceneBase(cx, { wall1:v.wall1||'#e0f4e6', wall2:v.wall2||'#c8e8d2', wainscot:v.wainscot||'#9fd4ab',
+    stripes:true, stripeA:0.3, floor1:'#efe0c8', floor2:'#dcc8a4', tile:'#f6ecd8', lightX:300 });
+  const bx2 = wx => wx - cx*0.85;
+  /* fish tank */
+  softShadow(true, 8);
+  fillRR(bx2(90), 90, 220, 130, 10, 'rgba(120,196,255,0.55)');
+  softShadow(false);
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 4; rr(bx2(90), 90, 220, 130, 10); ctx.stroke();
+  for(let k=0;k<4;k++){
+    const fx3 = bx2(120) + ((k*67 + time*30*(k%2?1:-1)) % 170 + 170) % 170;
+    txt(k%2 ? '🐟' : '🐠', fx3, 130 + (k*23)%70, 16);
+  }
+  /* hamster cage tower (Captain Nibbles' empty home) */
+  softShadow(true, 8);
+  fillRR(bx2(420), 80, 150, 160, 12, 'rgba(255,255,255,0.75)');
+  softShadow(false);
+  ctx.strokeStyle = '#b9b9c4'; ctx.lineWidth = 2;
+  for(let k=0;k<8;k++){ ctx.beginPath(); ctx.moveTo(bx2(430)+k*18, 86); ctx.lineTo(bx2(430)+k*18, 234); ctx.stroke(); }
+  ell(bx2(495), 210, 30, 12, '#f0d9a8');
+  txt('؟', bx2(495), 160, 30, {color:'#b8ab98', bold:true});
+  /* bird perch */
+  fillRR(bx2(660), 100, 10, 150, 4, '#9a6b4a');
+  fillRR(bx2(620), 110, 90, 8, 4, '#9a6b4a');
+  txt('🦜', bx2(700), 96, 24);
+  /* counter */
+  box3d(600 - cx, 440, 220, 110, 24, '#8fd4ab', '#b4e8c8', 10);
+  txt('🐾 PET PALACE 🐾', 710 - cx, 470, 14, {bold:true, color:'#2c6e52'});
+  /* pet bowls */
+  ell(180 - cx, 640, 26, 10, C('pink'));
+  ell(180 - cx, 636, 20, 7, '#8d3d55');
+  ell(240 - cx, 650, 26, 10, C('blue'));
+  sceneVignette();
+}
+
+/* ---- hiding-spot tables for the generic scenes ---- */
+const COTTAGE_SPOTS = [
+  {id:'sofaCushL',  layer:1, wx:360, y:475, w:78, h:52, type:'lift', cover:'cushion', col:'#f7a8cf', label:'the left cushion'},
+  {id:'sofaCushR',  layer:1, wx:470, y:475, w:78, h:52, type:'lift', cover:'cushion', col:'#cdb9ff', label:'the right cushion'},
+  {id:'rugMid',     layer:1, wx:180, y:640, w:130, h:70, type:'lift', cover:'rug', col:'#cdb9ff', label:'the rug corner'},
+  {id:'toyBasket',  layer:1, wx:640, y:590, w:86, h:70, type:'open', cover:'basket', label:'the toy basket'},
+  {id:'sideDrawer', layer:1, wx:820, y:560, w:92, h:56, type:'slide', cover:'drawer', col:'#c99be0', label:'the drawer'},
+  {id:'bigBook',    layer:1, wx:60,  y:430, w:80, h:44, type:'slide', cover:'book', col:'#5a8fd8', col2:'#e2699e', label:'the big book'},
+  {id:'flowerPot',  layer:1, wx:930, y:600, w:64, h:74, type:'lift', cover:'pot', label:'the flower pot'},
+  {id:'biscuitJar', layer:1, wx:560, y:400, w:56, h:64, type:'open', cover:'jar', col2:'#e2699e', label:'the biscuit jar'},
+  {id:'doorMat2',   layer:1, wx:40,  y:660, w:96, h:44, type:'lift', cover:'mat', label:'the door mat'},
+  {id:'windowSill', layer:0.85, wx:470, y:246, w:110, h:26, type:'plain', label:'the window sill'},
+  {id:'clockShelf', layer:0.85, wx:760, y:132, w:150, h:30, type:'plain', label:'the brass shelf'},
+  {id:'teaTrolley', layer:1, wx:110, y:560, w:96, h:60, type:'open', cover:'box', col:'#c99be0', label:'the side table'}
+];
+const SCHOOL_SPOTS = [
+  {id:'deskLidA',   layer:1, wx:120, y:520, w:96, h:58, type:'open', cover:'box', col:'#d4a877', label:'a desk lid'},
+  {id:'deskLidB',   layer:1, wx:300, y:560, w:96, h:58, type:'open', cover:'box', col:'#c99a66', label:'a desk lid'},
+  {id:'teacherDrawer',layer:1, wx:600, y:540, w:96, h:56, type:'slide', cover:'drawer', col:'#c99be0', label:'the teacher’s drawer'},
+  {id:'easelCanvas',layer:1, wx:160, y:470, w:86, h:96, type:'plain', cover:'painting', decor:true, col:'#d8ecff', col2:'#ff5fae', label:'the easel'},
+  {id:'paintJar',   layer:1, wx:480, y:600, w:56, h:64, type:'open', cover:'jar', col:'#e4d0f5', col2:'#4fb8ff', label:'the paint jar'},
+  {id:'cubby1',     layer:1, wx:770, y:590, w:84, h:60, type:'open', cover:'box', col:'#a9d7ff', label:'a cubby'},
+  {id:'cubby2',     layer:1, wx:880, y:620, w:84, h:60, type:'open', cover:'box', col:'#ffd6ea', label:'a cubby'},
+  {id:'backpack',   layer:1, wx:390, y:660, w:80, h:80, type:'open', cover:'bag', col:'#8fd4ab', tag:'', label:'a backpack'},
+  {id:'chalkTray',  layer:0.85, wx:150, y:236, w:280, h:22, type:'plain', label:'the chalk tray'},
+  {id:'globeSpot',  layer:1, wx:820, y:440, w:70, h:80, type:'plain', label:'the globe'},
+  {id:'lunchCrate', layer:1, wx:60, y:640, w:92, h:66, type:'open', cover:'basket', label:'the lunch crate'},
+  {id:'plantSchool',layer:1, wx:950, y:560, w:60, h:70, type:'lift', cover:'pot', label:'the plant'}
+];
+const LIBRARY_SPOTS = [
+  {id:'bigTome',    layer:1, wx:520, y:432, w:76, h:40, type:'slide', cover:'book', col:'#7a4fd8', col2:'#e2429a', label:'the big atlas shelf'},
+  {id:'shelfBook2', layer:0.85, wx:320, y:120, w:70, h:40, type:'slide', cover:'book', col:'#2f8fe0', col2:'#f0a832', label:'a shelf book'},
+  {id:'catalogDrawer',layer:1, wx:120, y:540, w:92, h:56, type:'slide', cover:'drawer', col:'#b98a5f', label:'the card catalogue'},
+  {id:'returnsCart',layer:1, wx:660, y:600, w:100, h:64, type:'open', cover:'box', col:'#b98a5f', label:'the returns cart'},
+  {id:'beanBag',    layer:1, wx:260, y:640, w:96, h:60, type:'lift', cover:'cushion', col:'#8fd4ab', label:'the bean bag'},
+  {id:'readingRug', layer:1, wx:420, y:680, w:120, h:64, type:'lift', cover:'rug', col:'#e2b33c', label:'the reading rug'},
+  {id:'curtainLib', layer:1, wx:900, y:420, w:80, h:180, type:'slide', cover:'curtain', col:'rgba(226,105,158,0.85)', col2:'#7a4fd8', label:'the curtain'},
+  {id:'scrollBasket',layer:1, wx:60, y:640, w:86, h:64, type:'open', cover:'basket', label:'the scroll basket'},
+  {id:'lampTable',  layer:1, wx:520, y:520, w:90, h:40, type:'plain', label:'the reading table'},
+  {id:'stepStool',  layer:1, wx:800, y:640, w:80, h:44, type:'open', cover:'chest', col:'#a97c4f', label:'the step stool'},
+  {id:'displayCase2',layer:1, wx:790, y:452, w:110, h:60, type:'plain', label:'the glass case'}
+];
+const PARK_SPOTS = [
+  {id:'bushA',      layer:1, wx:90,  y:560, w:100, h:80, type:'lift', cover:'bush', label:'a bush'},
+  {id:'bushB',      layer:1, wx:860, y:520, w:100, h:80, type:'lift', cover:'bush', col:'#5ba368', label:'a bush'},
+  {id:'stoneBig',   layer:1, wx:220, y:620, w:86, h:60, type:'lift', cover:'stone', label:'the big stone'},
+  {id:'benchSeat',  layer:1, wx:120, y:452, w:130, h:44, type:'plain', label:'under the bench'},
+  {id:'wheelbarrow',layer:1, wx:700, y:560, w:110, h:70, type:'open', cover:'box', col:'#c96a4a', label:'the wheelbarrow'},
+  {id:'fountainRim',layer:1, wx:390, y:470, w:180, h:60, type:'plain', label:'the fountain rim'},
+  {id:'flowerBedA', layer:1, wx:560, y:590, w:150, h:56, type:'plain', label:'the flower bed'},
+  {id:'picnicMat',  layer:1, wx:320, y:660, w:120, h:64, type:'lift', cover:'mat', col:'#ff9ed2', label:'the picnic mat'},
+  {id:'logPile',    layer:1, wx:940, y:640, w:96, h:60, type:'open', cover:'basket', col:'#9a6b4a', label:'the log pile'},
+  {id:'birdhouse',  layer:0.85, wx:760, y:180, w:60, h:60, type:'plain', label:'the birdhouse'},
+  {id:'sandPatch',  layer:1, wx:60, y:690, w:100, h:50, type:'lift', cover:'mat', col:'#e8dcc0', label:'the sand patch'}
+];
+const PETSHOP_SPOTS = [
+  {id:'hayBale',    layer:1, wx:80,  y:560, w:100, h:74, type:'open', cover:'bag', col:'#f0d9a8', tag:'HAY', label:'the hay bale'},
+  {id:'feedSack',   layer:1, wx:220, y:590, w:86, h:80, type:'open', cover:'bag', col:'#e8caa0', tag:'FEED', label:'the feed sack'},
+  {id:'petBedA',    layer:1, wx:360, y:620, w:92, h:56, type:'lift', cover:'cushion', col:'#a9d7ff', label:'a pet bed'},
+  {id:'petBedB',    layer:1, wx:500, y:660, w:92, h:56, type:'lift', cover:'cushion', col:'#ffd6ea', label:'a pet bed'},
+  {id:'counterDrawer',layer:1, wx:640, y:560, w:96, h:56, type:'slide', cover:'drawer', col:'#8fd4ab', label:'the counter drawer'},
+  {id:'seedJar',    layer:1, wx:800, y:480, w:56, h:64, type:'open', cover:'jar', col:'#f3e8d0', col2:'#2c6e52', label:'the seed jar'},
+  {id:'tunnelTube', layer:1, wx:880, y:600, w:100, h:54, type:'plain', label:'the play tunnel'},
+  {id:'blanketPile',layer:1, wx:60, y:680, w:110, h:56, type:'lift', cover:'rug', col:'#cdb9ff', label:'the blanket pile'},
+  {id:'crateShip',  layer:1, wx:760, y:640, w:96, h:66, type:'open', cover:'chest', label:'the shipping crate'},
+  {id:'cageFloor',  layer:0.85, wx:440, y:200, w:120, h:44, type:'plain', label:'inside the cage'},
+  {id:'fishTankBase',layer:0.85, wx:100, y:222, w:190, h:30, type:'plain', label:'below the fish tank'}
+];
+const SCENES = {
+  bakery:  { w:1000, spots:BAKERY_SPOTS,  draw:drawBakery,  bespoke:true },
+  cottage: { w:1000, spots:COTTAGE_SPOTS, draw:drawCottage },
+  school:  { w:1020, spots:SCHOOL_SPOTS,  draw:drawSchool },
+  library: { w:1000, spots:LIBRARY_SPOTS, draw:drawLibrary },
+  park:    { w:1010, spots:PARK_SPOTS,    draw:drawPark },
+  petshop: { w:1000, spots:PETSHOP_SPOTS, draw:drawPetshop }
+};
+
+/* Scene registry: bakery keeps its bespoke art; new scenes use the
+   generic cover system — each hiding spot IS a piece of furniture. */
+function curScene(){
+  const c = curCase();
+  return SCENES[(c && c.scene) || 'bakery'] || SCENES.bakery;
+}
+function sceneW(){ return curScene().w; }
+function spotList(){ return curScene().spots; }
+function sceneVariant(){ const c = curCase(); return (c && c.variant) || {}; }
+
+/* ---- generic cover furniture (lift / slide / open by style) ---- */
+function drawCoverGeneric(sp, t, cx){
+  const x = sp.wx - cx*(sp.layer||1), y = sp.y, w = sp.w, h = sp.h;
+  const st = sp.cover || 'box';
+  const midX = x + w/2;
+  ctx.save();
+  if(st === 'cushion'){
+    ell(midX, y+h*0.85, w*0.62, h*0.3, 'rgba(90,42,82,0.12)');
+    ctx.save(); ctx.translate(x, y+h*0.55); ctx.rotate(-t*0.9);
+    softShadow(true, 6);
+    fillRR(0, -h*0.45, w, h*0.8, h*0.32, sp.col || C('pink'));
+    softShadow(false);
+    fillRR(w*0.12, -h*0.32, w*0.76, h*0.24, h*0.12, 'rgba(255,255,255,0.35)');
+    ell(w/2, -h*0.05, 3, 3, shade(sp.col || C('pink'), 0.7));
+    ctx.restore();
+  } else if(st === 'rug'){
+    ell(midX, y+h*0.6, w*0.8, h*0.55, sp.col || C('purplePale'));
+    ell(midX, y+h*0.6, w*0.55, h*0.36, shade(sp.col || C('purplePale'), 1.12));
+    ctx.save(); ctx.translate(x+w*0.85, y+h*0.75); ctx.rotate(-t*1.1);
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(-w*0.7, -h*0.15); ctx.lineTo(-w*0.6, h*0.35);
+    ctx.closePath(); ctx.fillStyle = shade(sp.col || C('purplePale'), 0.88); ctx.fill();
+    ctx.restore();
+  } else if(st === 'pot'){
+    if(t>0.05){ /* leaves tilt aside */ }
+    ctx.save(); ctx.translate(midX, y+h*0.35); ctx.rotate(-t*0.55); ctx.translate(-midX, -(y+h*0.35));
+    ell(midX, y+h*0.2, w*0.42, h*0.28, sp.col || '#7cc487');
+    ell(midX-w*0.26, y+h*0.05, w*0.24, h*0.18, shade(sp.col || '#7cc487', 1.1));
+    ell(midX+w*0.25, y+h*0.07, w*0.24, h*0.17, shade(sp.col || '#7cc487', 0.85));
+    ctx.restore();
+    quadf(x+w*0.14, y+h*0.42, x+w*0.86, y+h*0.42, x+w*0.74, y+h, x+w*0.26, y+h, C('pinkDeep'));
+    fillRR(x+w*0.08, y+h*0.36, w*0.84, h*0.16, 5, C('pink'));
+  } else if(st === 'jar'){
+    softShadow(true, 5);
+    fillRR(x+w*0.12, y+h*0.22, w*0.76, h*0.78, w*0.2, 'rgba(255,255,255,0.88)');
+    softShadow(false);
+    fillRR(x+w*0.22, y+h*0.48, w*0.56, h*0.34, 4, sp.col || '#f3e8d0');
+    ctx.save(); ctx.translate(midX, y+h*0.22); ctx.rotate(-t*1.1); ctx.translate(t*-10, t*-6);
+    fillRR(-w*0.44, -h*0.16, w*0.88, h*0.18, 6, sp.col2 || C('purple'));
+    ctx.restore();
+  } else if(st === 'box' || st === 'chest'){
+    softShadow(true, 6);
+    fillRR(x, y+h*0.3, w, h*0.7, 6, sp.col || '#e8b04a');
+    softShadow(false);
+    ctx.strokeStyle = shade(sp.col || '#e8b04a', 0.75); ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(x+4, y+h*0.65); ctx.lineTo(x+w-4, y+h*0.65); ctx.stroke();
+    if(st === 'chest'){ ell(midX, y+h*0.66, 4, 5, C('gold')); }
+    ctx.save(); ctx.translate(x, y+h*0.3); ctx.rotate(-t*1.0);
+    fillRR(0, -h*0.16, w, h*0.2, 5, shade(sp.col || '#e8b04a', 1.15));
+    ctx.restore();
+  } else if(st === 'drawer'){
+    softShadow(true, 6);
+    fillRR(x-w*0.08, y-h*0.5, w*1.16, h*1.6, 8, sp.col || '#c99be0');
+    softShadow(false);
+    fillRR(x+w*0.04, y-h*0.38, w*0.92, h*0.4, 5, shade(sp.col || '#c99be0', 1.12));
+    ell(midX, y-h*0.18, 3.5, 3.5, C('gold'));
+    const slide = t*h*0.7;
+    fillRR(x+w*0.04, y+h*0.08, w*0.92, h*0.62 + slide*0.2, 5, shade(sp.col || '#c99be0', t>0.05 ? 0.8 : 1.12));
+    if(t>0.05){ fillRR(x+w*0.1, y+h*0.14+slide*0.35, w*0.8, h*0.24, 4, 'rgba(60,35,80,0.45)'); }
+    ell(midX, y+h*0.36+slide*0.3, 3.5, 3.5, C('gold'));
+  } else if(st === 'book'){
+    const slide = t*w*0.75;
+    softShadow(true, 4);
+    fillRR(x+slide, y, w*0.5, h, 4, sp.col || C('blueDeep'));
+    softShadow(false);
+    fillRR(x+slide+w*0.06, y+h*0.12, w*0.06, h*0.76, 2, '#fff');
+    fillRR(x+w*0.52+slide*0.2, y+h*0.06, w*0.42, h*0.94, 4, sp.col2 || C('pinkDeep'));
+  } else if(st === 'curtain'){
+    fillRR(x-6, y-h*0.14, w+12, h*0.14, 5, sp.col2 || C('purpleDeep'));
+    const gather2 = 1 - t*0.72;
+    ctx.fillStyle = sp.col || 'rgba(255,143,199,0.85)';
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.quadraticCurveTo(x + w*0.3*gather2, y+h*0.5, x, y+h);
+    ctx.lineTo(x + w*gather2, y+h);
+    ctx.quadraticCurveTo(x + w*0.7*gather2, y+h*0.5, x + w*gather2, y);
+    ctx.closePath(); ctx.fill();
+  } else if(st === 'basket'){
+    softShadow(true, 5);
+    quadf(x+w*0.08, y+h*0.3, x+w*0.92, y+h*0.3, x+w*0.82, y+h, x+w*0.18, y+h, sp.col || '#c99a66');
+    softShadow(false);
+    ctx.strokeStyle = shade(sp.col || '#c99a66', 0.78); ctx.lineWidth = 2;
+    for(let k=0;k<3;k++){ ctx.beginPath(); ctx.moveTo(x+w*0.12, y+h*(0.45+k*0.16)); ctx.lineTo(x+w*0.88, y+h*(0.45+k*0.16)); ctx.stroke(); }
+    ctx.save(); ctx.translate(x+w*0.08, y+h*0.3); ctx.rotate(-t*0.95);
+    ell(w*0.42, -h*0.05, w*0.46, h*0.16, shade(sp.col || '#c99a66', 1.15));
+    ctx.restore();
+  } else if(st === 'bush'){
+    ctx.save(); ctx.translate(midX, y+h); ctx.rotate(t*0.35); ctx.translate(-midX, -(y+h));
+    ell(midX, y+h*0.5, w*0.5, h*0.5, sp.col || '#6ab475');
+    ell(midX-w*0.3, y+h*0.62, w*0.3, h*0.34, shade(sp.col || '#6ab475', 1.1));
+    ell(midX+w*0.3, y+h*0.6, w*0.3, h*0.34, shade(sp.col || '#6ab475', 0.85));
+    ell(midX-w*0.12, y+h*0.34, 3, 3, C('pink'));
+    ell(midX+w*0.18, y+h*0.48, 3, 3, C('gold'));
+    ctx.restore();
+  } else if(st === 'mat'){
+    ctx.save(); ctx.translate(x, y+h*0.6); ctx.rotate(-t*0.6);
+    fillRR(0, -h*0.4, w, h*0.75, 7, sp.col || '#e8b04a');
+    ctx.strokeStyle = shade(sp.col || '#e8b04a', 0.8); ctx.lineWidth = 2;
+    rr(w*0.08, -h*0.28, w*0.84, h*0.5, 5); ctx.stroke();
+    ctx.restore();
+  } else if(st === 'bag'){
+    softShadow(true, 5);
+    ctx.beginPath();
+    ctx.moveTo(x+w*0.1, y+h);
+    ctx.quadraticCurveTo(x-w*0.05, y+h*0.3, x+w*0.22, y+h*(0.18 + t*0.1));
+    ctx.quadraticCurveTo(midX, y+h*(t>0.4 ? 0.16 : 0.06), x+w*0.78, y+h*(0.18 + t*0.1));
+    ctx.quadraticCurveTo(x+w*1.05, y+h*0.3, x+w*0.9, y+h);
+    ctx.closePath(); ctx.fillStyle = sp.col || '#fdf6e8'; ctx.fill();
+    softShadow(false);
+    fillRR(x+w*0.18, y+h*0.5, w*0.64, h*0.26, 5, shade(sp.col || '#fdf6e8', 0.9));
+    if(sp.tag) txt(sp.tag, midX, y+h*0.64, Math.min(11, w*0.2), {bold:true, color:'#b09a6a'});
+  } else if(st === 'stone'){
+    ctx.save(); ctx.translate(midX, y+h*0.8); ctx.rotate(-t*0.8); ctx.translate(-midX, -(y+h*0.8));
+    ell(midX, y+h*0.5, w*0.5, h*0.42, sp.col || '#b9b9c4');
+    ell(midX-w*0.15, y+h*0.36, w*0.2, h*0.14, 'rgba(255,255,255,0.4)');
+    ctx.restore();
+  } else if(st === 'painting'){
+    ctx.save(); ctx.translate(midX, y); ctx.rotate(t*0.35); ctx.translate(-midX, -y);
+    softShadow(true, 6);
+    fillRR(x, y, w, h, 5, '#fffdfe');
+    softShadow(false);
+    fillRR(x+w*0.09, y+h*0.11, w*0.82, h*0.78, 3, sp.col || C('bluePale'));
+    ell(midX, y+h*0.5, w*0.24, h*0.2, sp.col2 || C('pink'));
+    ctx.restore();
+  } else if(st === 'plank'){
+    softShadow(true, 5);
+    fillRR(x, y+h*0.25, w, h*0.36, 6, sp.col || '#c99a66');
+    softShadow(false);
+    fillRR(x+w*0.06, y+h*0.6, w*0.1, h*0.4, 3, shade(sp.col || '#c99a66', 0.8));
+    fillRR(x+w*0.84, y+h*0.6, w*0.1, h*0.4, 3, shade(sp.col || '#c99a66', 0.8));
+    if(t>0.05){ ctx.save(); ctx.translate(x, y+h*0.25); ctx.rotate(-t*0.5);
+      fillRR(0, 0, w, h*0.36, 6, shade(sp.col || '#c99a66', 1.1)); ctx.restore(); }
+  }
+  ctx.restore();
+}
+function drawGenericSpots(cx){
+  const c = curCase(); if(!c || !cp) return;
+  const spots = [...spotList()].sort((a,b)=>a.y - b.y);
+  for(const sp of spots){
+    const t = spotOpenT(sp.id);
+    const sx = sp.wx - cx*(sp.layer||1);
+    if(sx + sp.w < -60 || sx > W+60) continue;
+    if(sp.type === 'plain'){
+      if(sp.decor) drawCoverGeneric(sp, 0, cx);
+      drawSpotContents(sp.id, sx + sp.w/2, sp.y + sp.h/2, 0.9);
+    } else {
+      if(t > 0.4) drawSpotContents(sp.id, sx + sp.w/2, sp.y + sp.h*0.62, 1);
+      drawCoverGeneric(sp, t, cx);
+    }
+  }
+}
 function spotById(id){ return spotList().find(s=>s.id===id); }
 function spotScreenX(s, cx){ return s.wx - cx * s.layer; }
 function spotOpenT(id){ return spotAnim[id] || 0; }
@@ -1624,16 +2238,31 @@ const CASE_TITLES = [
   'The Umbrella Swap','The Sandbox Treasure','The Missing Scarf','The Great Sticker Mystery',
   'The Painted Pumpkin','The Surprise Party'
 ];
+/* recurring DHA Lahore cast */
+const LOOKS = {
+  nasreen:{skin:1, hair:'buns', hairColor:'#8a8a95', outfit:'shalwar', outfitColor:'#4fb8ff', acc:'glasses', accColor:'#ffd166', eyes:'gentle', mouth:'tiny'},
+  rafiq:  {skin:1, hair:'bob', hairColor:'#7a7a85', outfit:'sweater', outfitColor:'#9b6dff', acc:'glasses', accColor:'#4a3b63', boy:true, mustache:'#7a7a85', eyes:'sleepy', mouth:'tiny'},
+  yaqoob: {skin:2, hair:'curly', hairColor:'#e8e8ee', outfit:'overalls', outfitColor:'#8a6a4a', acc:'none', accColor:'', boy:true, mustache:'#e8e8ee', eyes:'sleepy', mouth:'shy'},
+  mehr:   {skin:4, hair:'wavy', hairColor:'#2b2b33', outfit:'dress', outfitColor:'#a78bfa', acc:'headband', accColor:'#ffd166', eyes:'gentle', mouth:'grin'},
+  parveen:{skin:2, hair:'buns', hairColor:'#4a3320', outfit:'shalwar', outfitColor:'#e2699e', acc:'none', accColor:'#ffd166', eyes:'gentle', mouth:'smile'},
+  brunoL: {skin:2, hair:'curly', hairColor:'#7a5230', outfit:'sweater', outfitColor:'#4e9e5f', acc:'none', accColor:'', boy:true, mustache:'#5a3d24', eyes:'sleepy', mouth:'shy'},
+  amna:   {skin:3, hair:'long', hairColor:'#2b2b33', outfit:'sweater', outfitColor:'#4fb8ff', acc:'glasses', accColor:'#4a3b63', eyes:'gentle', mouth:'smile'},
+  kausar: {skin:2, hair:'buns', hairColor:'#5a4632', outfit:'shalwar', outfitColor:'#5fe0b0', acc:'none', accColor:'#e2429a', eyes:'sparkle', mouth:'grin'},
+  chai:   {skin:4, hair:'bob', hairColor:'#3a3a45', outfit:'sweater', outfitColor:'#c96a4a', acc:'none', accColor:'', boy:true, mustache:'#3a3a45', eyes:'round', mouth:'grin'},
+  karim:  {skin:4, hair:'bob', hairColor:'#2b2b33', outfit:'overalls', outfitColor:'#5ba368', acc:'none', accColor:'', boy:true, mustache:'#2b2b33', eyes:'sleepy', mouth:'shy'},
+  majeed: {skin:3, hair:'curly', hairColor:'#5a5a65', outfit:'overalls', outfitColor:'#5a8fd8', acc:'none', accColor:'', boy:true, mustache:'#5a5a65', eyes:'round', mouth:'shy'},
+  saad:   {skin:3, hair:'bob', hairColor:'#2b2b33', outfit:'hoodie', outfitColor:'#5fe0b0', acc:'none', accColor:'', boy:true, eyes:'round', mouth:'grin'}
+};
 const CASES = [
 { n:1, title:'The Stolen Recipe Book', scene:'bakery', place:'Sprinkle Bakery',
-  client:{ id:'plum', name:'Mrs. Plum', grown:true,
-    look:{skin:1, hair:'buns', hairColor:'#7a5230', outfit:'dress', outfitColor:'#e2699e', acc:'none', accColor:''} },
+  client:{ id:'plum', name:'Auntie Parveen', grown:true,
+    look:{skin:2, hair:'buns', hairColor:'#4a3320', outfit:'shalwar', outfitColor:'#e2699e', acc:'none', accColor:'#ffd166'} },
   intro:[
     {sp:'plum', mood:'shock', text:'Detective! Thank goodness you’re here!'},
     {sp:'plum', mood:'sad',   text:'My secret rainbow-cake recipe book — it’s GONE! Vanished in the night!'},
-    {sp:'plum', mood:'sad',   text:'The Maple Street Bake-Off is TOMORROW. Without my book, Sprinkle Bakery is doomed!'},
+    {sp:'plum', mood:'sad',   text:'The DHA Grand Bake-Off is TOMORROW. Without my book, Sprinkle Bakery is doomed!'},
     {sp:'me',   mood:'smile', text:'Don’t worry, Mrs. Plum. No mystery is a match for me!'},
-    {sp:'plum', mood:'smile', text:'The bakery is just as I found it this morning. Come — look for anything strange!'}
+    {sp:'plum', mood:'smile', text:'The bakery is just as I found it this morning. Come, beta — look for anything strange!'}
   ],
   arrive:[
     {sp:'me', mood:'ooh',   text:'So this is Sprinkle Bakery… smells like sugar and secrets.'},
@@ -1645,7 +2274,7 @@ const CASES = [
     {id:'fabric',    spot:'windowLatch', name:'Torn green fabric', gear:null,
      desc:'A scrap of green cloth snagged on the window latch. Hmm… who wears green?'},
     {id:'flyer',     spot:'flourJar',    name:'Bake-Off flyer',    gear:null,
-     desc:'A Bake-Off flyer dropped in the flour… with “BEAT PLUM!” scribbled on it!'}
+     desc:'A Bake-Off flyer dropped in the flour… with “BEAT PARVEEN!” scribbled on it!'}
   ],
   herrings:[
     {id:'crumbs', spot:'displayCase', name:'Cupcake crumbs', line:'Crumbs from the display cupcakes. Totally normal for a bakery.'},
@@ -1654,27 +2283,27 @@ const CASES = [
   ],
   emptyLines:['Just dust bunnies!','Nothing here… yet.','Nope. Keep looking!','Hmm, nothing suspicious.','Empty. The plot thickens!'],
   suspects:[
-    { id:'max', name:'Max', role:'the delivery boy', home:'depot',
+    { id:'max', name:'Bilal', role:'the delivery boy', home:'depot',
       look:{skin:3, hair:'bob', hairColor:'#2b2b33', outfit:'hoodie', outfitColor:'#5a8fd8', acc:'none', accColor:'', boy:true, eyes:'round', mouth:'grin'},
       motive:'Mrs. Plum still owes him last week’s pocket money.',
       hello:'Oh! Um, hi detective. I just deliver the flour, honest!',
       innocentGiggle:'What?! Not me! I don’t even LIKE frosting. …Okay, I love frosting. But I didn’t do it!',
       testimony:[
         {id:'m1', text:'I dropped off the flour sacks at five, then loaded up my bike out front.',
-         press:'Old Tom next door waved at me the whole time. You can ask him!',
-         pressNote:'Max’s alibi checks out — Old Tom saw him outside. ✔'},
+         press:'Baba Yaqoob next door waved at me the whole time. You can ask him!',
+         pressNote:'Bilal’s alibi checks out — Baba Yaqoob saw him outside. ✔'},
         {id:'m2', text:'I never even went behind the counter. Pinky promise!',
          press:'The counter is for bakers only. I follow the rules!'}
       ]},
-    { id:'rosie', name:'Rosie', role:'the bakery helper', home:'choir',
+    { id:'rosie', name:'Zainab', role:'the bakery helper', home:'choir',
       look:{skin:0, hair:'braids', hairColor:'#a3502e', outfit:'overalls', outfitColor:'#ff8fc7', acc:'flower', accColor:'#ffd166'},
       motive:'She knows the secret recipe book is worth a LOT of coins.',
       hello:'Hello detective! Isn’t it awful? Poor, poor Mrs. Plum!',
-      innocentGiggle:'ME? I was singing at choir! Miss Melody heard every single note!',
+      innocentGiggle:'ME? I was at music class! Miss Mehr heard every single note!',
       testimony:[
-        {id:'r1', text:'I was at choir practice all evening. We sang until eight!',
-         press:'Miss Melody gave me a gold star sticker for staying the whole time. See?',
-         pressNote:'Rosie’s alibi checks out — choir until 8. ✔'},
+        {id:'r1', text:'I was at music class all evening. We sang until eight!',
+         press:'Miss Mehr gave me a gold star sticker for staying the whole time. See?',
+         pressNote:'Zainab’s alibi checks out — music class until 8. ✔'},
         {id:'r2', text:'I’d never peek in the secret book… well, maybe once. But never EVER steal it!',
          press:'It fell open by itself! I only saw the page about sprinkles!'}
       ]},
@@ -1688,7 +2317,7 @@ const CASES = [
          press:'Home alone, yes! Just me and my dough. No witnesses… I mean — none NEEDED!',
          pressNote:'Bruno has no witnesses for his evening…',
          lieBrokenBy:'flyer', becomes:'b1b',
-         brokenLine:'Th-that flyer?! FINE. I walked down Maple Street last night… but I never went INSIDE!'},
+         brokenLine:'Th-that flyer?! FINE. I walked through Y Block last night… but I never went INSIDE!'},
         {id:'b1b', hidden:true, text:'Okay, I walked PAST the bakery. But never inside! Never near the window!',
          press:'Past it! On the pavement! Like a completely normal, innocent baker!',
          lieBrokenBy:'fabric', final:true,
@@ -1702,70 +2331,70 @@ const CASES = [
   leads:{
     bootprint:{q:'Whose muddy boots are these?', unlocks:['depot']},
     fabric:{q:'Who in town wears GREEN like this?', unlocks:['tailor']},
-    flyer:{q:'Who wants to BEAT Mrs. Plum?', unlocks:['townhall']}
+    flyer:{q:'Who wants to BEAT Auntie Parveen?', unlocks:['townhall']}
   },
   /* documents & statements gathered around town */
   evidence:{
     signup:  {name:'Bake-Off sign-up list', icon:'list',
-      desc:'This year’s entries: Mrs. Plum, Bruno Butterhorn… and Rosie?!'},
+      desc:'This year’s entries: Auntie Parveen, Bruno Butterhorn… and Zainab?!'},
     gossip:  {name:'Five straight losses', icon:'note',
-      desc:'Town Hall gossip: Bruno has lost the Bake-Off to Mrs. Plum FIVE years in a row.'},
+      desc:'DHA Office gossip: Bruno has lost the Bake-Off to Auntie Parveen FIVE years in a row.'},
     receipt: {name:'Apron receipt', icon:'receipt',
       desc:'“1 green baker’s apron — sold to Butterhorn Breads.” The SAME green as the torn fabric!'},
     mudmatch:{name:'Muddy depot yard', icon:'mud',
-      desc:'The depot mud matches the boot print — and Bruno stomped through it at closing time, heading up Maple Street!'},
+      desc:'The courier-yard mud matches the boot print — and Bruno stomped through it at closing time, heading toward Y Block!'},
     tomsays: {name:'Old Tom’s statement', icon:'note',
-      desc:'“Max loaded his bike right in front of me till dark.” Max couldn’t have done it. ✔'},
+      desc:'“Bilal loaded his bike right in front of me till dark.” Bilal couldn’t have done it. ✔'},
     melodysays:{name:'Gold-star attendance', icon:'star',
-      desc:'“Rosie sang until eight — she even earned her gold star.” Rosie couldn’t have done it. ✔'}
+      desc:'“Zainab sang until eight — she even earned her gold star.” Zainab couldn’t have done it. ✔'}
   },
   locations:[
-    { id:'townhall', name:'Town Hall', icon:'🏛️', mapX:330, mapY:196, set:'hall', deco:'#7cc4ff',
-      npcs:[{ id:'ledger', name:'Ms. Ledger', role:'town clerk', grown:true,
-        look:{skin:0, hair:'buns', hairColor:'#8a8a95', outfit:'sweater', outfitColor:'#4fb8ff', acc:'glasses', accColor:'#4a3b63', eyes:'gentle', mouth:'tiny'},
+    { id:'townhall', name:'DHA Office', icon:'🏛️', mapX:330, mapY:196, set:'hall', deco:'#7cc4ff', banner:'🏛 DHA LAHORE OFFICE',
+      npcs:[{ id:'ledger', name:'Auntie Nasreen', role:'office clerk', grown:true,
+        look:{skin:1, hair:'buns', hairColor:'#8a8a95', outfit:'shalwar', outfitColor:'#4fb8ff', acc:'glasses', accColor:'#ffd166', eyes:'gentle', mouth:'tiny'},
         talk:[
-          {sp:'npc', mood:'smile', text:'A detective! How thrilling. How may Town Hall help?'},
+          {sp:'npc', mood:'smile', text:'A detective! How thrilling, beta. How may the DHA Office help?'},
           {sp:'me',  mood:'ooh',   text:'Someone scribbled “BEAT PLUM!” on this Bake-Off flyer. Who entered this year?'},
-          {sp:'npc', mood:'ooh',   text:'The sign-up list? Right here, dear: Mrs. Plum, Bruno Butterhorn… and little Rosie!'},
-          {sp:'npc', mood:'giggle',text:'Between us — Bruno has lost to Mrs. Plum FIVE years straight. He was NOT gracious about it.'}
+          {sp:'npc', mood:'ooh',   text:'The sign-up list? Right here, jaani: Auntie Parveen, Bruno Butterhorn… and little Zainab!'},
+          {sp:'npc', mood:'giggle',text:'Between us — Bruno has lost to Auntie Parveen FIVE years straight. He was NOT gracious about it.'}
         ],
         needsClue:'flyer', gives:['signup','gossip'], names:['bruno','rosie'] }]},
-    { id:'tailor', name:'Stitch & Thread', icon:'🧵', mapX:96, mapY:420, set:'shop', deco:'#9b6dff',
-      npcs:[{ id:'button', name:'Mr. Button', role:'the tailor', grown:true,
+    { id:'tailor', name:'Rafiq Tailors', icon:'🧵', mapX:96, mapY:420, set:'shop', deco:'#9b6dff',
+      npcs:[{ id:'button', name:'Master Rafiq', role:'the tailor', grown:true,
         look:{skin:1, hair:'bob', hairColor:'#7a7a85', outfit:'sweater', outfitColor:'#9b6dff', acc:'glasses', accColor:'#4a3b63', boy:true, mustache:'#7a7a85', eyes:'sleepy', mouth:'tiny'},
         talk:[
-          {sp:'npc', mood:'smile', text:'Welcome, welcome! Buttons, bows, mending for all of Maple Falls.'},
-          {sp:'me',  mood:'ooh',   text:'Mr. Button, do you know this green cloth? It was snagged on a window latch.'},
+          {sp:'npc', mood:'smile', text:'Welcome, welcome! Stitching, buttons, mending for all of DHA.'},
+          {sp:'me',  mood:'ooh',   text:'Master Rafiq, do you know this green cloth? It was snagged on a window latch.'},
           {sp:'npc', mood:'shock', text:'Know it? I WOVE it! Finest apron green. I only ever sold ONE apron in this cloth…'},
           {sp:'npc', mood:'ooh',   text:'…here is the receipt. “One green baker’s apron — Butterhorn Breads.”'}
         ],
         needsClue:'fabric', gives:['receipt'] }]},
-    { id:'depot', name:'Delivery Depot', icon:'📦', mapX:352, mapY:342, set:'yard', deco:'#f0a832',
-      npcs:[{ id:'tom', name:'Old Tom', role:'lives next door', grown:true,
+    { id:'depot', name:'Speedy Couriers', icon:'📦', mapX:352, mapY:342, set:'yard', deco:'#f0a832', mud:true,
+      npcs:[{ id:'tom', name:'Baba Yaqoob', role:'the chowkidar', grown:true,
         look:{skin:2, hair:'curly', hairColor:'#e8e8ee', outfit:'overalls', outfitColor:'#8a6a4a', acc:'none', accColor:'', boy:true, mustache:'#e8e8ee', eyes:'sleepy', mouth:'shy'},
         talk:[
-          {sp:'npc', mood:'smile', text:'Evenin’, detective. Watched this street forty years, I have.'},
-          {sp:'me',  mood:'ooh',   text:'Old Tom — did you see Max the delivery boy yesterday evening?'},
-          {sp:'npc', mood:'happy', text:'Aye! Lad loaded his bike right in front of me till dark. Waved at him myself.'},
+          {sp:'npc', mood:'smile', text:'Salaam, detective sahiba. I have watched this street for forty years.'},
+          {sp:'me',  mood:'ooh',   text:'Baba Yaqoob — did you see Bilal the delivery boy yesterday evening?'},
+          {sp:'npc', mood:'happy', text:'Haan haan! The boy loaded his bike right in front of me till dark. Waved at him myself.'},
           {sp:'me',  mood:'ooh',   text:'And this muddy boot print — mud like the yard here?'},
-          {sp:'npc', mood:'ooh',   text:'That’s depot mud alright. And oh — BRUNO stomped straight through our yard at closing time, marching up Maple Street!'}
+          {sp:'npc', mood:'ooh',   text:'That’s our yard mud alright. And oh — BRUNO stomped straight through here at closing time, marching toward Y Block!'}
         ],
         needsClue:'bootprint', gives:['tomsays','mudmatch'], names:['max'], clears:'max' }]},
-    { id:'choir', name:'Choir Hall', icon:'🎶', mapX:300, mapY:492, set:'hall', deco:'#ff5fae',
-      npcs:[{ id:'melody', name:'Miss Melody', role:'choir teacher', grown:true,
+    { id:'choir', name:'Melody Music Academy', icon:'🎶', mapX:300, mapY:492, set:'hall', deco:'#ff5fae', banner:'🎶 MELODY MUSIC ACADEMY 🎶',
+      npcs:[{ id:'melody', name:'Miss Mehr', role:'music teacher', grown:true,
         look:{skin:4, hair:'wavy', hairColor:'#2b2b33', outfit:'dress', outfitColor:'#a78bfa', acc:'headband', accColor:'#ffd166', eyes:'gentle', mouth:'grin'},
         talk:[
-          {sp:'npc', mood:'giggle',text:'Do-re-mi! A visitor! Are you joining the choir, dear?'},
-          {sp:'me',  mood:'smile', text:'Not today! Miss Melody — was Rosie at practice yesterday evening?'},
-          {sp:'npc', mood:'happy', text:'Every single minute! She sang until eight and earned her gold star. My best little songbird.'}
+          {sp:'npc', mood:'giggle',text:'Do-re-mi! A visitor! Are you joining the music class, dear?'},
+          {sp:'me',  mood:'smile', text:'Not today! Miss Mehr — was Zainab at practice yesterday evening?'},
+          {sp:'npc', mood:'happy', text:'Every single minute! She sang until eight and earned her gold star. My best little bulbul.'}
         ],
         gives:['melodysays'], clears:'rosie' }]},
     { id:'butterhorn', name:'Butterhorn Breads', icon:'🥖', mapX:140, mapY:566, set:'bakery2', deco:'#4e9e5f', npcs:[] }
   ],
   truth:{ bruno:{ motive:'gossip', means:'receipt', opp:'mudmatch' } },
   gather:[
-    {sp:'me',   mood:'smile', text:'Mrs. Plum, Max, Rosie, Mr. Butterhorn — thank you all for coming back to Sprinkle Bakery.'},
-    {sp:'me',   mood:'ooh',   text:'I have followed every lead in Maple Falls… and I am ready to name the thief.'},
+    {sp:'me',   mood:'smile', text:'Auntie Parveen, Bilal, Zainab, Mr. Butterhorn — thank you all for coming back to Sprinkle Bakery.'},
+    {sp:'me',   mood:'ooh',   text:'I have followed every lead in DHA Lahore… and I am ready to name the thief.'},
     {sp:'bruno',mood:'nervous', text:'Th-this is highly irregular! Some of us have BREAD to bake!'},
     {sp:'me',   mood:'smile', text:'Oh, it won’t take long, Mr. Butterhorn. It won’t take long at all.'}
   ],
@@ -1778,9 +2407,1157 @@ const CASES = [
     {sp:'bruno', mood:'cracked', text:'ALRIGHT! It was me! I slipped in through the window and took the book!'},
     {sp:'bruno', mood:'sad',     text:'Five years of Bake-Offs… five years of losing to that dazzling rainbow cake…'},
     {sp:'bruno', mood:'sad',     text:'I just wanted to win. Once. I’m sorry, Mrs. Plum. Truly.'},
-    {sp:'plum',  mood:'smile',   text:'Oh, Bruno. Your sourdough is wonderful — bake as YOURSELF, not as me.'},
+    {sp:'plum',  mood:'smile',   text:'Oh, Bruno. Your naan khatai are wonderful — bake as YOURSELF, not as me.'},
     {sp:'bruno', mood:'happy',   text:'You… you mean it? Then I shall return the book — and enter the Bake-Off fair and square!'},
-    {sp:'plum',  mood:'giggle',  text:'And YOU, detective — Sprinkle Bakery is saved! You marvel!'}
+    {sp:'plum',  mood:'giggle',  text:'And YOU, detective beta — Sprinkle Bakery is saved! Shabash!'}
+  ]
+},
+
+/* ================= CASE 2 — The Missing Cat Toy ================= */
+{ n:2, title:'The Missing Cat Toy', scene:'cottage', place:'Nano Jaan’s House',
+  client:{ id:'nano', name:'Nano Jaan', grown:true,
+    look:{skin:2, hair:'buns', hairColor:'#c8c8d0', outfit:'shalwar', outfitColor:'#9b6dff', acc:'glasses', accColor:'#e2429a', eyes:'gentle', mouth:'smile'} },
+  intro:[
+    {sp:'nano', mood:'sad',   text:'Beta, a disaster! Sultan’s favourite toy — Sir Squeakums — has vanished!'},
+    {sp:'nano', mood:'sad',   text:'My poor cat has cried at the window all morning. Meow meow meow!'},
+    {sp:'me',   mood:'smile', text:'Don’t worry, Nano Jaan. Missing toys are my speciality.'},
+    {sp:'nano', mood:'smile', text:'Shabash! The sitting room is just as I found it. Look everywhere, beta.'}
+  ],
+  arrive:[
+    {sp:'me', mood:'ooh', text:'Nano Jaan’s sitting room… cosy, warm, and hiding a mystery.'}
+  ],
+  clues:[
+    {id:'fur',   spot:'sofaCushL', name:'Orange fur tuft', icon:'fluff', gear:null,
+     desc:'A tuft of ORANGE fur on the cushion — but Sultan is grey! Another cat was here!'},
+    {id:'paws',  spot:'rugMid', name:'Tiny muddy paw prints', icon:'paw', gear:null,
+     desc:'Little muddy paw prints under the rug… heading straight for the window!'},
+    {id:'ribbon',spot:'toyBasket', name:'Ribbon scrap', icon:'bow', gear:null,
+     desc:'A snipped ribbon scrap — the exact ribbon from Sir Squeakums’ bow!'}
+  ],
+  herrings:[
+    {id:'knit', spot:'sideDrawer', name:'Knitting wool', line:'Nano Jaan’s knitting. Sultan is INNOCENT of this tangle. Probably.'},
+    {id:'biscuit', spot:'biscuitJar', name:'Naan khatai', line:'Mmm, naan khatai… wait, focus! This is not clue-eating time.'}
+  ],
+  suspects:[
+    { id:'hamza', name:'Hamza', role:'the boy next door', home:'roselane',
+      look:{skin:3, hair:'bob', hairColor:'#2b2b33', outfit:'hoodie', outfitColor:'#f0a832', acc:'none', accColor:'', boy:true, eyes:'round', mouth:'shy'},
+      motive:'His new kitten Mano cries all night for a toy.',
+      hello:'Oh! Um. Salaam, detective. Is… is this about the toy?',
+      testimony:[
+        {id:'h1', text:'I was home ALL evening, feeding Mano her milk.',
+         press:'Just me and Mano! She drinks very slowly. Very, VERY slowly.',
+         pressNote:'Hamza has no one to back up his evening…',
+         lieBrokenBy:'paws', becomes:'h1b',
+         brokenLine:'Okay okay! Mano climbed Nano Jaan’s wall and I followed her… but only to the WINDOW!'},
+        {id:'h1b', hidden:true, text:'I only peeked in the window to catch Mano. I never touched the toy!',
+         press:'Catch kitten, go home. That was the whole plan!',
+         lieBrokenBy:'fur', final:true,
+         brokenLine:'Mano’s fur… on the cushion… because I lifted her in through the window… oh no.'},
+        {id:'h2', text:'Mano has plenty of toys. She doesn’t NEED Sir Squeakums.',
+         press:'…She has one sock. Half a sock. It used to be my sock.',
+         pressNote:'Little Mano has no real toys at all.'}
+      ]},
+    { id:'alina', name:'Alina', role:'the visiting cousin',
+      look:{skin:1, hair:'pigtails', hairColor:'#4a3320', outfit:'dress', outfitColor:'#4fb8ff', acc:'bow', accColor:'#ffd166', eyes:'sparkle', mouth:'smile'},
+      motive:'She wanted Sir Squeakums for her scrapbook photos.',
+      hello:'Salaam! Isn’t Sultan the saddest little cat today?',
+      innocentGiggle:'ME? I was gluing my scrapbook at the DHA Office craft table! Auntie Nasreen saw!',
+      testimony:[
+        {id:'a1', text:'I was at the DHA Office craft table until dinner.',
+         press:'Auntie Nasreen lent me her special glitter glue. I still have sparkly fingers!',
+         pressNote:'Alina says Auntie Nasreen can vouch for her.'},
+        {id:'a2', text:'I only photographed Sir Squeakums. Photos are not stealing!',
+         press:'He is SO photogenic for a mouse made of felt.'}
+      ]},
+    { id:'karim', name:'Mali Karim', role:'the gardener', grown:true,
+      look:LOOKS.karim,
+      motive:'The squeaky toy ruins his quiet afternoon chai.',
+      hello:'Salaam, detective sahiba. The roses needed me all day, I saw nothing.',
+      innocentGiggle:'Me?! I have PRUNED all evening! Ask Baba Yaqoob — he heard my clippers!',
+      testimony:[
+        {id:'k1', text:'I trimmed the front hedge until the maghrib azaan.',
+         press:'Snip snip snip. Baba Yaqoob waved from his gate. Ask him!',
+         pressNote:'Mali Karim says Baba Yaqoob saw him pruning.'},
+        {id:'k2', text:'That squeaky mouse! Squeak squeak while I plant my petunias!',
+         press:'…But a quiet garden with a sad cat is worse. I admit it.'}
+      ]}
+  ],
+  leads:{
+    fur:{q:'Whose ORANGE cat visited Sultan?', unlocks:['petpalace']},
+    ribbon:{q:'Where did this snipped ribbon come from?', unlocks:['townhall']},
+    paws:{q:'Muddy paws — who saw a cat parade?', unlocks:['depot']}
+  },
+  evidence:{
+    kittencry:{name:'Mano’s midnight crying', icon:'note',
+      desc:'Saad: “Hamza’s kitten Mano cries for a toy every night. He asked the price of one — then counted his pocket money and sighed.”'},
+    ribboncut:{name:'Craft-table ribbon', icon:'receipt',
+      desc:'Auntie Nasreen: “That’s MY craft ribbon. Hamza took a strip yesterday — said it was for something important.”'},
+    wallwalk:{name:'The wall-walk sighting', icon:'note',
+      desc:'Baba Yaqoob: “At dusk I saw young Hamza balancing along Nano Jaan’s wall behind a little orange kitten.”'}
+  },
+  locations:[
+    { id:'petpalace', name:'Pet Palace', icon:'🐹', mapX:330, mapY:196, set:'shop', deco:'#5fe0b0',
+      npcs:[{ id:'saad', name:'Saad', role:'pet shop helper',
+        look:LOOKS.saad,
+        talk:[
+          {sp:'npc', mood:'smile', text:'Welcome to Pet Palace! Fish, birds, and THE fluffiest hamsters in DHA.'},
+          {sp:'me',  mood:'ooh',   text:'Saad — do you know a small ORANGE cat around Y Block?'},
+          {sp:'npc', mood:'ooh',   text:'Orange? That’s Mano! Hamza’s new kitten. He’s in here every day looking at toys.'},
+          {sp:'npc', mood:'sad',   text:'Poor Mano cries for a toy every night. Hamza counted his pocket money and went home sad.'}
+        ],
+        gives:['kittencry'], names:['hamza'] }]},
+    { id:'townhall', name:'DHA Office', icon:'🏛️', mapX:352, mapY:342, set:'hall', deco:'#7cc4ff', banner:'🏛 DHA LAHORE OFFICE',
+      npcs:[{ id:'ledger', name:'Auntie Nasreen', role:'office clerk', grown:true,
+        look:LOOKS.nasreen,
+        talk:[
+          {sp:'npc', mood:'smile', text:'Back again, detective beta! Craft week is keeping us all busy.'},
+          {sp:'me',  mood:'ooh',   text:'Auntie Nasreen, do you recognise this ribbon scrap?'},
+          {sp:'npc', mood:'ooh',   text:'My craft ribbon! Hamza took a strip yesterday — “for something important,” he said.'},
+          {sp:'npc', mood:'happy', text:'And your cousin Alina? Glued her scrapbook at my table till dinner. Sparkles everywhere!'}
+        ],
+        gives:['ribboncut'], names:['alina'], clears:'alina' }]},
+    { id:'depot', name:'Speedy Couriers', icon:'📦', mapX:96, mapY:420, set:'yard', deco:'#f0a832',
+      npcs:[{ id:'tom', name:'Baba Yaqoob', role:'the chowkidar', grown:true,
+        look:LOOKS.yaqoob,
+        talk:[
+          {sp:'npc', mood:'smile', text:'Salaam, detective sahiba! More mysteries on my street?'},
+          {sp:'me',  mood:'ooh',   text:'Muddy paw prints, Baba Yaqoob. Did you see any cats on parade?'},
+          {sp:'npc', mood:'giggle',text:'A parade indeed! An orange kitten marching along Nano Jaan’s wall — and young Hamza wobbling after it!'},
+          {sp:'npc', mood:'happy', text:'And Mali Karim? Snip snip snip until the azaan. My ears can vouch for HIM.'}
+        ],
+        gives:['wallwalk'], names:['karim'], clears:'karim' }]},
+    { id:'roselane', name:'Hamza’s House', icon:'🏠', mapX:140, mapY:566, set:'house', deco:'#f0a832', npcs:[] }
+  ],
+  truth:{ hamza:{ motive:'kittencry', means:'ribboncut', opp:'wallwalk' } },
+  gather:[
+    {sp:'me',   mood:'smile', text:'Nano Jaan, Alina, Mali Karim, Hamza — thank you for gathering in the sitting room.'},
+    {sp:'me',   mood:'ooh',   text:'A tuft of fur, a snipped ribbon, a trail of tiny paws… the mystery is solved.'},
+    {sp:'hamza',mood:'nervous', text:'I— I should really go feed Mano…'},
+    {sp:'me',   mood:'smile', text:'Oh, Mano can wait one more minute, Hamza.'}
+  ],
+  culprit:'hamza', provingClue:'fur',
+  confession:[
+    {sp:'hamza', mood:'cracked', text:'It was me! Mano wouldn’t stop crying, and Sir Squeakums is the BEST toy in DHA…'},
+    {sp:'hamza', mood:'sad',     text:'I used Auntie Nasreen’s ribbon to make him a bow and everything. I’m sorry, Nano Jaan.'},
+    {sp:'nano',  mood:'smile',   text:'Oh, beta. Sultan had two squeaky mice all along. Mano may KEEP the second one.'},
+    {sp:'hamza', mood:'happy',   text:'Really?! Mano will be SO happy! I’ll visit Sultan every day, promise!'},
+    {sp:'nano',  mood:'giggle',  text:'And you, detective — come for naan khatai anytime. Shabash!'}
+  ]
+},
+
+/* ================= CASE 3 — The Paint Mix-Up ================= */
+{ n:3, title:'The Paint Mix-Up', scene:'school', place:'DHA Model School',
+  variant:{ board1:'DHA Model School', board2:'Mural Week! 🎨' },
+  client:{ id:'imran', name:'Sir Imran', grown:true,
+    look:{skin:3, hair:'bob', hairColor:'#2b2b33', outfit:'sweater', outfitColor:'#e2429a', acc:'glasses', accColor:'#4a3b63', boy:true, eyes:'gentle', mouth:'smile'} },
+  intro:[
+    {sp:'imran', mood:'shock', text:'Detective! Catastrophe in the art room!'},
+    {sp:'imran', mood:'sad',   text:'Every mural paint has been MIXED into brown sludge — one day before the unveiling!'},
+    {sp:'imran', mood:'sad',   text:'The whole school voted for this mural. Someone has ruined weeks of work.'},
+    {sp:'me',    mood:'smile', text:'Mixed paints, mixed motives. Show me the art room, Sir Imran.'}
+  ],
+  arrive:[
+    {sp:'me', mood:'ooh', text:'The art room… and the smell of jealousy. And turpentine.'}
+  ],
+  clues:[
+    {id:'handprint', spot:'easelCanvas', name:'Small purple handprint', icon:'hand', gear:null,
+     desc:'A PURPLE handprint on the easel — small, like a kid’s hand. Fresh too!'},
+    {id:'glitter', spot:'paintJar', name:'Glitter-glue smear', icon:'sparkles', gear:null,
+     desc:'A smear of glitter glue in the paint jar. Someone’s signature sparkle…'},
+    {id:'votelist', spot:'teacherDrawer', name:'Torn vote list', icon:'list', gear:null,
+     desc:'The mural vote list — with one corner torn off in ANGER. Whose name was there?'}
+  ],
+  herrings:[
+    {id:'chalkbit', spot:'chalkTray', name:'Broken chalk', line:'Just chalk. Sir Imran breaks three a day drawing perfect circles.'},
+    {id:'lunchbox', spot:'lunchCrate', name:'Forgotten lunch', line:'Someone’s aloo paratha. Cold, but innocent.'}
+  ],
+  suspects:[
+    { id:'mahnoor', name:'Mahnoor', role:'art club star', home:'artclub',
+      look:{skin:1, hair:'long', hairColor:'#2b2b33', outfit:'sparkle', outfitColor:'#a78bfa', acc:'headband', accColor:'#ff5fae', eyes:'starry', mouth:'shy'},
+      motive:'Her design LOST the mural vote by three votes.',
+      hello:'Salaam, detective. Here to admire the… brown mural?',
+      testimony:[
+        {id:'v1', text:'I was home all evening, painting sunsets. Ask my paintbrush.',
+         press:'Alone with my art! True artists need NO witnesses.',
+         pressNote:'Mahnoor has no witnesses for her evening…',
+         lieBrokenBy:'handprint', becomes:'v1b',
+         brokenLine:'Fine! I came to school to collect my brushes… but I never entered the ART ROOM!'},
+        {id:'v1b', hidden:true, text:'I collected my brushes from the corridor. I never touched the paints!',
+         press:'In, out, gone. Barely a minute!',
+         lieBrokenBy:'glitter', final:true,
+         brokenLine:'My glitter glue… it dripped when I… when I stirred… oh, PAINT it all!'},
+        {id:'v2', text:'My design was better anyway. Everyone knows it.',
+         press:'Three votes! I lost by THREE votes! Do you know how unfair that is?',
+         pressNote:'Mahnoor is still furious about losing the vote.'}
+      ]},
+    { id:'daniyal', name:'Daniyal', role:'mural vote winner',
+      look:{skin:4, hair:'bob', hairColor:'#2b2b33', outfit:'hoodie', outfitColor:'#4fb8ff', acc:'none', accColor:'', boy:true, eyes:'round', mouth:'grin'},
+      motive:'Wanted the mural repainted with MORE dinosaurs.',
+      hello:'Salaam! Is my mural safe?! Tell me the dinosaur corner survived!',
+      innocentGiggle:'Me?! Ruin my OWN mural? I would never! Auntie Nasreen stamped my library card at closing!',
+      testimony:[
+        {id:'d1', text:'I was at the DHA Office getting my art prize form stamped.',
+         press:'Auntie Nasreen stamped it twice because I asked nicely. TWICE.',
+         pressNote:'Daniyal was at the DHA Office at closing time.'},
+        {id:'d2', text:'More dinosaurs would improve it. But sabotage? Never!',
+         press:'A T-rex in the corner. That’s all I asked for. ONE T-rex.'}
+      ]},
+    { id:'majeed', name:'Chacha Majeed', role:'school caretaker', grown:true,
+      look:LOOKS.majeed,
+      motive:'Paint spills make his floors “a national tragedy.”',
+      hello:'Salaam. Whoever mixed those paints also DRIPPED on my clean floor.',
+      innocentGiggle:'ME? I MOP paint, I do not MIX it! Baba Yaqoob drank chai with me till dark!',
+      testimony:[
+        {id:'m1', text:'After school I polished the corridor, then had chai at the couriers yard.',
+         press:'Baba Yaqoob poured. Two cups each. Ask him about the biscuits too.',
+         pressNote:'Chacha Majeed says he had chai with Baba Yaqoob.'},
+        {id:'m2', text:'I keep that art room SPOTLESS. Whoever did this respects nothing.',
+         press:'Thirty years of floors, detective. THIRTY years.'}
+      ]}
+  ],
+  leads:{
+    votelist:{q:'Who tore their name off the vote list?', unlocks:['townhall']},
+    handprint:{q:'Whose small purple hand is this?', unlocks:['tailor']},
+    glitter:{q:'Who saw someone sneak into school?', unlocks:['depot']}
+  },
+  evidence:{
+    votegossip:{name:'The vote result', icon:'list',
+      desc:'Auntie Nasreen: “Mahnoor lost the mural vote by three votes — she tore her name off the list and stormed out.”'},
+    smockstain:{name:'Purple-stained smock', icon:'receipt',
+      desc:'Master Rafiq: “I mended a small smock this morning — COVERED in fresh purple paint. Mahnoor’s smock.”'},
+    gatesight:{name:'The gate sighting', icon:'note',
+      desc:'Baba Yaqoob: “Past closing, a girl with a sparkly headband slipped through the school gate. Glitter in the moonlight!”'}
+  },
+  locations:[
+    { id:'townhall', name:'DHA Office', icon:'🏛️', mapX:330, mapY:196, set:'hall', deco:'#7cc4ff', banner:'🏛 DHA LAHORE OFFICE',
+      npcs:[{ id:'ledger', name:'Auntie Nasreen', role:'office clerk', grown:true, look:LOOKS.nasreen,
+        talk:[
+          {sp:'npc', mood:'smile', text:'The mural vote? Oh, what drama, beta. What DRAMA.'},
+          {sp:'npc', mood:'ooh',   text:'Mahnoor lost by three votes. She tore her name off the list and stormed off like a monsoon.'},
+          {sp:'npc', mood:'happy', text:'Daniyal? He was right here at closing, getting his prize form stamped. Twice, the sweet pest.'}
+        ],
+        gives:['votegossip'], names:['mahnoor','daniyal'], clears:'daniyal' }]},
+    { id:'tailor', name:'Rafiq Tailors', icon:'🧵', mapX:96, mapY:420, set:'shop', deco:'#9b6dff',
+      npcs:[{ id:'button', name:'Master Rafiq', role:'the tailor', grown:true, look:LOOKS.rafiq,
+        talk:[
+          {sp:'npc', mood:'smile', text:'Ah, detective sahiba. What needs stitching today — a case, perhaps?'},
+          {sp:'me',  mood:'ooh',   text:'A purple handprint, Master Rafiq. Small hands. Fresh paint.'},
+          {sp:'npc', mood:'ooh',   text:'Purple! This morning I mended a small art smock DRENCHED in fresh purple. Mahnoor’s smock.'}
+        ],
+        gives:['smockstain'] }]},
+    { id:'depot', name:'Speedy Couriers', icon:'📦', mapX:352, mapY:342, set:'yard', deco:'#f0a832',
+      npcs:[{ id:'tom', name:'Baba Yaqoob', role:'the chowkidar', grown:true, look:LOOKS.yaqoob,
+        talk:[
+          {sp:'npc', mood:'smile', text:'Detective sahiba! Majeed and I were just talking about you over chai.'},
+          {sp:'npc', mood:'ooh',   text:'Last night, past closing — a girl with a SPARKLY headband slipped through the school gate.'},
+          {sp:'npc', mood:'happy', text:'Majeed? He drank chai with me till dark. Two cups. Excellent biscuit dunking.'}
+        ],
+        gives:['gatesight'], names:['majeed'], clears:'majeed' }]},
+    { id:'artclub', name:'Art Society', icon:'🎨', mapX:300, mapY:492, set:'hall', deco:'#ff5fae', banner:'🎨 DHA ART SOCIETY 🎨', npcs:[] }
+  ],
+  truth:{ mahnoor:{ motive:'votegossip', means:'smockstain', opp:'gatesight' } },
+  gather:[
+    {sp:'me',     mood:'smile', text:'Sir Imran, Daniyal, Chacha Majeed, Mahnoor — welcome back to the art room.'},
+    {sp:'me',     mood:'ooh',   text:'A handprint, a glitter smear, a torn vote list. Art always signs its name.'},
+    {sp:'mahnoor',mood:'nervous', text:'Some of us have PAINTINGS to finish, you know.'},
+    {sp:'me',     mood:'smile', text:'Oh, this will be quicker than a brushstroke.'}
+  ],
+  culprit:'mahnoor', provingClue:'glitter',
+  confession:[
+    {sp:'mahnoor', mood:'cracked', text:'THREE VOTES! I lost by three votes, so I mixed every single colour into MUD!'},
+    {sp:'mahnoor', mood:'sad',     text:'Weeks of work… and I ruined it in five minutes. My hands were shaking. I’m sorry.'},
+    {sp:'imran',   mood:'smile',   text:'Mahnoor. Your design lost — but your COLOURS were the best in school.'},
+    {sp:'imran',   mood:'happy',   text:'Mix us fresh paint tonight — and paint the border. Both artists, one wall.'},
+    {sp:'mahnoor', mood:'happy',   text:'Really?! I’ll mix the brightest purple DHA has ever seen!'}
+  ]
+},
+
+/* ================= CASE 4 — The Lost Library Book ================= */
+{ n:4, title:'The Lost Library Book', scene:'library', place:'DHA Library',
+  client:{ id:'ayesha', name:'Miss Ayesha', grown:true,
+    look:{skin:1, hair:'bob', hairColor:'#4a3320', outfit:'dress', outfitColor:'#2f8fe0', acc:'glasses', accColor:'#e2429a', eyes:'gentle', mouth:'tiny'} },
+  intro:[
+    {sp:'ayesha', mood:'shock', text:'Detective — the Atlas of Wonders is GONE from its glass case!'},
+    {sp:'ayesha', mood:'sad',   text:'It is a hundred years old. Golden maps, sea monsters in the margins… priceless.'},
+    {sp:'ayesha', mood:'sad',   text:'The case was locked. The key never left my desk. And yet — empty.'},
+    {sp:'me',     mood:'smile', text:'A locked case and a missing treasure? Miss Ayesha, I love this already.'}
+  ],
+  arrive:[
+    {sp:'me', mood:'ooh', text:'Shhh… the library. Even the dust here keeps secrets.'}
+  ],
+  clues:[
+    {id:'glovebtn', spot:'catalogDrawer', name:'Fancy glove button', icon:'bead', gear:null,
+     desc:'A pearl button from an expensive glove, dropped in the card catalogue!'},
+    {id:'wrapper', spot:'beanBag', name:'Toffee wrapper', icon:'candy', gear:null,
+     desc:'A shiny toffee wrapper — “Khan Sweets Special Toffee” — still smelling sweet.'},
+    {id:'scuff', spot:'lampTable', name:'Ladder scuff marks', icon:'mud', gear:null,
+     desc:'Fresh scuff marks — someone dragged the ladder to the GLASS CASE, not the shelves!'}
+  ],
+  herrings:[
+    {id:'bookmark', spot:'bigTome', name:'Old bookmark', line:'A bookmark from 1985. A clue, yes — to someone’s unfinished homework.'},
+    {id:'scrolls', spot:'scrollBasket', name:'Poetry scrolls', line:'Rolled-up poems. Quite good ones. Not stolen, just shy.'}
+  ],
+  suspects:[
+    { id:'chaudhry', name:'Chaudhry Sahab', role:'famous collector', home:'chaudhryvilla', grown:true,
+      look:{skin:2, hair:'bob', hairColor:'#8a8a95', outfit:'trench', outfitColor:'#7a4fd8', acc:'glasses', accColor:'#4a3b63', boy:true, mustache:'#8a8a95', eyes:'sleepy', mouth:'tiny'},
+      motive:'Boasts he MUST own every rare book in Lahore.',
+      hello:'Ah, the little detective. I collect rare things. Compliments, mostly.',
+      testimony:[
+        {id:'g1', text:'I spent the evening at the villa, cataloguing my first editions.',
+         press:'Alone with my treasures. They are better company than people.',
+         pressNote:'Chaudhry Sahab was “alone with his treasures”…',
+         lieBrokenBy:'glovebtn', becomes:'g1b',
+         brokenLine:'My glove button?! Very well — I BROWSED the library. Browsing is not a crime!'},
+        {id:'g1b', hidden:true, text:'I browsed the poetry section only. I never went NEAR the glass case.',
+         press:'Poetry! Ghalib! Iqbal! Nowhere near the atlases!',
+         lieBrokenBy:'wrapper', final:true,
+         brokenLine:'My toffee… I always unwrap one when I am… acquiring… oh, bother.'},
+        {id:'g2', text:'That atlas is wasted on a library. Children touch it with JAM hands.',
+         press:'It belongs in a climate-controlled cabinet. MY cabinet.',
+         pressNote:'Chaudhry Sahab believes the atlas should be HIS.'}
+      ]},
+    { id:'noor', name:'Noor', role:'the bookworm',
+      look:{skin:0, hair:'braids', hairColor:'#2b2b33', outfit:'overalls', outfitColor:'#e2699e', acc:'glasses', accColor:'#7a4fd8', eyes:'sparkle', mouth:'smile'},
+      motive:'Has borrowed the atlas seventeen times. SEVENTEEN.',
+      hello:'Salaam! Have you read it? The sea monster on page 40 has THREE tails!',
+      innocentGiggle:'Steal it? I want everyone to read it! Auntie Kausar and I traded stickers till closing!',
+      testimony:[
+        {id:'n1', text:'I was at Khan Sweets trading stickers with Auntie Kausar till closing.',
+         press:'I traded two golden dinosaurs for one holographic whale. Best deal EVER.',
+         pressNote:'Noor was at Khan Sweets till closing.'},
+        {id:'n2', text:'I would NEVER take it home forever. Books belong to everybody.',
+         press:'Seventeen borrows and I returned it seventeen times. Early!'}
+      ]},
+    { id:'bilal', name:'Bilal', role:'the delivery boy',
+      look:{skin:3, hair:'bob', hairColor:'#2b2b33', outfit:'hoodie', outfitColor:'#5a8fd8', acc:'none', accColor:'', boy:true, eyes:'round', mouth:'grin'},
+      motive:'Delivered heavy boxes to the library that very evening.',
+      hello:'Detective! We meet again! I promise I delivered NOTHING suspicious!',
+      innocentGiggle:'Not me! Baba Yaqoob checked every box on my bike — twice!',
+      testimony:[
+        {id:'b1', text:'I dropped off two boxes of new books and left before dark.',
+         press:'Baba Yaqoob signed for them. He checks EVERYTHING. Twice.',
+         pressNote:'Bilal’s delivery was checked by Baba Yaqoob.'},
+        {id:'b2', text:'Heavy boxes IN, empty hands OUT. That’s my motto.',
+         press:'Well, my second motto. The first is “ring the bell twice.”'}
+      ]}
+  ],
+  leads:{
+    glovebtn:{q:'Who wears fancy pearl-button gloves?', unlocks:['tailor']},
+    wrapper:{q:'Who buys Khan Sweets special toffee?', unlocks:['sweets']},
+    scuff:{q:'Who saw someone leave with something heavy?', unlocks:['depot']}
+  },
+  evidence:{
+    glovematch:{name:'The glove order', icon:'receipt',
+      desc:'Master Rafiq: “Pearl-button gloves? I sew ONE pair a year — for Chaudhry Sahab of Chaudhry Villa.”'},
+    toffeehabit:{name:'The toffee habit', icon:'note',
+      desc:'Auntie Kausar: “Chaudhry Sahab buys my special toffee daily — and BRAGS he must own every rare book in Lahore.”'},
+    parcelsight:{name:'The heavy parcel', icon:'note',
+      desc:'Baba Yaqoob: “At closing, Chaudhry Sahab hurried past hugging a big flat parcel — hugging it like a baby!”'}
+  },
+  locations:[
+    { id:'tailor', name:'Rafiq Tailors', icon:'🧵', mapX:96, mapY:420, set:'shop', deco:'#9b6dff',
+      npcs:[{ id:'button', name:'Master Rafiq', role:'the tailor', grown:true, look:LOOKS.rafiq,
+        talk:[
+          {sp:'me',  mood:'ooh',   text:'Master Rafiq — a pearl button, from a very fancy glove.'},
+          {sp:'npc', mood:'ooh',   text:'Pearl buttons! I sew one such pair a year, for one such customer…'},
+          {sp:'npc', mood:'smile', text:'Chaudhry Sahab. Of Chaudhry Villa. He waves those gloves at EVERYONE.'}
+        ],
+        gives:['glovematch'], names:['chaudhry'] }]},
+    { id:'sweets', name:'Khan Sweets', icon:'🍬', mapX:330, mapY:196, set:'shop', deco:'#ff5fae',
+      npcs:[{ id:'kausar', name:'Auntie Kausar', role:'sweet shop owner', grown:true, look:LOOKS.kausar,
+        talk:[
+          {sp:'npc', mood:'giggle',text:'Detective beta! Gulab jamun? Barfi? A clue, perhaps?'},
+          {sp:'me',  mood:'ooh',   text:'This toffee wrapper, Auntie Kausar. Special toffee. Whose favourite?'},
+          {sp:'npc', mood:'ooh',   text:'Chaudhry Sahab’s! Every day one bag — and every day the same boast: “I MUST own every rare book in Lahore!”'},
+          {sp:'npc', mood:'happy', text:'And little Noor? Trading stickers with me till closing. A holographic whale, imagine!'}
+        ],
+        gives:['toffeehabit'], names:['noor'], clears:'noor' }]},
+    { id:'depot', name:'Speedy Couriers', icon:'📦', mapX:352, mapY:342, set:'yard', deco:'#f0a832',
+      npcs:[{ id:'tom', name:'Baba Yaqoob', role:'the chowkidar', grown:true, look:LOOKS.yaqoob,
+        talk:[
+          {sp:'npc', mood:'smile', text:'Detective sahiba! Third case this month. DHA sleeps safe with you awake.'},
+          {sp:'npc', mood:'ooh',   text:'Last evening? Chaudhry Sahab rushed past hugging a big flat parcel like a baby!'},
+          {sp:'npc', mood:'happy', text:'Bilal’s boxes? I checked them myself. Twice. Books IN, nothing OUT.'}
+        ],
+        gives:['parcelsight'], names:['bilal'], clears:'bilal' }]},
+    { id:'chaudhryvilla', name:'Chaudhry Villa', icon:'🏰', mapX:140, mapY:566, set:'house', deco:'#7a4fd8', npcs:[] }
+  ],
+  truth:{ chaudhry:{ motive:'toffeehabit', means:'glovematch', opp:'parcelsight' } },
+  gather:[
+    {sp:'me',      mood:'smile', text:'Miss Ayesha, Noor, Bilal, Chaudhry Sahab — welcome back among the books.'},
+    {sp:'me',      mood:'ooh',   text:'A pearl button. A toffee wrapper. Scuffs to a locked case. Quite a bibliography.'},
+    {sp:'chaudhry',mood:'nervous', text:'I have an APPOINTMENT. With my… shelves.'},
+    {sp:'me',      mood:'smile', text:'Your shelves can wait, Chaudhry Sahab. The Atlas cannot.'}
+  ],
+  culprit:'chaudhry', provingClue:'wrapper',
+  confession:[
+    {sp:'chaudhry', mood:'cracked', text:'YES! I picked the lock with my letter opener and took the Atlas! It deserved ME!'},
+    {sp:'chaudhry', mood:'sad',     text:'But at home… it sat in my cabinet looking… lonely. Books hate silence, you know.'},
+    {sp:'ayesha',   mood:'smile',   text:'Then let it live where it is loved, Chaudhry Sahab — and visit it any day you like.'},
+    {sp:'chaudhry', mood:'happy',   text:'A reading chair. By the case. With my NAME on it — I shall donate ten rare books at once!'},
+    {sp:'ayesha',   mood:'giggle',  text:'And YOU, detective — the library owes you a lifetime of stories.'}
+  ]
+},
+
+/* ================= CASE 5 — The Wandering Garden Gnome ================= */
+{ n:5, title:'The Wandering Garden Gnome', scene:'park', place:'H Block Park',
+  client:{ id:'farhat', name:'Auntie Farhat', grown:true,
+    look:{skin:1, hair:'buns', hairColor:'#5a4632', outfit:'shalwar', outfitColor:'#e2429a', acc:'none', accColor:'#5fe0b0', eyes:'gentle', mouth:'smile'} },
+  intro:[
+    {sp:'farhat', mood:'shock', text:'Detective beta! Sir Chippy has been GNOME-NAPPED!'},
+    {sp:'farhat', mood:'sad',   text:'My lucky garden gnome. He has guarded my roses through five Garden Shows.'},
+    {sp:'farhat', mood:'sad',   text:'The DHA Garden Show judging is TOMORROW. Without Chippy, my display is ruined!'},
+    {sp:'me',     mood:'smile', text:'A missing gnome before judging day? That is no accident, Auntie Farhat.'}
+  ],
+  arrive:[
+    {sp:'me', mood:'ooh', text:'H Block Park. Kites above, secrets below.'}
+  ],
+  clues:[
+    {id:'trowel', spot:'flowerBedA', name:'Monogrammed trowel', icon:'trowel', gear:null,
+     desc:'A fancy trowel dropped in the flower bed — engraved “R.S.” Who is R.S.?'},
+    {id:'petals', spot:'stoneBig', name:'Crushed rose petals', icon:'petals', gear:null,
+     desc:'A trail of crushed rose petals — from PRIZE roses, squashed under hurrying feet!'},
+    {id:'track', spot:'picnicMat', name:'Wheelbarrow track', icon:'mud', gear:null,
+     desc:'A single fresh wheelbarrow track, pressed deep… as if carrying something gnome-sized.'}
+  ],
+  herrings:[
+    {id:'kitestring', spot:'birdhouse', name:'Kite string', line:'Basant leftovers. The birds have opinions about it.'},
+    {id:'chapati', spot:'logPile', name:'Picnic chapati', line:'Someone’s picnic chapati. The ants found it first. Case closed.'}
+  ],
+  suspects:[
+    { id:'rana', name:'Rana Sahab', role:'rival gardener', home:'ranaresidence', grown:true,
+      look:{skin:2, hair:'curly', hairColor:'#5a5a65', outfit:'sweater', outfitColor:'#2c6e52', acc:'none', accColor:'', boy:true, mustache:'#5a5a65', eyes:'sleepy', mouth:'shy'},
+      motive:'Has lost Best Garden to Auntie Farhat five shows running.',
+      hello:'Rana Sahab, of the FAMOUS Rana rose beds. You have heard of them, surely.',
+      testimony:[
+        {id:'p1', text:'I watered my roses all evening. They require CONSTANT devotion.',
+         press:'Alone! A master gardener needs no audience. Only aphid-free air.',
+         pressNote:'Rana Sahab was “alone with his roses”…',
+         lieBrokenBy:'trowel', becomes:'p1b',
+         brokenLine:'My trowel! I— I dropped it there DAYS ago. Weeks! Possibly months!'},
+        {id:'p1b', hidden:true, text:'That trowel has been lost for weeks. I was nowhere near the park last night.',
+         press:'Weeks, I say! A gardener loses many trowels. It is the tragedy of our craft.',
+         lieBrokenBy:'track', final:true,
+         brokenLine:'The barrow track… Baba Yaqoob’s barrow… which I borrowed… LAST NIGHT. Curses.'},
+        {id:'p2', text:'Farhat’s roses win because of LUCK. A lucky gnome! Is that gardening?',
+         press:'Five years! Five silver cups on HER shelf that belong on MINE!',
+         pressNote:'Rana Sahab is bitterly jealous of the Garden Show cups.'}
+      ]},
+    { id:'munna', name:'Munna', role:'the paperboy',
+      look:{skin:4, hair:'bob', hairColor:'#2b2b33', outfit:'hoodie', outfitColor:'#f0a832', acc:'none', accColor:'', boy:true, eyes:'round', mouth:'grin'},
+      motive:'Sir Chippy “stares at him” on his shortcut through the park.',
+      hello:'Salaam detective! Newspaper? Old one, but the comics are still funny.',
+      innocentGiggle:'Not me! I finished my route before dark — Auntie Nasreen got her paper LAST, ask her!',
+      testimony:[
+        {id:'mu1', text:'I delivered papers till sunset, then went straight home for dinner.',
+         press:'Auntie Nasreen is my last stop. She always complains the paper is late. It is ON TIME.',
+         pressNote:'Munna’s route ended at the DHA Office.'},
+        {id:'mu2', text:'That gnome DOES stare. But I stare back. We have an understanding.',
+         press:'Every morning. Eye to painted eye. Nobody blinks.'}
+      ]},
+    { id:'sana', name:'Sana', role:'young sculptor',
+      look:{skin:0, hair:'wavy', hairColor:'#a3502e', outfit:'overalls', outfitColor:'#9b6dff', acc:'flower', accColor:'#ffd166', eyes:'gentle', mouth:'smile'},
+      motive:'Wants to study Sir Chippy for her clay sculptures.',
+      hello:'Salaam! I sculpt! Mostly cats. Sir Chippy was going to be my first gnome.',
+      innocentGiggle:'I only sketch him! Auntie Nasreen watched me draw at the office till closing!',
+      testimony:[
+        {id:'s1', text:'I was sketching statues at the DHA Office until it closed.',
+         press:'Auntie Nasreen kept peeking at my sketchbook. She says my cats look like samosas.',
+         pressNote:'Sana sketched at the DHA Office till closing.'},
+        {id:'s2', text:'Chippy has a PERFECT nose for clay. I would never risk chipping him!',
+         press:'You cannot sculpt from a stolen model. The guilt ruins the clay.'}
+      ]}
+  ],
+  leads:{
+    trowel:{q:'Who is “R.S.” with the fancy trowel?', unlocks:['townhall']},
+    track:{q:'Whose wheelbarrow rolled here at night?', unlocks:['depot']},
+    petals:{q:'Where do crushed prize petals lead?', unlocks:['gulshop']}
+  },
+  evidence:{
+    trophyobsess:{name:'Five lost cups', icon:'list',
+      desc:'Auntie Nasreen: “Rana Sahab — R.S.! — has lost Best Garden to Farhat five shows running. He filed a COMPLAINT about her lucky gnome.”'},
+    barrowloan:{name:'The borrowed barrow', icon:'note',
+      desc:'Baba Yaqoob: “Rana Sahab borrowed my wheelbarrow at dusk — returned it at dawn, muddy and squeaking.”'},
+    petalpath:{name:'The petal path', icon:'note',
+      desc:'Auntie Gul: “Crushed prize petals? Only one lane is lined with those roses — Rana Lane. The trail leads HOME, detective.”'}
+  },
+  locations:[
+    { id:'townhall', name:'DHA Office', icon:'🏛️', mapX:330, mapY:196, set:'hall', deco:'#7cc4ff', banner:'🏛 DHA LAHORE OFFICE',
+      npcs:[{ id:'ledger', name:'Auntie Nasreen', role:'office clerk', grown:true, look:LOOKS.nasreen,
+        talk:[
+          {sp:'me',  mood:'ooh',   text:'Auntie Nasreen — a trowel engraved “R.S.” Ring any bells?'},
+          {sp:'npc', mood:'ooh',   text:'Rana Sahab! He filed a complaint about Farhat’s “unfair lucky gnome.” Five lost cups will do that to a man.'},
+          {sp:'npc', mood:'happy', text:'Little Sana sketched samosa-cats here till closing, and Munna delivered my paper bang on time. Both good children.'}
+        ],
+        gives:['trophyobsess'], names:['rana','sana','munna'], clears:'sana' }]},
+    { id:'depot', name:'Speedy Couriers', icon:'📦', mapX:352, mapY:342, set:'yard', deco:'#f0a832',
+      npcs:[{ id:'tom', name:'Baba Yaqoob', role:'the chowkidar', grown:true, look:LOOKS.yaqoob,
+        talk:[
+          {sp:'npc', mood:'ooh',   text:'My wheelbarrow! Rana Sahab borrowed it at dusk — brought it back at dawn, muddy and SQUEAKING.'},
+          {sp:'npc', mood:'happy', text:'And Munna the paperboy? Finished his whole route before dark. I set my watch by that boy.'}
+        ],
+        gives:['barrowloan'], clears:'munna' }]},
+    { id:'gulshop', name:'Gul Flower Shop', icon:'🌷', mapX:96, mapY:420, set:'shop', deco:'#ff5fae',
+      npcs:[{ id:'gul', name:'Auntie Gul', role:'florist', grown:true,
+        look:{skin:3, hair:'wavy', hairColor:'#4a3320', outfit:'sweater', outfitColor:'#ff5fae', acc:'flower', accColor:'#ffd166', eyes:'gentle', mouth:'grin'},
+        talk:[
+          {sp:'npc', mood:'smile', text:'Welcome, welcome! Roses, motia, genda — what may Gul gather for you?'},
+          {sp:'me',  mood:'ooh',   text:'Crushed prize petals, Auntie Gul. A whole trail of them.'},
+          {sp:'npc', mood:'ooh',   text:'Those roses line exactly ONE lane in DHA — Rana Lane. Follow the petals, follow the gnome!'}
+        ],
+        gives:['petalpath'] }]},
+    { id:'ranaresidence', name:'Rana Residence', icon:'🏡', mapX:140, mapY:566, set:'garden', deco:'#2c6e52', npcs:[] }
+  ],
+  truth:{ rana:{ motive:'trophyobsess', means:'barrowloan', opp:'petalpath' } },
+  gather:[
+    {sp:'me',   mood:'smile', text:'Auntie Farhat, Munna, Sana, Rana Sahab — thank you for coming to the park.'},
+    {sp:'me',   mood:'ooh',   text:'A monogrammed trowel. A borrowed barrow. A trail of petals leading home.'},
+    {sp:'rana', mood:'nervous', text:'This is outrageous. My roses need me. They get LONELY.'},
+    {sp:'me',   mood:'smile', text:'Then let us finish quickly, Rana Sahab — for the roses.'}
+  ],
+  culprit:'rana', provingClue:'track',
+  confession:[
+    {sp:'rana',   mood:'cracked', text:'FIVE YEARS of second place! So yes — I wheeled that smug little gnome away in the night!'},
+    {sp:'rana',   mood:'sad',     text:'He is in my shed. Facing the wall. …I gave him a blanket. I am not a MONSTER.'},
+    {sp:'farhat', mood:'smile',   text:'Rana Sahab, your roses never needed luck. They needed you to stop scowling at mine.'},
+    {sp:'rana',   mood:'happy',   text:'Then this year — may the best garden win. And Chippy… may he forgive the shed.'},
+    {sp:'farhat', mood:'giggle',  text:'Shabash, detective beta! Sir Chippy comes home tonight!'}
+  ]
+},
+
+/* ================= CASE 6 — The Glitter Trail ================= */
+{ n:6, title:'The Glitter Trail', scene:'park', place:'Sunday Bazaar Grounds',
+  variant:{ grass1:'#c8e8d0', grass2:'#a5d6b2', noPedestal:true },
+  client:{ id:'nasreenC', name:'Auntie Nasreen', grown:true, look:LOOKS.nasreen },
+  intro:[
+    {sp:'nasreenC', mood:'shock', text:'Detective beta, my Sunday Bazaar craft stall — SABOTAGED!'},
+    {sp:'nasreenC', mood:'sad',   text:'My grand banner shredded, and glitter dumped over EVERYTHING. Even the samosas sparkle.'},
+    {sp:'nasreenC', mood:'sad',   text:'The bazaar opens tomorrow. Who would do this to a craft stall?'},
+    {sp:'me',       mood:'smile', text:'Glitter is loud, Auntie Nasreen. It always talks. Let’s go listen.'}
+  ],
+  arrive:[
+    {sp:'me', mood:'ooh', text:'The bazaar grounds… everything twinkles. TOO much.'}
+  ],
+  clues:[
+    {id:'shoeprint', spot:'sandPatch', name:'Sparkly shoe print', icon:'bootprint', gear:null,
+     desc:'A small shoe print filled with glitter — sparkly boots, small feet, big mischief.'},
+    {id:'thread', spot:'bushA', name:'Banner thread', icon:'threadIcon', gear:null,
+     desc:'A golden thread from the shredded banner, caught on a bush at running-height.'},
+    {id:'charm', spot:'fountainRim', name:'Tiny “Z” charm', icon:'charmZ', gear:'magnifier',
+     desc:'A teeny-tiny bracelet charm shaped like the letter “Z”. Almost invisible without a lens!'}
+  ],
+  herrings:[
+    {id:'balloonbit', spot:'bushB', name:'Popped balloon', line:'A popped balloon from Babu’s stand. Sad, but not sinister.'},
+    {id:'bangle', spot:'benchSeat', name:'Lost bangle', line:'Someone’s bangle. Lost fairly, and sparkly ONLY by coincidence.'}
+  ],
+  suspects:[
+    { id:'zara', name:'Zara', role:'twin no. 1', home:'twinhouse',
+      look:{skin:1, hair:'ponytail', hairColor:'#2b2b33', outfit:'hoodie', outfitColor:'#e2429a', acc:'none', accColor:'', eyes:'round', mouth:'grin'},
+      motive:'Was BANNED from the bazaar after last month’s prank.',
+      hello:'Salaam! If this is about glitter, glitter is basically air. It gets everywhere on its own.',
+      testimony:[
+        {id:'z1', text:'I was home all evening, gluing my sticker album.',
+         press:'Very delicate work. One wrong sticker ruins a whole page. Ask NO ONE, I was alone.',
+         pressNote:'Zara was “alone with her stickers”…',
+         lieBrokenBy:'shoeprint', becomes:'z1b',
+         brokenLine:'Ugh, FINE. I cut through the bazaar grounds… but I touched NOTHING!'},
+        {id:'z1b', hidden:true, text:'I walked through, that’s all. Straight line. No stopping. No glitter.',
+         press:'In one side, out the other. Like a very fast, very innocent breeze.',
+         lieBrokenBy:'charm', final:true,
+         brokenLine:'My “Z” charm… it snapped off when I shook the glitter jar… WHO SEWS CHARMS SO LOOSELY?!'},
+        {id:'z2', text:'Banning me was UNFAIR. My fountain-foam prank was basically a public service.',
+         press:'The fountain has never been cleaner! You’re welcome, DHA!',
+         pressNote:'Zara is still furious about the bazaar ban.'}
+      ]},
+    { id:'sara', name:'Sara', role:'twin no. 2',
+      look:{skin:1, hair:'braids', hairColor:'#2b2b33', outfit:'dress', outfitColor:'#4fb8ff', acc:'bow', accColor:'#ffd166', eyes:'gentle', mouth:'smile'},
+      motive:'Twins get blamed together. Always.',
+      hello:'Salaam. Whatever Zara did, I did NOT do. That is the twin rule.',
+      innocentGiggle:'My sparkly boots were at Master Rafiq’s getting new soles! I wore SLIPPERS all day!',
+      testimony:[
+        {id:'sa1', text:'My boots were at the tailor’s for new soles. I wore slippers all day.',
+         press:'Fuzzy slippers. You cannot do crimes in fuzzy slippers. It is a known fact.',
+         pressNote:'Sara’s boots were at Rafiq Tailors all day.'},
+        {id:'sa2', text:'I told Zara the ban would make her do something silly. I TOLD her.',
+         press:'Being a twin is mostly saying “I told you so” in advance.'}
+      ]},
+    { id:'babu', name:'Babu', role:'the balloon-wala', grown:true,
+      look:{skin:4, hair:'curly', hairColor:'#3a3a45', outfit:'sweater', outfitColor:'#f0a832', acc:'none', accColor:'', boy:true, mustache:'#3a3a45', eyes:'round', mouth:'grin'},
+      motive:'The craft stall took his favourite bazaar corner.',
+      hello:'Balloons! Red, gold, green! …Ah. You are here about the sparkle-storm.',
+      innocentGiggle:'Me?! I pumped balloons at the music academy party ALL evening! Puff puff puff!',
+      testimony:[
+        {id:'ba1', text:'I pumped balloons for Miss Mehr’s recital party until late.',
+         press:'One hundred balloons! My arms are still noodles. Feel free to verify. Gently.',
+         pressNote:'Babu was at the Music Academy recital.'},
+        {id:'ba2', text:'That corner had the best breeze for balloons. But I would never pop a stall over it.',
+         press:'The breeze finds every balloon-wala eventually. This is balloon wisdom.'}
+      ]}
+  ],
+  leads:{
+    shoeprint:{q:'Who owns tiny sparkly boots?', unlocks:['tailor']},
+    thread:{q:'Who saw a runner near the banner?', unlocks:['choir']},
+    charm:{q:'Whose bracelet spells “Z”?', unlocks:['chaikhokha']}
+  },
+  evidence:{
+    banfury:{name:'The bazaar ban', icon:'note',
+      desc:'Chacha Chai: “Zara sat at my khokha after the ban, stirring her chai and muttering — I will make that bazaar SPARKLE, chacha.”'},
+    bootsale:{name:'The sparkly boots', icon:'receipt',
+      desc:'Master Rafiq: “Two pairs of sparkly boots, twin sizes. SARA’S pair sat in my shop all day for soles. ZARA’S did not.”'},
+    hoodsight:{name:'The running hood', icon:'note',
+      desc:'Miss Mehr: “During rehearsal I saw a hooded girl sprint from the bazaar grounds — ponytail flying, boots twinkling.”'}
+  },
+  locations:[
+    { id:'tailor', name:'Rafiq Tailors', icon:'🧵', mapX:96, mapY:420, set:'shop', deco:'#9b6dff',
+      npcs:[{ id:'button', name:'Master Rafiq', role:'the tailor', grown:true, look:LOOKS.rafiq,
+        talk:[
+          {sp:'me',  mood:'ooh',   text:'Master Rafiq — tiny sparkly boot prints. Sound familiar?'},
+          {sp:'npc', mood:'ooh',   text:'The twins! I sold sparkly boots to both. But hear this — SARA’S pair was HERE all day for new soles.'},
+          {sp:'npc', mood:'smile', text:'Zara’s pair? Out in the world. Doing… whatever Zara does.'}
+        ],
+        gives:['bootsale'], names:['zara','sara'], clears:'sara' }]},
+    { id:'choir', name:'Melody Music Academy', icon:'🎶', mapX:300, mapY:492, set:'hall', deco:'#ff5fae', banner:'🎶 MELODY MUSIC ACADEMY 🎶',
+      npcs:[{ id:'melody', name:'Miss Mehr', role:'music teacher', grown:true, look:LOOKS.mehr,
+        talk:[
+          {sp:'npc', mood:'ooh',   text:'During rehearsal I saw a hooded girl SPRINT from the bazaar grounds — ponytail flying, boots twinkling!'},
+          {sp:'npc', mood:'happy', text:'Babu? He pumped a hundred balloons for our recital. His arms went full noodle. I can vouch!'}
+        ],
+        gives:['hoodsight'], names:['babu'], clears:'babu' }]},
+    { id:'chaikhokha', name:'Chacha’s Chai Khokha', icon:'☕', mapX:352, mapY:342, set:'yard', deco:'#c96a4a',
+      npcs:[{ id:'chacha', name:'Chacha Chai', role:'chai-wala', grown:true, look:LOOKS.chai,
+        talk:[
+          {sp:'npc', mood:'giggle',text:'Detective sahiba! Doodh patti? Special discount for crime-solvers.'},
+          {sp:'me',  mood:'ooh',   text:'A tiny charm shaped like “Z”, Chacha. From a bracelet.'},
+          {sp:'npc', mood:'ooh',   text:'Zara’s bracelet! She sat right there after her bazaar ban, muttering: “I will make that bazaar SPARKLE, chacha.”'}
+        ],
+        gives:['banfury'] }]},
+    { id:'twinhouse', name:'Zara & Sara’s House', icon:'🏠', mapX:140, mapY:566, set:'house', deco:'#e2429a', npcs:[] }
+  ],
+  truth:{ zara:{ motive:'banfury', means:'bootsale', opp:'hoodsight' } },
+  gather:[
+    {sp:'me',   mood:'smile', text:'Auntie Nasreen, Sara, Babu, Zara — back to the scene of the sparkle.'},
+    {sp:'me',   mood:'ooh',   text:'A glittery shoe print, a golden thread, and one very tiny letter “Z”.'},
+    {sp:'zara', mood:'nervous', text:'Z stands for… zebra? Zamzam? LOTS of things!'},
+    {sp:'me',   mood:'smile', text:'It stands for exactly one girl in fuzzy-slipper-less boots.'}
+  ],
+  culprit:'zara', provingClue:'charm',
+  confession:[
+    {sp:'zara',     mood:'cracked', text:'OKAY! They banned me for ONE foam prank, so I glitter-bombed the whole stall!'},
+    {sp:'zara',     mood:'sad',     text:'But then the samosas sparkled and everyone looked so sad and… glitter never comes off. EVER.'},
+    {sp:'nasreenC', mood:'smile',   text:'Zara, beta. Anyone who can plan THIS well should be running my games corner.'},
+    {sp:'zara',     mood:'happy',   text:'Games corner?! I have SO many ideas. Legal ones! Mostly!'},
+    {sp:'nasreenC', mood:'giggle',  text:'And the ban ends the day the stall shines glitter-free. Start scrubbing, jaani.'}
+  ]
+},
+
+/* ================= CASE 7 — The Missing Homework ================= */
+{ n:7, title:'The Missing Homework', scene:'cottage', place:'Omar’s House',
+  variant:{ wall1:'#dceefc', wall2:'#c6e0f5', wainscot:'#a9cfe8', sofa:'#5a8fd8' },
+  client:{ id:'omar', name:'Omar', 
+    look:{skin:3, hair:'bob', hairColor:'#2b2b33', outfit:'sweater', outfitColor:'#2f8fe0', acc:'none', accColor:'', boy:true, eyes:'round', mouth:'shy'} },
+  intro:[
+    {sp:'omar', mood:'shock', text:'Detective! My essay is GONE! The one that won the class prize!'},
+    {sp:'omar', mood:'sad',   text:'I read it at assembly tomorrow. Miss Amna says it might win the ALL-LAHORE medal.'},
+    {sp:'omar', mood:'sad',   text:'I left it on my desk after dinner. Now — poof! Only my maths homework remains. NOBODY steals maths.'},
+    {sp:'me',   mood:'smile', text:'A missing masterpiece. Omar, show me your room.'}
+  ],
+  arrive:[
+    {sp:'me', mood:'ooh', text:'Omar’s sitting room. Somewhere here, a prize essay went missing.'}
+  ],
+  clues:[
+    {id:'eraser', spot:'sideDrawer', name:'Eraser marked “H”', icon:'eraserIcon', gear:null,
+     desc:'A strawberry-scented eraser with a big “H” scratched on it. Not Omar’s!'},
+    {id:'crease', spot:'windowSill', name:'Paper-plane crease', icon:'plane', gear:null,
+     desc:'A page corner on the sill, folded in a perfect paper-plane crease. Someone folds planes here.'},
+    {id:'inkmark', spot:'bigBook', name:'Violet ink smudge', icon:'ink', gear:null,
+     desc:'A violet ink fingerprint on the bookshelf. Omar writes in blue. Who writes in VIOLET?'}
+  ],
+  herrings:[
+    {id:'chewbone', spot:'doorMat2', name:'Chewed toy bone', line:'Biscuit the dog’s toy. Slobbery, squeaky, and legally his.'},
+    {id:'mangopit', spot:'biscuitJar', name:'Mango pit', line:'Somebody hid a mango pit in the jar. A crime, yes — but not TODAY’S crime.'}
+  ],
+  suspects:[
+    { id:'hira', name:'Hira', role:'essay rival', home:'hirahouse',
+      look:{skin:1, hair:'long', hairColor:'#4a3320', outfit:'sweater', outfitColor:'#7a4fd8', acc:'headband', accColor:'#4fb8ff', eyes:'gentle', mouth:'tiny'},
+      motive:'Her essay came SECOND. The medal reading is tomorrow.',
+      hello:'Salaam, detective. If you need an essay about justice, mine came second. Barely.',
+      testimony:[
+        {id:'hi1', text:'I was home all evening, practising my OWN essay in the mirror.',
+         press:'The mirror is an excellent audience. It never yawns.',
+         pressNote:'Hira practised “alone with the mirror”…',
+         lieBrokenBy:'eraser', becomes:'hi1b',
+         brokenLine:'My eraser! Okay — I visited Omar to “compare notes”… but I never went NEAR his desk!'},
+        {id:'hi1b', hidden:true, text:'We compared notes at the DOOR. I never stepped past the door mat!',
+         press:'Door. Mat. Notes. Home. That is the whole story.',
+         lieBrokenBy:'inkmark', final:true,
+         brokenLine:'My violet ink… on the BOOKSHELF… where I hid— where SOMEONE hid… oh, full stop.'},
+        {id:'hi2', text:'Second place by HALF a mark. Miss Amna counts commas like a hawk.',
+         press:'One comma! My medal, lost to punctuation!',
+         pressNote:'Hira lost first place by half a mark.'}
+      ]},
+    { id:'mishal', name:'Mishal', role:'Omar’s little sister',
+      look:{skin:3, hair:'pigtails', hairColor:'#2b2b33', outfit:'dress', outfitColor:'#ff5fae', acc:'bow', accColor:'#5fe0b0', eyes:'sparkle', mouth:'grin'},
+      motive:'World-champion paper-plane folder. Always hunting paper.',
+      hello:'Salaam! Wanna see my plane? It did THREE loops yesterday!',
+      innocentGiggle:'I fold SCRAP paper only! Baba Yaqoob checked my plane — it was a shopping list!',
+      testimony:[
+        {id:'mi1', text:'I folded planes on the roof till the azaan, then came down for dinner.',
+         press:'My best plane landed in Baba Yaqoob’s yard. He threw it back. GREAT throw for his age.',
+         pressNote:'Mishal’s planes flew over Baba Yaqoob’s yard.'},
+        {id:'mi2', text:'Bhai’s essay is boring anyway. No planes in it AT ALL.',
+         press:'I listened to him practise nine times. NINE. I could recite it. I won’t.'}
+      ]},
+    { id:'shayan', name:'Shayan', role:'the neighbour boy',
+      look:{skin:4, hair:'curly', hairColor:'#2b2b33', outfit:'hoodie', outfitColor:'#5fe0b0', acc:'none', accColor:'', boy:true, eyes:'round', mouth:'grin'},
+      motive:'His comic books are hidden inside Omar’s school folder.',
+      hello:'Salaam! Is Omar okay? Is… is the FOLDER okay?',
+      innocentGiggle:'I only care about my comics! Miss Amna kept me in detention till dark — wiping boards!',
+      testimony:[
+        {id:'sh1', text:'Detention till dark. Miss Amna made me wipe every board in school.',
+         press:'Even the STAFF ROOM board. Do you know what teachers draw? Pie charts.',
+         pressNote:'Shayan was in detention with Miss Amna.'},
+        {id:'sh2', text:'My comics live in Omar’s folder because my ammi recycles EVERYTHING.',
+         press:'Issue 12 of Captain Karachi survived three recycling raids in that folder.'}
+      ]}
+  ],
+  leads:{
+    eraser:{q:'Whose eraser is marked “H”?', unlocks:['school']},
+    inkmark:{q:'Who writes in violet ink?', unlocks:['townhall']},
+    crease:{q:'Who saw planes and porch visitors?', unlocks:['depot']}
+  },
+  evidence:{
+    contestfear:{name:'The postponement plea', icon:'note',
+      desc:'Miss Amna: “Hira begged me to postpone the reading — said her essay needed one more night to become the best.”'},
+    inkmatch:{name:'The violet ink bottle', icon:'receipt',
+      desc:'Auntie Nasreen: “Violet ink? I sell one bottle a month — Hira bought one YESTERDAY. Very particular about violet.”'},
+    porchsight:{name:'The porch sighting', icon:'note',
+      desc:'Baba Yaqoob: “Planes from the roof all evening — and later, the essay girl slipping onto Omar’s porch, quiet as a cat.”'}
+  },
+  locations:[
+    { id:'school', name:'DHA Model School', icon:'🏫', mapX:330, mapY:196, set:'hall', deco:'#4fb8ff', banner:'🏫 DHA MODEL SCHOOL',
+      npcs:[{ id:'amna', name:'Miss Amna', role:'class teacher', grown:true, look:LOOKS.amna,
+        talk:[
+          {sp:'npc', mood:'smile', text:'The essay contest! Such talent this year. Such DRAMA.'},
+          {sp:'npc', mood:'ooh',   text:'Hira begged me to postpone tomorrow’s reading — “one more night and mine becomes the best,” she said.'},
+          {sp:'npc', mood:'happy', text:'Shayan? He wiped boards in detention till dark. Every board. He has strong opinions about pie charts now.'}
+        ],
+        gives:['contestfear'], names:['hira','shayan'], clears:'shayan' }]},
+    { id:'townhall', name:'DHA Office', icon:'🏛️', mapX:352, mapY:342, set:'hall', deco:'#7cc4ff', banner:'🏛 DHA LAHORE OFFICE',
+      npcs:[{ id:'ledger', name:'Auntie Nasreen', role:'office clerk', grown:true, look:LOOKS.nasreen,
+        talk:[
+          {sp:'me',  mood:'ooh',   text:'Auntie Nasreen — who in DHA writes in VIOLET ink?'},
+          {sp:'npc', mood:'ooh',   text:'One bottle a month, that is all I sell — and Hira bought one just yesterday. Very particular girl.'}
+        ],
+        gives:['inkmatch'] }]},
+    { id:'depot', name:'Speedy Couriers', icon:'📦', mapX:96, mapY:420, set:'yard', deco:'#f0a832',
+      npcs:[{ id:'tom', name:'Baba Yaqoob', role:'the chowkidar', grown:true, look:LOOKS.yaqoob,
+        talk:[
+          {sp:'npc', mood:'giggle',text:'Paper planes rained on my yard all evening! One was a shopping list. Excellent wing design.'},
+          {sp:'npc', mood:'ooh',   text:'And later — the essay girl, slipping onto Omar’s porch. Quiet as a cat. Cats, I notice.'}
+        ],
+        gives:['porchsight'], names:['mishal'], clears:'mishal' }]},
+    { id:'hirahouse', name:'Hira’s House', icon:'🏠', mapX:140, mapY:566, set:'house', deco:'#7a4fd8', npcs:[] }
+  ],
+  truth:{ hira:{ motive:'contestfear', means:'inkmatch', opp:'porchsight' } },
+  gather:[
+    {sp:'me',   mood:'smile', text:'Omar, Mishal, Shayan, Hira — thank you for gathering before assembly.'},
+    {sp:'me',   mood:'ooh',   text:'An eraser marked H. Violet ink. A quiet visit to the porch. The essay writes its own ending.'},
+    {sp:'hira', mood:'nervous', text:'I should be practising! In front of my MIRROR!'},
+    {sp:'me',   mood:'smile', text:'The mirror can wait. The truth reads first today.'}
+  ],
+  culprit:'hira', provingClue:'inkmark',
+  confession:[
+    {sp:'hira', mood:'cracked', text:'Half a mark! I took the essay and hid it behind the bookshelf — I just needed ONE more night!'},
+    {sp:'hira', mood:'sad',     text:'But every time I read it… it really is better than mine. I’m sorry, Omar.'},
+    {sp:'omar', mood:'smile',   text:'Hira — your ending made Miss Amna CRY. Mine just has good commas.'},
+    {sp:'hira', mood:'happy',   text:'Then read yours tomorrow — and I’ll read mine at the winter contest. Deal?'},
+    {sp:'omar', mood:'giggle',  text:'Deal! And detective — you get the first bow at assembly!'}
+  ]
+},
+
+/* ================= CASE 8 — The Swapped Lunchboxes ================= */
+{ n:8, title:'The Swapped Lunchboxes', scene:'school', place:'DHA Model School',
+  variant:{ board1:'Family Food Festival!', board2:'Star Dish: Auntie Bushra’s Biryani 🍚' },
+  bonus:{ spot:'cubby2' },
+  client:{ id:'bushra', name:'Auntie Bushra', grown:true,
+    look:{skin:2, hair:'buns', hairColor:'#4a3320', outfit:'shalwar', outfitColor:'#f0a832', acc:'none', accColor:'#e2429a', eyes:'gentle', mouth:'grin'} },
+  intro:[
+    {sp:'bushra', mood:'shock', text:'Detective beta! My festival biryani — SWAPPED for a lunchbox full of ROCKS!'},
+    {sp:'bushra', mood:'sad',   text:'Fifty families come to the Food Festival tonight. My biryani wins the Star Dish every year.'},
+    {sp:'bushra', mood:'sad',   text:'I left it in the school kitchen this morning. Now — rocks. ROCKS, beta!'},
+    {sp:'me',     mood:'smile', text:'Someone traded treasure for stones. Let’s sniff out this recipe for trouble.'}
+  ],
+  arrive:[
+    {sp:'me', mood:'ooh', text:'The school before the festival… I can almost smell the missing biryani.'}
+  ],
+  clues:[
+    {id:'mitthread', spot:'cubby1', name:'Plaid mitt thread', icon:'threadIcon', gear:null,
+     desc:'A thread of PLAID oven-mitt wool, snagged on the cubby edge.'},
+    {id:'rockdirt', spot:'backpack', name:'Rockery pebble', icon:'mud', gear:null,
+     desc:'A pebble that matches the lunchbox rocks — with fresh greenhouse soil on it!'},
+    {id:'menupin', spot:'deskLidA', name:'Tiny menu pin', icon:'pinIcon', gear:'magnifier',
+     desc:'A tiny enamel pin — “CANTEEN MENU COMMITTEE” — dropped mid-swap. Nearly invisible!'}
+  ],
+  herrings:[
+    {id:'sparechalk', spot:'chalkTray', name:'Rainbow chalk', line:'Festival decoration chalk. Innocent and delightfully smudgy.'},
+    {id:'juicebox', spot:'lunchCrate', name:'Empty juice box', line:'Mango juice, fully slurped. A crime against recycling only.'}
+  ],
+  suspects:[
+    { id:'shakeela', name:'Auntie Shakeela', role:'canteen in-charge', home:'canteen', grown:true,
+      look:{skin:1, hair:'bob', hairColor:'#5a4632', outfit:'sweater', outfitColor:'#e2429a', acc:'none', accColor:'', eyes:'sleepy', mouth:'tiny'},
+      motive:'Her canteen menu loses to Bushra’s biryani EVERY festival.',
+      hello:'Detective. If you are here about lunch, the canteen daal is PERFECTLY adequate.',
+      testimony:[
+        {id:'sk1', text:'I stirred daal in the canteen all morning. Never left my pot.',
+         press:'A watched pot never burns. An unwatched canteen never wins Star Dish. I mean— stirring! Just stirring!',
+         pressNote:'Auntie Shakeela “never left her pot”…',
+         lieBrokenBy:'mitthread', becomes:'sk1b',
+         brokenLine:'My mitt thread?! Fine — I passed the kitchen corridor… carrying INGREDIENTS!'},
+        {id:'sk1b', hidden:true, text:'I fetched onions past the kitchen. I never opened ANY lunchbox.',
+         press:'Onions! For the adequate daal! That is ALL my mitts touched!',
+         lieBrokenBy:'menupin', final:true,
+         brokenLine:'My committee pin… it popped off when I lifted the… the biryani… oh, KHOTAY ki tarah pakri gayi.'},
+        {id:'sk2', text:'Every year: “Bushra’s biryani! Bushra’s biryani!” My daal has FEELINGS.',
+         press:'Seven festivals. Seven second places. The daal and I keep count.',
+         pressNote:'Auntie Shakeela has lost Star Dish seven times.'}
+      ]},
+    { id:'taimur', name:'Taimur', role:'hungriest boy in school',
+      look:{skin:4, hair:'bob', hairColor:'#2b2b33', outfit:'hoodie', outfitColor:'#f0a832', acc:'none', accColor:'', boy:true, eyes:'round', mouth:'grin'},
+      motive:'Would trade his schoolbag for one plate of that biryani.',
+      hello:'Salaam! Is there… is there any biryani left? Asking for me.',
+      innocentGiggle:'I WISH I took it! But I was taste-testing jam at Auntie Nasreen’s stall! Officially!',
+      testimony:[
+        {id:'t1', text:'I was official jam taste-tester at the DHA Office stall all morning.',
+         press:'Eleven jams. My tongue was purple till lunch. Auntie Nasreen has photos.',
+         pressNote:'Taimur was jam-testing at the DHA Office.'},
+        {id:'t2', text:'If I HAD the biryani, detective, would I look this hungry?',
+         press:'Look at me. This is the face of a boy who ate eleven jams and ZERO biryani.'}
+      ]},
+    { id:'majeed', name:'Chacha Majeed', role:'school caretaker', grown:true,
+      look:LOOKS.majeed,
+      motive:'Festival crowds mean festival MESS on his floors.',
+      hello:'Fifty families tonight. Fifty pairs of muddy shoes. Salaam, detective.',
+      innocentGiggle:'ME? I watered the courtyard with Mali Karim’s hose ALL morning! Ask him!',
+      testimony:[
+        {id:'mj1', text:'I borrowed Mali Karim’s hose and watered the courtyard all morning.',
+         press:'Dust control! Fifty families deserve a shine. Karim supervised my spray technique.',
+         pressNote:'Chacha Majeed watered the courtyard with Mali Karim.'},
+        {id:'mj2', text:'Rocks in a lunchbox! Who carries ROCKS through my clean corridor?',
+         press:'Every pebble on my floor is a personal insult, detective.'}
+      ]}
+  ],
+  leads:{
+    mitthread:{q:'Whose plaid oven mitts are fraying?', unlocks:['tailor']},
+    rockdirt:{q:'Where do rockery pebbles come from?', unlocks:['greenhouse']},
+    menupin:{q:'Who wears a menu-committee pin?', unlocks:['townhall']}
+  },
+  evidence:{
+    menuloss:{name:'Seven second places', icon:'list',
+      desc:'Auntie Nasreen: “The festival registry — Shakeela enters her daal EVERY year, and EVERY year Bushra’s biryani wins. She filed a complaint. Twice.”'},
+    mittmatch:{name:'The plaid mitts', icon:'receipt',
+      desc:'Master Rafiq: “Plaid oven mitts, double-stitched — I knit ONE pair, for Auntie Shakeela’s canteen. They fray at the left thumb.”'},
+    rockbucket:{name:'The pebble bucket', icon:'mud',
+      desc:'Mali Karim: “Auntie Shakeela took a bucket of my rockery pebbles this morning — said it was for DECORATION. Decoration!”'}
+  },
+  locations:[
+    { id:'tailor', name:'Rafiq Tailors', icon:'🧵', mapX:96, mapY:420, set:'shop', deco:'#9b6dff',
+      npcs:[{ id:'button', name:'Master Rafiq', role:'the tailor', grown:true, look:LOOKS.rafiq,
+        talk:[
+          {sp:'me',  mood:'ooh',   text:'Plaid wool, Master Rafiq. From an oven mitt, I think.'},
+          {sp:'npc', mood:'ooh',   text:'My double-stitched plaid! One pair only — knitted for Auntie Shakeela’s canteen. Frays at the left thumb.'}
+        ],
+        gives:['mittmatch'], names:['shakeela'] }]},
+    { id:'greenhouse', name:'Karim’s Greenhouse', icon:'🌱', mapX:140, mapY:566, set:'garden', deco:'#2c6e52',
+      npcs:[{ id:'karim', name:'Mali Karim', role:'the gardener', grown:true, look:LOOKS.karim,
+        talk:[
+          {sp:'npc', mood:'smile', text:'Salaam, detective sahiba! Mind the seedlings — they are shy this week.'},
+          {sp:'me',  mood:'ooh',   text:'This pebble, Mali Karim. Greenhouse soil, rockery stone?'},
+          {sp:'npc', mood:'ooh',   text:'My rockery! Auntie Shakeela took a whole BUCKET this morning. “For decoration,” she said. Hmph!'},
+          {sp:'npc', mood:'happy', text:'Chacha Majeed? He borrowed my hose and watered the courtyard all morning. Spray technique: excellent.'}
+        ],
+        gives:['rockbucket'], names:['majeed'], clears:'majeed' }]},
+    { id:'townhall', name:'DHA Office', icon:'🏛️', mapX:330, mapY:196, set:'hall', deco:'#7cc4ff', banner:'🏛 DHA LAHORE OFFICE',
+      npcs:[{ id:'ledger', name:'Auntie Nasreen', role:'office clerk', grown:true, look:LOOKS.nasreen,
+        talk:[
+          {sp:'npc', mood:'ooh',   text:'The menu-committee pin? Only canteen staff wear those, beta. And the registry shows Shakeela’s daal — seven straight second places.'},
+          {sp:'npc', mood:'giggle',text:'Taimur? Eleven jams at my stall. His tongue went PURPLE. I have photos for the newsletter.'}
+        ],
+        gives:['menuloss'], names:['taimur'], clears:'taimur' }]},
+    { id:'canteen', name:'School Canteen', icon:'🍲', mapX:352, mapY:342, set:'hall', deco:'#e2429a', banner:'🍲 CANTEEN — DAAL FRESH DAILY', npcs:[] }
+  ],
+  truth:{ shakeela:{ motive:'menuloss', means:'mittmatch', opp:'rockbucket' } },
+  gather:[
+    {sp:'me',      mood:'smile', text:'Auntie Bushra, Taimur, Chacha Majeed, Auntie Shakeela — the festival can wait five minutes.'},
+    {sp:'me',      mood:'ooh',   text:'A plaid thread. A rockery pebble. A tiny pin dropped mid-swap.'},
+    {sp:'shakeela',mood:'nervous', text:'My daal is SIMMERING. Unsupervised daal is a safety hazard!'},
+    {sp:'me',      mood:'smile', text:'Then let us serve the truth quickly — before it boils over.'}
+  ],
+  culprit:'shakeela', provingClue:'menupin',
+  confession:[
+    {sp:'shakeela', mood:'cracked', text:'SEVEN YEARS of second place! So I hid the biryani in the canteen fridge and left rocks!'},
+    {sp:'shakeela', mood:'sad',     text:'It is still perfect. I could not even bring myself to taste it. It smells like… like winning.'},
+    {sp:'bushra',   mood:'smile',   text:'Shakeela, jaani — who do you think taught me the biryani masala? YOUR daal deserves better company.'},
+    {sp:'bushra',   mood:'happy',   text:'Tonight we serve them TOGETHER. Biryani and daal. One table. Star Dish for two.'},
+    {sp:'shakeela', mood:'happy',   text:'Together?! Then I will fry the crispiest onions DHA has ever crunched!'}
+  ]
+},
+
+/* ================= CASE 9 — The Cookie Jar Caper ================= */
+{ n:9, title:'The Cookie Jar Caper', scene:'cottage', place:'Auntie Parveen’s Cottage',
+  variant:{ wall1:'#ffe7d6', wall2:'#ffd3bd', sofa:'#8fd4ab' },
+  client:{ id:'plum', name:'Auntie Parveen', grown:true, look:LOOKS.parveen },
+  intro:[
+    {sp:'plum', mood:'shock', text:'Detective beta! You remember me? Now the mystery follows me HOME!'},
+    {sp:'plum', mood:'sad',   text:'My famous naan khatai jar — EMPTIED in the night. Forty naan khatai, gone!'},
+    {sp:'plum', mood:'sad',   text:'They were for the orphanage tea tomorrow. Every single one, vanished!'},
+    {sp:'me',   mood:'smile', text:'Auntie Parveen, no crumb escapes me. To the cottage!'}
+  ],
+  arrive:[
+    {sp:'me', mood:'ooh', text:'Auntie Parveen’s cottage… it still smells of naan khatai. The GHOST of naan khatai.'}
+  ],
+  clues:[
+    {id:'crumbs2', spot:'rugMid', name:'Crumb trail', icon:'crumbs', gear:null,
+     desc:'A tidy trail of naan khatai crumbs — leading from the jar to the window!'},
+    {id:'pouch', spot:'biscuitJar', name:'Dropped coin pouch', icon:'pouchIcon', gear:null,
+     desc:'A coin pouch dropped INSIDE the empty jar — with a price list: “Rs.20 each”!'},
+    {id:'fiber', spot:'windowSill', name:'Blue scarf fibre', icon:'threadIcon', gear:null,
+     desc:'A soft blue wool fibre caught on the window latch. Fresh, and NOT Auntie Parveen’s.'}
+  ],
+  herrings:[
+    {id:'recipecard', spot:'sideDrawer', name:'Recipe card', line:'The secret naan khatai recipe — still safe! This thief wanted the GOODS, not the knowledge.'},
+    {id:'catnip', spot:'toyBasket', name:'Sultan’s catnip', line:'Catnip from Nano Jaan’s Sultan. The cats of DHA share everything.'}
+  ],
+  suspects:[
+    { id:'danish', name:'Danish', role:'the teenage nephew', home:'danishhouse',
+      look:{skin:2, hair:'curly', hairColor:'#2b2b33', outfit:'hoodie', outfitColor:'#2f8fe0', acc:'none', accColor:'', boy:true, eyes:'sleepy', mouth:'shy'},
+      motive:'Sells snacks at school — and Khala’s naan khatai are FAMOUS.',
+      hello:'Uh. Salaam. If this is about the jar, I was asleep. Since… yesterday.',
+      testimony:[
+        {id:'dn1', text:'I was asleep by nine. Growing boys need sleep. It is science.',
+         press:'Deep sleep! Dreamless! Ask my pillow!',
+         pressNote:'Danish claims he slept from nine…',
+         lieBrokenBy:'pouch', becomes:'dn1b',
+         brokenLine:'My pouch!? I— I must have dropped it when I visited Khala LAST WEEK!'},
+        {id:'dn1b', hidden:true, text:'That pouch has been lost for a week. I haven’t visited since Sunday!',
+         press:'A week! Pouches wander! It is a known pouch behaviour!',
+         lieBrokenBy:'fiber', final:true,
+         brokenLine:'My new scarf… it caught on the latch when I climbed… okay okay, the scarf is a SNITCH.'},
+        {id:'dn2', text:'Rs.20 per naan khatai is just good business. Hypothetically.',
+         press:'Forty naan khatai times twenty rupees is… hypothetically… eight hundred rupees.',
+         pressNote:'Danish had a full price list ready. Hypothetically.'}
+      ]},
+    { id:'brunoC', name:'Bruno Butterhorn', role:'reformed rival baker', grown:true,
+      look:LOOKS.brunoL,
+      motive:'Once a recipe thief… old reputations stick.',
+      hello:'Detective. Yes, I know how this looks. I keep HONEST hours now. Mostly flour-covered ones.',
+      innocentGiggle:'I bake at night — I do not BURGLE at night! My oven glowed till fajr, ask Baba Yaqoob!',
+      testimony:[
+        {id:'br1', text:'I proofed dough all night. My oven never went cold.',
+         press:'Baba Yaqoob buys my midnight naan. He saw the chimney smoking till dawn.',
+         pressNote:'Bruno’s oven ran all night — Baba Yaqoob can confirm.'},
+        {id:'br2', text:'I ADMIRE Parveen’s naan khatai. Openly! With a signed apology on my wall!',
+         press:'Framed. Next to my first fair-and-square Bake-Off ribbon. Third place. I am PROUD of it.'}
+      ]},
+    { id:'surraiya', name:'Khala Surraiya', role:'the neighbour', grown:true,
+      look:{skin:1, hair:'buns', hairColor:'#8a8a95', outfit:'shalwar', outfitColor:'#7a4fd8', acc:'none', accColor:'#5fe0b0', eyes:'gentle', mouth:'tiny'},
+      motive:'Forever asking for “just the naan khatai recipe, jaani.”',
+      hello:'Salaam, beta. Terrible business. Simply terrible. …Were any crumbs recovered?',
+      innocentGiggle:'At MY age? Through a WINDOW? I was tasting gulab jamun at Kausar’s till late!',
+      testimony:[
+        {id:'su1', text:'I was at Khan Sweets until closing, tasting gulab jamun with Kausar.',
+         press:'Quality control, beta. Somebody must protect DHA from substandard gulab jamun.',
+         pressNote:'Khala Surraiya was at Khan Sweets till closing.'},
+        {id:'su2', text:'I only ever ask for the RECIPE. Politely. Weekly. For eleven years.',
+         press:'Five hundred and seventy-two times. Parveen counts. So do I.'}
+      ]}
+  ],
+  leads:{
+    crumbs2:{q:'Where does the crumb trail lead?', unlocks:['depot']},
+    pouch:{q:'Who sells snacks for Rs.20?', unlocks:['school','sweets']},
+    fiber:{q:'Whose new blue scarf is shedding?', unlocks:['tailor']}
+  },
+  evidence:{
+    cookiesales:{name:'The recess snack stand', icon:'list',
+      desc:'Miss Amna: “Danish runs a snack stand at recess — yesterday he promised the whole class ‘famous naan khatai, Rs.20, limited stock’!”'},
+    scarfmatch:{name:'The blue scarf', icon:'receipt',
+      desc:'Master Rafiq: “Soft blue wool — I knit that scarf for young Danish LAST WEEK. First wearing, first shedding.”'},
+    hedgesight:{name:'The midnight hedge run', icon:'note',
+      desc:'Baba Yaqoob: “Past midnight — a tall boy in a blue scarf hurrying along Parveen’s hedge, jingling like a money box.”'}
+  },
+  locations:[
+    { id:'school', name:'DHA Model School', icon:'🏫', mapX:330, mapY:196, set:'hall', deco:'#4fb8ff', banner:'🏫 DHA MODEL SCHOOL',
+      npcs:[{ id:'amna', name:'Miss Amna', role:'class teacher', grown:true, look:LOOKS.amna,
+        talk:[
+          {sp:'npc', mood:'ooh',   text:'Danish? He runs a recess snack stand. Yesterday he promised “famous naan khatai, Rs.20, limited stock.”'},
+          {sp:'npc', mood:'smile', text:'The whole class pre-ordered. I confiscated the waiting list. It has THREE pages.'}
+        ],
+        gives:['cookiesales'], names:['danish'] }]},
+    { id:'sweets', name:'Khan Sweets', icon:'🍬', mapX:96, mapY:420, set:'shop', deco:'#ff5fae',
+      npcs:[{ id:'kausar', name:'Auntie Kausar', role:'sweet shop owner', grown:true, look:LOOKS.kausar,
+        talk:[
+          {sp:'npc', mood:'giggle',text:'Back again, detective beta! Today’s gulab jamun is POETRY.'},
+          {sp:'npc', mood:'happy', text:'Khala Surraiya? Right here till closing, tasting and judging. She gave my jalebi seven marks out of ten. SEVEN!'}
+        ],
+        names:['surraiya'], clears:'surraiya' }]},
+    { id:'depot', name:'Speedy Couriers', icon:'📦', mapX:352, mapY:342, set:'yard', deco:'#f0a832',
+      npcs:[{ id:'tom', name:'Baba Yaqoob', role:'the chowkidar', grown:true, look:LOOKS.yaqoob,
+        talk:[
+          {sp:'npc', mood:'ooh',   text:'Past midnight — a tall boy in a blue scarf hurried along Parveen’s hedge, jingling like a money box!'},
+          {sp:'npc', mood:'happy', text:'And Bruno? His chimney smoked till fajr. I bought midnight naan at two. Warm as a hug.'}
+        ],
+        gives:['hedgesight'], names:['brunoC'], clears:'brunoC' }]},
+    { id:'tailor', name:'Rafiq Tailors', icon:'🧵', mapX:300, mapY:492, set:'shop', deco:'#9b6dff',
+      npcs:[{ id:'button', name:'Master Rafiq', role:'the tailor', grown:true, look:LOOKS.rafiq,
+        talk:[
+          {sp:'me',  mood:'ooh',   text:'Master Rafiq — a soft blue fibre, fresh off someone’s scarf.'},
+          {sp:'npc', mood:'ooh',   text:'My wool! I knit that scarf for young Danish last week. First wearing, first shedding — wool never lies.'}
+        ],
+        gives:['scarfmatch'] }]},
+    { id:'danishhouse', name:'Danish’s House', icon:'🏠', mapX:140, mapY:566, set:'house', deco:'#2f8fe0', npcs:[] }
+  ],
+  truth:{ danish:{ motive:'cookiesales', means:'scarfmatch', opp:'hedgesight' } },
+  gather:[
+    {sp:'me',     mood:'smile', text:'Auntie Parveen, Bruno, Khala Surraiya, Danish — gather round the empty jar.'},
+    {sp:'me',     mood:'ooh',   text:'A crumb trail. A price list. One brand-new, very talkative scarf.'},
+    {sp:'danish', mood:'nervous', text:'I have… homework. So much homework. Piles.'},
+    {sp:'me',     mood:'smile', text:'This will be quick, Danish. Quicker than recess.'}
+  ],
+  culprit:'danish', provingClue:'fiber',
+  confession:[
+    {sp:'danish', mood:'cracked', text:'Okay! I took them! Forty naan khatai, Rs.20 each — the whole class pre-ordered!'},
+    {sp:'danish', mood:'sad',     text:'But they were for the orphanage tea… I didn’t know that, Khala. I really didn’t.'},
+    {sp:'plum',   mood:'smile',   text:'Then tomorrow YOU serve at the orphanage tea, beta. Every cup. Every plate.'},
+    {sp:'danish', mood:'happy',   text:'And I’ll bake the replacement batch tonight — Bruno said he’d teach me. Fair and square!'},
+    {sp:'plum',   mood:'giggle',  text:'My jar, my nephew, and my rival — all reformed in one evening. Shabash, detective!'}
+  ]
+},
+
+/* ================= CASE 10 — The Hamster Escape ================= */
+{ n:10, title:'The Hamster Escape', scene:'petshop', place:'Pet Palace',
+  client:{ id:'saadC', name:'Saad', look:LOOKS.saad },
+  intro:[
+    {sp:'saadC', mood:'shock', text:'Detective! Captain Nibbles is GONE — and his cage lock was PICKED!'},
+    {sp:'saadC', mood:'sad',   text:'He’s the fluffiest hamster in Lahore. Three-time DHA Pet Parade champion!'},
+    {sp:'saadC', mood:'sad',   text:'The Parade is TOMORROW. No Captain Nibbles, no Pet Palace float…'},
+    {sp:'me',    mood:'smile', text:'A picked lock means a planned crime, Saad. This was no hamster jailbreak.'}
+  ],
+  arrive:[
+    {sp:'me', mood:'ooh', text:'Pet Palace. Every animal saw the thief… if only parrots gave testimony.'}
+  ],
+  clues:[
+    {id:'hairpin', spot:'cageFloor', name:'Bent jewelled hairpin', icon:'hairpinIcon', gear:null,
+     desc:'A jewelled hairpin, bent from picking the cage lock. Fancy AND felonious.'},
+    {id:'seeds', spot:'feedSack', name:'Sunflower seed trail', icon:'seedsIcon', gear:null,
+     desc:'A trail of sunflower seeds — someone LURED Captain Nibbles into something…'},
+    {id:'rosette', spot:'petBedA', name:'Rosette ribbon thread', icon:'rosetteIcon', gear:'magnifier',
+     desc:'A microscopic thread from a prize rosette, deep in Nibbles’ bed. A CHAMPION’S ribbon.'}
+  ],
+  herrings:[
+    {id:'featherblue', spot:'tunnelTube', name:'Parrot feather', line:'Mitthu the parrot’s feather. He is loud, but he is lawful.'},
+    {id:'fishflake', spot:'fishTankBase', name:'Fish food flakes', line:'Spilled fish flakes. The goldfish plead extremely innocent.'}
+  ],
+  suspects:[
+    { id:'mehak', name:'Mehak', role:'pet-show star', home:'malikmansion',
+      look:{skin:0, hair:'long', hairColor:'#4a3320', outfit:'sparkle', outfitColor:'#ff5fae', acc:'headband', accColor:'#ffd166', eyes:'starry', mouth:'tiny'},
+      motive:'Her poodle Prince lost the Parade to Captain Nibbles. Twice.',
+      hello:'Salaam. If you’re looking for champions, Prince and I are RIGHT here.',
+      testimony:[
+        {id:'me1', text:'I groomed Prince all evening. Champions require four hours of brushing.',
+         press:'Four hours! His fur has LAYERS. Witnesses? Champions groom ALONE.',
+         pressNote:'Mehak groomed Prince “alone” all evening…',
+         lieBrokenBy:'hairpin', becomes:'me1b',
+         brokenLine:'My hairpin?! I— browsed the pet shop for BOWS. Bows only! Then straight home!'},
+        {id:'me1b', hidden:true, text:'I looked at ribbons near the counter. I never went NEAR the cages.',
+         press:'Ribbons! For Prince! The cage wall is entirely out of my way!',
+         lieBrokenBy:'rosette', final:true,
+         brokenLine:'My rosette thread… in his BED… from when I lifted him out… fluffy little TRAITOR.'},
+        {id:'me2', text:'A hamster beating a PEDIGREE POODLE. Twice! The judges need spectacles.',
+         press:'Prince has a certificate. Nibbles has… cheeks. CHEEKS, detective.',
+         pressNote:'Mehak deeply resents losing to Captain Nibbles.'}
+      ]},
+    { id:'sameer', name:'Sameer', role:'snake-owner', 
+      look:{skin:3, hair:'curly', hairColor:'#2b2b33', outfit:'hoodie', outfitColor:'#2c6e52', acc:'glasses', accColor:'#4a3b63', boy:true, eyes:'round', mouth:'grin'},
+      motive:'Rumour says his snake Naagin “wants a friend.”',
+      hello:'Salaam! Naagin didn’t do it. She was measured ALL evening. Officially.',
+      innocentGiggle:'Naagin eats EGGS, not champions! Madam Sonia measured her at the tent till late!',
+      testimony:[
+        {id:'sm1', text:'Naagin’s official Parade measuring ran until late. I held her tail end.',
+         press:'Ninety-one centimetres of certified friendliness. Madam Sonia has the paperwork.',
+         pressNote:'Sameer was at the Parade measuring station.'},
+        {id:'sm2', text:'The “wants a friend” rumour is SLANDER. Naagin has me.',
+         press:'And a heat lamp. And a rock called Kamran. She is fully socialised.'}
+      ]},
+    { id:'tomS', name:'Baba Yaqoob', role:'the chowkidar', grown:true,
+      look:LOOKS.yaqoob,
+      motive:'Nibbles’ squeaky wheel keeps the whole street awake.',
+      hello:'Salaam, detective sahiba. Yes, yes — the wheel squeaks. No, I did not hamster-nap anyone.',
+      innocentGiggle:'At the council meeting I SLEPT, sahiba! Nasreen says I snored through three agenda items!',
+      testimony:[
+        {id:'ty1', text:'I attended the DHA council meeting and… rested my eyes through most of it.',
+         press:'Auntie Nasreen kept minutes. My snores are IN the minutes.',
+         pressNote:'Baba Yaqoob slept through the council meeting.'},
+        {id:'ty2', text:'That wheel! Squeak-squeak at three in the morning! But the little captain… he waves at me.',
+         press:'Every dawn. A tiny wave. We are, against my will, friends.'}
+      ]}
+  ],
+  leads:{
+    hairpin:{q:'Who wears jewelled hairpins?', unlocks:['tailor']},
+    seeds:{q:'Who bought sunflower seeds for a lure?', unlocks:['paradetent','townhall']},
+    rosette:{q:'Whose wagon rolled at dawn?', unlocks:['chaikhokha']}
+  },
+  evidence:{
+    mysteryentry:{name:'The “mystery pet” entry', icon:'list',
+      desc:'Madam Sonia: “Mehak changed her Parade entry yesterday — from ‘Prince (poodle)’ to ‘SURPRISE CHAMPION (small, fluffy)’. Suspicious? Extremely.”'},
+    pinmatch:{name:'The jewelled hairpins', icon:'receipt',
+      desc:'Master Rafiq: “Jewelled hairpins by the dozen — I order them for exactly one customer: Mehak of Malik Mansion.”'},
+    wagonsight:{name:'The dawn wagon', icon:'note',
+      desc:'Chacha Chai: “At dawn, Mehak’s little parade wagon rattled past my khokha — squeaking, with a blanket over the top. Blankets don’t SQUEAK, detective.”'}
+  },
+  locations:[
+    { id:'tailor', name:'Rafiq Tailors', icon:'🧵', mapX:96, mapY:420, set:'shop', deco:'#9b6dff',
+      npcs:[{ id:'button', name:'Master Rafiq', role:'the tailor', grown:true, look:LOOKS.rafiq,
+        talk:[
+          {sp:'me',  mood:'ooh',   text:'A jewelled hairpin, Master Rafiq — bent from picking a lock.'},
+          {sp:'npc', mood:'ooh',   text:'I order those by the DOZEN for one customer only — Mehak, of Malik Mansion. She loses one a week.'}
+        ],
+        gives:['pinmatch'], names:['mehak'] }]},
+    { id:'paradetent', name:'Pet Parade Tent', icon:'🎪', mapX:330, mapY:196, set:'hall', deco:'#f0a832', banner:'🎪 DHA PET PARADE 🎪',
+      npcs:[{ id:'sonia', name:'Madam Sonia', role:'parade judge', grown:true,
+        look:{skin:0, hair:'bob', hairColor:'#a3502e', outfit:'trench', outfitColor:'#f0a832', acc:'glasses', accColor:'#4a3b63', eyes:'gentle', mouth:'tiny'},
+        talk:[
+          {sp:'npc', mood:'smile', text:'A detective! Wonderful. Judges appreciate EVIDENCE.'},
+          {sp:'npc', mood:'ooh',   text:'Mehak changed her entry yesterday — from “Prince (poodle)” to “SURPRISE CHAMPION — small, fluffy.” Make of that what you will.'},
+          {sp:'npc', mood:'happy', text:'Sameer? He held Naagin’s tail at measuring till late. Ninety-one certified centimetres.'}
+        ],
+        gives:['mysteryentry'], names:['sameer'], clears:'sameer' }]},
+    { id:'townhall', name:'DHA Office', icon:'🏛️', mapX:352, mapY:342, set:'hall', deco:'#7cc4ff', banner:'🏛 DHA LAHORE OFFICE',
+      npcs:[{ id:'ledger', name:'Auntie Nasreen', role:'office clerk', grown:true, look:LOOKS.nasreen,
+        talk:[
+          {sp:'npc', mood:'giggle',text:'Baba Yaqoob at the council meeting? Beta, he snored through THREE agenda items. It is in the minutes. Officially.'}
+        ],
+        names:['tomS'], clears:'tomS' }]},
+    { id:'chaikhokha', name:'Chacha’s Chai Khokha', icon:'☕', mapX:300, mapY:492, set:'yard', deco:'#c96a4a',
+      npcs:[{ id:'chacha', name:'Chacha Chai', role:'chai-wala', grown:true, look:LOOKS.chai,
+        talk:[
+          {sp:'npc', mood:'ooh',   text:'At dawn — Mehak’s parade wagon rattled past, SQUEAKING, with a blanket on top. Blankets, detective, do not squeak.'}
+        ],
+        gives:['wagonsight'] }]},
+    { id:'malikmansion', name:'Malik Mansion', icon:'🏰', mapX:140, mapY:566, set:'house', deco:'#ff5fae', npcs:[] }
+  ],
+  truth:{ mehak:{ motive:'mysteryentry', means:'pinmatch', opp:'wagonsight' } },
+  gather:[
+    {sp:'me',    mood:'smile', text:'Saad, Sameer, Baba Yaqoob, Mehak — welcome back to Pet Palace.'},
+    {sp:'me',    mood:'ooh',   text:'A bent hairpin. A seed trail. One squeaking wagon at dawn. The Parade starts early this year.'},
+    {sp:'mehak', mood:'nervous', text:'Prince needs his pre-parade blow-dry! This is ANIMAL CRUELTY!'},
+    {sp:'me',    mood:'smile', text:'One champion first, Mehak. The fluffy one you borrowed.'}
+  ],
+  culprit:'mehak', provingClue:'rosette',
+  confession:[
+    {sp:'mehak', mood:'cracked', text:'FINE! I picked the lock, lured him with seeds, and wheeled him home — my “surprise champion”!'},
+    {sp:'mehak', mood:'sad',     text:'But he only sleeps in my rosette box and waves at the wall… he misses his squeaky wheel. And Saad.'},
+    {sp:'saadC', mood:'smile',   text:'Bring him back tonight and enter Prince FAIRLY, Mehak. He’s actually really fluffy too.'},
+    {sp:'mehak', mood:'happy',   text:'He IS, isn’t he?! Four hours a day! …Fine. May the fluffiest pet win.'},
+    {sp:'saadC', mood:'giggle',  text:'Captain Nibbles comes home! Detective — Pet Palace salutes you!'}
   ]
 }];
 function caseByLevel(n){ return CASES.find(c=>c.n===n); }
@@ -1832,7 +3609,7 @@ function locById(id){ const c = curCase(); return c && c.locations.find(l=>l.id=
 function evInfo(id){
   const c = curCase(); if(!c) return null;
   const cl = c.clues.find(x=>x.id===id);
-  if(cl) return {id, name:cl.name, icon:cl.id, desc:cl.desc};
+  if(cl) return {id, name:cl.name, icon:cl.icon || cl.id, desc:cl.desc};
   const e = c.evidence[id];
   return e ? {id, name:e.name, icon:e.icon, desc:e.desc} : null;
 }
@@ -1919,17 +3696,23 @@ function drawSpotContents(spotId, x, y, s){
   const cl = clueAt(spotId);
   if(cl){
     if(cl.gear === 'magnifier' && !renderingLens) return;
-    drawClueIcon(cl.id, x, y, s);
+    drawClueIcon(cl.icon || cl.id, x, y, s);
     const tw = 0.6 + Math.sin(time*4)*0.4;
     sparkle4(x + 12*s, y - 12*s, 5*s*tw, '#fff', 0.9);
     sparkle4(x - 10*s, y + 8*s, 3.5*s*tw, C('gold'), 0.8);
+    return;
+  }
+  const c2 = curCase();
+  if(c2 && c2.bonus && c2.bonus.spot === spotId && !cp.bonusTaken){
+    drawClueIcon('paw', x, y, s);
+    sparkle4(x+10*s, y-10*s, 5*s, C('gold'), 0.7+Math.sin(time*4)*0.3);
     return;
   }
   const h = herringAt(spotId);
   if(h && !cp.inspected[h.id]) drawClueIcon('note', x, y, s*0.9);
 }
 function glintAt(x, y, key){
-  if(clueDone('bootprint')) return;
+  if(!cp || cp.level !== 1 || clueDone('bootprint')) return;
   const ph = (time*0.9) % 3;
   if(ph < 0.8) sparkle4(x + Math.sin(time*3)*6, y - 8, 7*(0.5+ph), '#fff', 0.9 - ph);
 }
@@ -2195,7 +3978,7 @@ function drawCity(){
     ell(t[0]-9, t[1]-4, 10, 9, '#7cc487');
     ell(t[0]+9, t[1]-5, 10, 9, '#5ba368');
   });
-  txt('🗺 Maple Falls', W/2, 40, 28, {bold:true, color:C('purpleDeep'), outline:'#fff'});
+  txt('🗺 DHA Lahore', W/2, 40, 28, {bold:true, color:C('purpleDeep'), outline:'#fff'});
   txt(nextThread(), W/2, 72, 13, {bold:true, color:C('pinkDeep'), outline:'#fff'});
   /* fixed stops: office + crime scene */
   drawBuilding(70, 140, 'Your Office', '🕵️', '#9b6dff', 'open');
@@ -2214,10 +3997,11 @@ function drawCity(){
       uiButtons.push({x:L.mapX-46, y:L.mapY-56, w:92, h:100, cb:()=>{ SFX.hmm(); floaty('Find a lead that points here…', L.mapX, L.mapY-64, C('purpleDeep'), 13); }});
     }
   }
-  /* future-case locked facades */
-  drawBuilding(420, 216, '???', '🏫', '#8fe3c0', 'locked');
-  drawBuilding(60, 640, '???', '📚', '#ffd166', 'locked');
-  drawBuilding(400, 660, '???', '🐹', '#ff9ed2', 'locked');
+  /* future-case locked facades (skip slots this case uses) */
+  [[420,216,'🏫','#8fe3c0'],[60,640,'📚','#ffd166'],[400,660,'🐹','#ff9ed2']].forEach(f=>{
+    if(!c.locations.some(L=>Math.hypot(L.mapX-f[0], L.mapY-f[1]) < 60))
+      drawBuilding(f[0], f[1], '???', f[2], f[3], 'locked');
+  });
   drawButton('🧵 Mystery Board', W/2-105, H-64, 210, 50, ()=>{ state='board'; }, {size:15, c1:'#cdb9ff', c2:'#a78bfa'});
   drawButton('📔', W-70, H-64, 52, 50, ()=>{ journalOpen = true; journalTab='case'; }, {size:18, r:18, c1:'#fff', c2:'#efe6ff'});
   if(journalOpen) drawJournal();
@@ -2247,10 +4031,12 @@ function drawVisitSet(L){
     box3d(40, 430, 90, 80, 18, '#e8b04a', '#f0c069', 8);
     box3d(70, 380, 70, 60, 14, '#d99f3e', '#f0c069', 8);
     txt('📦', 86, 470, 30);
-    /* the muddy patch */
-    ell(300, 600, 110, 40, '#8a6a4a', 0.8);
-    ell(280, 590, 60, 22, '#7a5a3a', 0.9);
-    drawClueIcon('bootprint', 300, 596, 1.3);
+    /* the muddy patch (case-1 depot flavour) */
+    if(L.mud){
+      ell(300, 600, 110, 40, '#8a6a4a', 0.8);
+      ell(280, 590, 60, 22, '#7a5a3a', 0.9);
+      drawClueIcon('bootprint', 300, 596, 1.3);
+    }
     /* parked delivery bike */
     ctx.strokeStyle = '#5b4488'; ctx.lineWidth = 5;
     ctx.beginPath(); ctx.arc(370, 470, 24, 0, 7); ctx.stroke();
@@ -2289,6 +4075,44 @@ function drawVisitSet(L){
     ell(380, 280, 34, 26, '#5d4a78');
     ell(380, 280, 26, 18, '#ffca7a', 0.5);
     txt('🥖 BUTTERHORN BREADS 🥖', W/2, 322, 13, {bold:true, color:'#4e9e5f'});
+  } else if(L.set === 'house'){
+    ctx.fillStyle = vGrad(0, 0, HORIZON, shade(col,1.45), shade(col,1.2)); ctx.fillRect(0, 0, W, HORIZON);
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    for(let k=0;k<9;k++) ctx.fillRect(k*60+16, 0, 20, HORIZON-50);
+    floorPlanks(0, '#efdcc8', '#dfc5a8', '#f8ecd8');
+    /* window + armchair + shelf */
+    softShadow(true, 8); fillRR(300, 70, 140, 150, 12, '#fff'); softShadow(false);
+    fillRR(308, 78, 124, 134, 8, '#bfe4ff');
+    ctx.strokeStyle='#fff'; ctx.lineWidth=5;
+    ctx.beginPath(); ctx.moveTo(370,78); ctx.lineTo(370,212); ctx.moveTo(308,146); ctx.lineTo(432,146); ctx.stroke();
+    softShadow(true, 8);
+    fillRR(50, 190, 130, 110, 20, shade(col, 0.95));
+    softShadow(false);
+    fillRR(40, 180, 30, 110, 14, shade(col, 1.1));
+    fillRR(160, 180, 30, 110, 14, shade(col, 1.1));
+    fillRR(62, 200, 106, 40, 14, shade(col, 1.2));
+    softShadow(true, 6); fillRR(210, 140, 70, 10, 4, '#c99a66'); softShadow(false);
+    for(let k=0;k<3;k++) fillRR(218+k*20, 112, 14, 28, 3, [C('pink'),C('blue'),C('gold')][k]);
+    ell(240, 380, 120, 40, shade(col, 1.3), 0.5);
+  } else if(L.set === 'garden'){
+    ctx.fillStyle = vGrad(0, 0, HORIZON, '#bfe4ff', '#e0f4ff'); ctx.fillRect(0, 0, W, HORIZON);
+    ell(90, 70, 28, 28, '#fff3c9');
+    ctx.fillStyle = vGrad(0, HORIZON, H-HORIZON, '#bfe6c8', '#9fd4ab'); ctx.fillRect(0, HORIZON, W, H-HORIZON);
+    /* hedge + glasshouse */
+    for(let k=0;k<8;k++) ell(k*66+30, HORIZON-30, 42, 40, k%2 ? '#6ab475' : '#7cc487');
+    softShadow(true, 8);
+    quadf(280, 120, 430, 120, 450, 300, 260, 300, 'rgba(200,240,255,0.75)');
+    softShadow(false);
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(355,120); ctx.lineTo(355,300); ctx.moveTo(280,210); ctx.lineTo(450,210); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(280,120); ctx.lineTo(355,70); ctx.lineTo(430,120); ctx.closePath();
+    ctx.fillStyle='rgba(200,240,255,0.9)'; ctx.fill();
+    /* flower rows */
+    for(let k=0;k<6;k++){
+      ell(60+k*70, 480, 26, 12, '#8a6a4a');
+      ell(60+k*70, 462, 9, 9, [C('pink'),C('gold'),C('purple')][k%3]);
+      fillRR(58+k*70, 466, 4, 16, 2, '#5ba368');
+    }
   } else { /* hall */
     ctx.fillStyle = vGrad(0, 0, HORIZON, shade(col, 1.35), shade(col, 1.1)); ctx.fillRect(0, 0, W, HORIZON);
     floorPlanks(0, '#efe6f2', '#ddd0e2', '#ffffff');
@@ -2304,7 +4128,7 @@ function drawVisitSet(L){
     softShadow(true, 8);
     fillRR(120, 60, 240, 56, 14, col);
     softShadow(false);
-    txt(L.id === 'choir' ? '🎶 SING YOUR HEART OUT 🎶' : '🏛 MAPLE FALLS TOWN HALL', W/2, 90, 13, {bold:true, color:'#fff'});
+    txt(L.banner || (L.id === 'choir' ? '🎶 SING YOUR HEART OUT 🎶' : '🏛 MAPLE FALLS TOWN HALL'), W/2, 90, 13, {bold:true, color:'#fff'});
     /* desk */
     box3d(150, 210, 180, 80, 20, '#c99be0', '#e0c3f0', 10);
     if(L.id === 'choir'){ txt('🎹', 110, 260, 30); txt('🎵', 380, 180, 22); }
@@ -2576,7 +4400,7 @@ function drawGather(){
 function drawCasebook(){
   menuBG();
   txt('📔 Casebook', W/2, 44, 30, {bold:true, color:C('purpleDeep')});
-  txt('30 mysteries on Maple Street', W/2, 76, 14, {color:C('inkSoft')});
+  txt('30 mysteries around DHA Lahore', W/2, 76, 14, {color:C('inkSoft')});
   const cols = 5, cw2 = 78, ch2 = 84, gx0 = (W - cols*cw2 - (cols-1)*10)/2;
   for(let n=1;n<=30;n++){
     const i = n-1, col = i%cols, row = Math.floor(i/cols);
@@ -2668,7 +4492,11 @@ function unfoundClueSpots(){
   const c = curCase(); if(!c) return [];
   return c.clues.filter(cl=>!cp.found[cl.id]).map(cl=>spotById(cl.spot));
 }
-function drawSceneWorld(cx){ drawBakery(cx); }
+function drawSceneWorld(cx){
+  const S = curScene();
+  S.draw(cx);
+  if(!S.bespoke) drawGenericSpots(cx);
+}
 
 function drawLens(){
   const r = 78;
@@ -2756,9 +4584,11 @@ function hintUpdate(){
     if(hintPulse.t > 1.6) hintPulse = null;
   }
 }
+const DEFAULT_EMPTY = ['Just dust bunnies!','Nothing here… yet.','Nope. Keep looking!','Hmm, nothing suspicious.','Empty. The plot thickens!'];
 function randEmpty(){
   const c = curCase();
-  return c.emptyLines[Math.floor(Math.random()*c.emptyLines.length)];
+  const lines = (c && c.emptyLines) || DEFAULT_EMPTY;
+  return lines[Math.floor(Math.random()*lines.length)];
 }
 function sceneTap(p){
   if(popup || journalOpen) return;
@@ -2784,10 +4614,21 @@ function tapSpot(s, p){
   }
   if(cl){
     if(cl.gear === 'magnifier' && !renderingLens && !zoomMode){
-      floaty('Something teeny-tiny… zoom in?', p.x, p.y-24, C('purpleDeep'), 14);
+      if(!save.gear.magnifier) floaty('Something teeny-tiny… you need the 🔍 Magnifying Glass from the Shop!', p.x, Math.max(80,p.y-24), C('purpleDeep'), 13);
+      else floaty('Something teeny-tiny… switch on your 🔍 lens!', p.x, Math.max(80,p.y-24), C('purpleDeep'), 14);
       SFX.hmm(); return;
     }
     collectClue(cl, p); return;
+  }
+  if(c.bonus && s.id === c.bonus.spot && !cp.bonusTaken){
+    cp.bonusTaken = 1; save.pawprints = (save.pawprints||0) + 1; cpSave(); persist();
+    SFX.coin(); sparkBurst(p.x, p.y, C('gold'), 22);
+    floaty('🐾 Golden pawprint! (' + save.pawprints + '/3)', W/2, Math.max(80, p.y-30), C('goldDeep'), 18);
+    if(save.pawprints >= 3 && !save.unlocked.whiskers){
+      save.unlocked.whiskers = true; persist(); SFX.fanfare(); burstConfetti(W/2, 300, 60);
+      floaty('😺 Detective Whiskers joins your squad!', W/2, 200, C('pinkDeep'), 18);
+    }
+    return;
   }
   if(h){
     if(!cp.inspected[h.id]){
@@ -2823,7 +4664,7 @@ function drawPopup(){
     const cl = popup.cl;
     txt('✨ CLUE FOUND! ✨', W/2, by+36, 22, {bold:true, color:C('pinkDeep')});
     ell(W/2, by+110, 46, 46, C('purplePale'));
-    drawClueIcon(cl.id, W/2, by+110, 2);
+    drawClueIcon(cl.icon || cl.id, W/2, by+110, 2);
     sparkle4(W/2+40, by+76, 7, C('gold'), 0.7+Math.sin(time*4)*0.3);
     sparkle4(W/2-44, by+140, 5, C('pink'), 0.7+Math.cos(time*3)*0.3);
     txt(cl.name, W/2, by+176, 20, {bold:true});
@@ -2912,6 +4753,7 @@ function drawSceneHUD(c){
 }
 function tutorialOverlays(){
   if(dlg || popup || journalOpen) return;
+  if(!cp || cp.level !== 1){ return; }
   if(!save.tut.pan){
     if(camX > 60){ save.tut.pan = true; persist(); }
     else {
@@ -2989,7 +4831,7 @@ function drawJournal(){
     });
   } else if(journalTab === 'people'){
     const ppl = knownPeople();
-    if(!ppl.length) txt('No persons of interest yet.\nFollow leads around Maple Falls!', bx+bw/2, cy0+40, 14, {color:'#b8ab98'});
+    if(!ppl.length) txt('No persons of interest yet.\nFollow leads around DHA Lahore!', bx+bw/2, cy0+40, 14, {color:'#b8ab98'});
     ppl.forEach((s2, i)=>{
       const y = cy0 + i*118;
       fillRR(bx+18, y, bw-36, 106, 16, cp.cleared[s2.id] ? '#eef8f0' : '#fff');
@@ -3167,7 +5009,7 @@ function drawCluePicker(){
     const col = i%3, row = Math.floor(i/3);
     const x = bx + 34 + col*106, y = by + 90 + row*130;
     fillRR(x, y, 96, 110, 14, C('purplePale'));
-    drawClueIcon(cl.id, x+48, y+40, 1.3);
+    drawClueIcon(cl.icon || cl.id, x+48, y+40, 1.3);
     wrapLines(cl.name, 11, 86).slice(0,2).forEach((l,li)=> txt(l, x+48, y+80+li*13, 11, {bold:true}));
     uiButtons.push({x, y, w:96, h:110, cb:()=>{
       const cb = cluePicker.onPick; cluePicker = null; cb(cl.id);
@@ -3344,7 +5186,9 @@ function drawClosed(){
 function validateCases(){
   const errs = [];
   for(const c of CASES){
-    const spotIds = spotList().map(s=>s.id);
+    if(!SCENES[c.scene]){ errs.push('case '+c.n+': unknown scene '+c.scene); continue; }
+    const spotIds = SCENES[c.scene].spots.map(s=>s.id);
+    if(c.bonus && !spotIds.includes(c.bonus.spot)) errs.push('case '+c.n+': bonus spot missing '+c.bonus.spot);
     const used = {};
     for(const cl of c.clues){
       if(!spotIds.includes(cl.spot)) errs.push('case '+c.n+': clue '+cl.id+' spot missing: '+cl.spot);
