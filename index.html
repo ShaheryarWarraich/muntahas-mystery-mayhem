@@ -164,7 +164,7 @@ const SAVE_DEFAULTS = {
   coins: 0,
   selected: 'custom',                 // which detective is active
   custom: { skin:2, hair:'ponytail', hairColor:'#4a3320', outfit:'trench',
-            outfitColor:'#a78bfa', acc:'hat', accColor:'#ff8fc7' },
+            outfitColor:'#a78bfa', acc:'hat', accColor:'#ff8fc7', eyes:'sparkle', mouth:'smile' },
   creatorDone: false,
   unlocked: { custom:true, muntaha:true, anya:true },
   gear: {},                           // {magnifier:true, ...}
@@ -500,6 +500,10 @@ const OUTFITS = ['trench','dress','hoodie','overalls','sweater','sparkle'];
 const OUTFITNAMES = {trench:'Trench Coat', dress:'Twirl Dress', hoodie:'Hoodie + Skirt', overalls:'Overalls', sweater:'Cozy Sweater', sparkle:'Sparkle Top'};
 const OUTFITCOLORS = ['#ff8fc7','#e2699e','#a78bfa','#7c5cbf','#7cc4ff','#5a8fd8','#8fe3c0','#ffd166'];
 const ACCS = ['none','hat','bow','headband','glasses','flower'];
+const EYESTYLES = ['sparkle','gentle','round','sleepy','starry'];
+const EYENAMES  = {sparkle:'Sparkle', gentle:'Gentle', round:'Big & Round', sleepy:'Sleepy', starry:'Starry'};
+const MOUTHSTYLES = ['smile','grin','tiny','cat','shy'];
+const MOUTHNAMES  = {smile:'Sweet Smile', grin:'Big Grin', tiny:'Tiny', cat:'Kitty :3', shy:'Shy'};
 const ACCNAMES = {none:'None', hat:'Detective Hat', bow:'Big Bow', headband:'Headband', glasses:'Glasses', flower:'Flower Clip'};
 
 function shade(hex, f){
@@ -612,13 +616,14 @@ function drawHead(x, y, r, ch, mood, o){
   }
   /* head */
   softShadow(true, 7);
-  ell(x, y, r, r*1.05, skin);
+  ell(x, y, r*(ch.boy?1.06:1), r*1.05, skin);
   softShadow(false);
   ell(x-r*0.99, y+r*0.08, r*0.14, r*0.22, skin);
   ell(x+r*0.99, y+r*0.08, r*0.14, r*0.22, skin);
   /* ---- face ---- */
   const ex = r*0.42, ey = y + r*0.02;
   const m = mood || 'smile';
+  const es = ch.eyes || 'sparkle', ms = ch.mouth || 'smile';
   if(m === 'happy' || m === 'giggle'){
     ctx.strokeStyle = '#3a3048'; ctx.lineWidth = r*0.1; ctx.lineCap = 'round';
     for(const g of [-1,1]){ ctx.beginPath(); ctx.arc(x+g*ex, ey+r*0.08, r*0.17, Math.PI*1.12, Math.PI*1.88); ctx.stroke(); }
@@ -637,11 +642,45 @@ function drawHead(x, y, r, ch, mood, o){
       if(blink){
         ctx.strokeStyle = '#3a3048'; ctx.lineWidth = r*0.08; ctx.lineCap='round';
         ctx.beginPath(); ctx.moveTo(x+g*ex-r*0.11, ey); ctx.lineTo(x+g*ex+r*0.11, ey); ctx.stroke();
-      } else {
+      } else if(es === 'round'){
+        ell(x+g*ex, ey, r*0.16, r*0.19, '#3a3048');
+        ell(x+g*ex - r*0.055, ey - r*0.07, r*0.06, r*0.07, '#fff');
+        if(!ch.boy) ell(x+g*ex + r*0.06, ey + r*0.05, r*0.025, r*0.03, 'rgba(255,255,255,0.85)');
+      } else if(es === 'sleepy'){
+        ell(x+g*ex, ey+r*0.01, r*0.125, r*0.13, '#3a3048');
+        ell(x+g*ex, ey - r*0.1, r*0.16, r*0.1, skin);
+        ctx.strokeStyle = '#3a3048'; ctx.lineWidth = r*0.055; ctx.lineCap='round';
+        ctx.beginPath(); ctx.arc(x+g*ex, ey - r*0.015, r*0.14, Math.PI*1.08, Math.PI*1.92); ctx.stroke();
+        ell(x+g*ex + r*0.04, ey + r*0.03, r*0.03, r*0.035, '#fff');
+      } else if(es === 'starry'){
+        ell(x+g*ex, ey, r*0.14, r*0.17, '#3a3048');
+        star(x+g*ex, ey, r*0.085, '#ffd166', 0.3);
+      } else if(es === 'gentle'){
+        ell(x+g*ex, ey, r*0.115, r*0.15, '#3a3048');
+        ell(x+g*ex - r*0.035, ey - r*0.05, r*0.045, r*0.05, '#fff');
+        ctx.strokeStyle = '#3a3048'; ctx.lineWidth = r*0.045; ctx.lineCap='round';
+        for(let li=0; li<2; li++){
+          ctx.beginPath();
+          ctx.moveTo(x+g*(ex + r*0.1), ey - r*(0.1 + li*0.05));
+          ctx.lineTo(x+g*(ex + r*0.2), ey - r*(0.16 + li*0.07));
+          ctx.stroke();
+        }
+      } else { /* sparkle */
         ell(x+g*ex, ey, r*0.125, r*0.16, '#3a3048');
         ell(x+g*ex - r*0.045, ey - r*0.055, r*0.048, r*0.058, '#fff');
-        ell(x+g*ex + r*0.05, ey + r*0.04, r*0.022, r*0.026, 'rgba(255,255,255,0.85)');
+        if(!ch.boy) ell(x+g*ex + r*0.05, ey + r*0.04, r*0.022, r*0.026, 'rgba(255,255,255,0.85)');
       }
+    }
+  }
+  /* boy brows: short, flat, serious */
+  if(ch.boy && m !== 'cracked' && m !== 'shock'){
+    ctx.strokeStyle = shade(ch.hairColor || '#4a3320', 0.75);
+    ctx.lineWidth = r*0.07; ctx.lineCap = 'round';
+    for(const g of [-1,1]){
+      ctx.beginPath();
+      ctx.moveTo(x+g*ex - r*0.12, ey - r*0.26);
+      ctx.lineTo(x+g*ex + r*0.12, ey - r*0.27);
+      ctx.stroke();
     }
   }
   /* mouth */
@@ -653,11 +692,42 @@ function drawHead(x, y, r, ch, mood, o){
   else if(m === 'cracked'){ ell(x, y+r*0.46, r*0.17, r*0.21, '#8d3d55'); ell(x, y+r*0.54, r*0.11, r*0.08, '#e78fa5'); }
   else if(m === 'giggle'){ ctx.beginPath(); ctx.arc(x, y+r*0.3, r*0.25, Math.PI*0.1, Math.PI*0.9); ctx.stroke();
     ell(x, y+r*0.48, r*0.13, r*0.08, '#e78fa5'); }
+  else if(ms === 'grin'){
+    ctx.beginPath(); ctx.arc(x, y+r*0.32, r*0.22, Math.PI*0.08, Math.PI*0.92); ctx.closePath();
+    ctx.fillStyle = '#8d3d55'; ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(x-r*0.17, y+r*0.345, r*0.34, r*0.07);
+    ctx.beginPath(); ctx.arc(x, y+r*0.32, r*0.22, Math.PI*0.08, Math.PI*0.92); ctx.stroke();
+  }
+  else if(ms === 'tiny'){ ell(x, y+r*0.42, r*0.07, r*0.05, '#c25a78'); }
+  else if(ms === 'cat'){
+    ctx.lineWidth = r*0.07;
+    ctx.beginPath(); ctx.arc(x-r*0.1, y+r*0.36, r*0.1, Math.PI*0.1, Math.PI*0.95); ctx.stroke();
+    ctx.beginPath(); ctx.arc(x+r*0.1, y+r*0.36, r*0.1, Math.PI*0.05, Math.PI*0.9); ctx.stroke();
+  }
+  else if(ms === 'shy'){
+    ctx.lineWidth = r*0.06;
+    ctx.beginPath(); ctx.moveTo(x-r*0.12, y+r*0.42);
+    ctx.quadraticCurveTo(x, y+r*0.47, x+r*0.12, y+r*0.42); ctx.stroke();
+  }
   else { ctx.beginPath(); ctx.arc(x, y+r*0.3, r*0.21, Math.PI*0.15, Math.PI*0.85); ctx.stroke(); }
-  /* blush with a glint */
-  for(const g of [-1,1]){
-    ell(x+g*r*0.63, y+r*0.3, r*0.15, r*0.1, 'rgba(255,110,165,0.38)');
-    ell(x+g*r*0.58, y+r*0.27, r*0.045, r*0.03, 'rgba(255,255,255,0.6)');
+  /* mustache (grown men) */
+  if(ch.mustache){
+    ctx.strokeStyle = ch.mustache; ctx.lineWidth = r*0.11; ctx.lineCap = 'round';
+    for(const g of [-1,1]){
+      ctx.beginPath();
+      ctx.moveTo(x, y+r*0.24);
+      ctx.quadraticCurveTo(x+g*r*0.2, y+r*0.18, x+g*r*0.32, y+r*0.24);
+      ctx.quadraticCurveTo(x+g*r*0.4, y+r*0.28, x+g*r*0.38, y+r*0.14);
+      ctx.stroke();
+    }
+  }
+  /* blush with a glint (girls only) */
+  if(!ch.boy){
+    for(const g of [-1,1]){
+      ell(x+g*r*0.63, y+r*0.3, r*0.15, r*0.1, 'rgba(255,110,165,0.38)');
+      ell(x+g*r*0.58, y+r*0.27, r*0.045, r*0.03, 'rgba(255,255,255,0.6)');
+    }
   }
   /* sweat drops */
   if(m === 'nervous' || m === 'cracked'){
@@ -734,13 +804,17 @@ function drawDetective(x, y, ch, s, o){
   ell(x, y+3*u, 32*u*grown, 7.5*u, 'rgba(140,40,110,0.16)');
   /* hair that hangs below the chin goes BEHIND everything */
   drawHairBehind(x, hy, headR, ch, o);
-  /* legs */
+  /* hips + legs — a lower garment ALWAYS covers the hip zone (no gaps, ever) */
   const legCol = (of==='overalls'||of==='hoodie') ? shade(oc,0.72)
                : (of==='sweater') ? shade(oc,0.55) : skin;
+  const hipCol = (of==='sweater') ? shade(oc,0.55)
+               : (of==='overalls'||of==='hoodie') ? shade(oc,0.72)
+               : shade(oc,0.8);
+  fillRR(x-15*u, hipY-20*u, 30*u, 34*u, 9*u, hipCol);
   ctx.lineCap = 'round';
   ctx.strokeStyle = legCol; ctx.lineWidth = 10.5*u;
-  ctx.beginPath(); ctx.moveTo(x-9*u, hipY+6*u); ctx.lineTo(x-10*u, y-8*u+walk*0.4); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(x+9*u, hipY+6*u); ctx.lineTo(x+10*u, y-8*u-walk*0.4); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x-9*u, hipY+10*u); ctx.lineTo(x-10*u, y-8*u+walk*0.4); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x+9*u, hipY+10*u); ctx.lineTo(x+10*u, y-8*u-walk*0.4); ctx.stroke();
   /* glossy mary-jane shoes */
   for(const g of [-1,1]){
     const sy2 = y-4*u + walk*0.4*(-g);
@@ -1013,10 +1087,10 @@ function drawMuteButtons(){
 /* ---- creator ---- */
 let creatorCh = null;
 function optRow(label, y, value, onPrev, onNext){
-  txt(label, 26, y+22, 15, {align:'left', color:C('inkSoft'), bold:true});
-  drawButton('◀', 150, y, 44, 44, onPrev, {size:18, c1:'#fff', c2:'#efe6ff', ink:C('purpleDeep'), r:14});
-  txt(value, (198+404)/2, y+22, 17, {bold:true});
-  drawButton('▶', 410, y, 44, 44, onNext, {size:18, c1:'#fff', c2:'#efe6ff', ink:C('purpleDeep'), r:14});
+  txt(label, 26, y+19, 14, {align:'left', color:C('inkSoft'), bold:true});
+  drawButton('◀', 150, y, 44, 38, onPrev, {size:16, c1:'#fff', c2:'#efe6ff', ink:C('purpleDeep'), r:13});
+  txt(value, (198+404)/2, y+19, 16, {bold:true});
+  drawButton('▶', 410, y, 44, 38, onNext, {size:16, c1:'#fff', c2:'#efe6ff', ink:C('purpleDeep'), r:13});
 }
 function swatchRow(label, y, colors, cur, onPick){
   txt(label, 26, y+16, 15, {align:'left', color:C('inkSoft'), bold:true});
@@ -1039,23 +1113,27 @@ function drawCreator(){
   menuBG();
   if(!creatorCh) creatorCh = JSON.parse(JSON.stringify(save.custom));
   const ch = creatorCh;
-  txt('Make your detective!', W/2, 44, 28, {bold:true, color:C('purpleDeep')});
+  txt('Make your detective!', W/2, 38, 26, {bold:true, color:C('purpleDeep')});
+  if(!ch.eyes) ch.eyes = 'sparkle';
+  if(!ch.mouth) ch.mouth = 'smile';
   /* preview stage */
   softShadow(true, 14);
-  fillRR(W/2-105, 74, 210, 268, 26, 'rgba(255,255,255,0.75)');
+  fillRR(W/2-95, 60, 190, 222, 24, 'rgba(255,255,255,0.75)');
   softShadow(false);
-  ell(W/2, 320, 74, 13, C('purplePale'));
-  drawDetective(W/2, 316, ch, 1.35, {ph:2});
-  sparkle4(W/2-84, 100, 6, C('gold'), 0.7+Math.sin(time*3)*0.3);
-  sparkle4(W/2+86, 140, 5, C('pink'), 0.7+Math.cos(time*2.6)*0.3);
+  ell(W/2, 262, 62, 11, C('purplePale'));
+  drawDetective(W/2, 258, ch, 1.08, {ph:2});
+  sparkle4(W/2-76, 84, 6, C('gold'), 0.7+Math.sin(time*3)*0.3);
+  sparkle4(W/2+78, 120, 5, C('pink'), 0.7+Math.cos(time*2.6)*0.3);
   /* rows */
-  let y = 362;
-  swatchRow('Skin', y, SKINS, SKINS[ch.skin], c=>{ ch.skin = SKINS.indexOf(c); SFX.tap(); }); y += 50;
-  optRow('Hair', y, HAIRNAMES[ch.hair], ()=>{ ch.hair = cycle(HAIRSTYLES, ch.hair, -1); }, ()=>{ ch.hair = cycle(HAIRSTYLES, ch.hair, 1); }); y += 52;
-  swatchRow('Hair color', y, HAIRCOLORS, ch.hairColor, c=>{ ch.hairColor = c; SFX.tap(); }); y += 50;
-  optRow('Outfit', y, OUTFITNAMES[ch.outfit], ()=>{ ch.outfit = cycle(OUTFITS, ch.outfit, -1); }, ()=>{ ch.outfit = cycle(OUTFITS, ch.outfit, 1); }); y += 52;
-  swatchRow('Outfit color', y, OUTFITCOLORS, ch.outfitColor, c=>{ ch.outfitColor = c; SFX.tap(); }); y += 50;
-  optRow('Accessory', y, ACCNAMES[ch.acc], ()=>{ ch.acc = cycle(ACCS, ch.acc, -1); }, ()=>{ ch.acc = cycle(ACCS, ch.acc, 1); }); y += 60;
+  let y = 300;
+  swatchRow('Skin', y, SKINS, SKINS[ch.skin], c=>{ ch.skin = SKINS.indexOf(c); SFX.tap(); }); y += 44;
+  optRow('Hair', y, HAIRNAMES[ch.hair], ()=>{ ch.hair = cycle(HAIRSTYLES, ch.hair, -1); }, ()=>{ ch.hair = cycle(HAIRSTYLES, ch.hair, 1); }); y += 44;
+  swatchRow('Hair color', y, HAIRCOLORS, ch.hairColor, c=>{ ch.hairColor = c; SFX.tap(); }); y += 44;
+  optRow('Eyes', y, EYENAMES[ch.eyes], ()=>{ ch.eyes = cycle(EYESTYLES, ch.eyes, -1); }, ()=>{ ch.eyes = cycle(EYESTYLES, ch.eyes, 1); }); y += 44;
+  optRow('Mouth', y, MOUTHNAMES[ch.mouth], ()=>{ ch.mouth = cycle(MOUTHSTYLES, ch.mouth, -1); }, ()=>{ ch.mouth = cycle(MOUTHSTYLES, ch.mouth, 1); }); y += 44;
+  optRow('Outfit', y, OUTFITNAMES[ch.outfit], ()=>{ ch.outfit = cycle(OUTFITS, ch.outfit, -1); }, ()=>{ ch.outfit = cycle(OUTFITS, ch.outfit, 1); }); y += 44;
+  swatchRow('Outfit color', y, OUTFITCOLORS, ch.outfitColor, c=>{ ch.outfitColor = c; SFX.tap(); }); y += 44;
+  optRow('Accessory', y, ACCNAMES[ch.acc], ()=>{ ch.acc = cycle(ACCS, ch.acc, -1); }, ()=>{ ch.acc = cycle(ACCS, ch.acc, 1); }); y += 54;
   drawButton('🎲 Surprise me!', 30, y, 200, 54, ()=>{
     ch.skin = Math.floor(Math.random()*SKINS.length);
     ch.hair = HAIRSTYLES[Math.floor(Math.random()*HAIRSTYLES.length)];
@@ -1064,6 +1142,8 @@ function drawCreator(){
     ch.outfitColor = OUTFITCOLORS[Math.floor(Math.random()*OUTFITCOLORS.length)];
     ch.acc = ACCS[Math.floor(Math.random()*ACCS.length)];
     ch.accColor = OUTFITCOLORS[Math.floor(Math.random()*OUTFITCOLORS.length)];
+    ch.eyes = EYESTYLES[Math.floor(Math.random()*EYESTYLES.length)];
+    ch.mouth = MOUTHSTYLES[Math.floor(Math.random()*MOUTHSTYLES.length)];
     SFX.chime();
   }, {size:17, c1:'#cdb9ff', c2:'#a78bfa'});
   drawButton('Done! ✔', 250, y, 200, 54, ()=>{
@@ -1200,6 +1280,35 @@ function drawClueIcon(id, x, y, s){
     ctx.strokeStyle = 'rgba(120,90,40,0.5)'; ctx.lineWidth = 1*s;
     for(let i=0;i<4;i++){ ctx.beginPath(); ctx.moveTo(-6*s, -6*s+i*5*s); ctx.lineTo(6*s, -6*s+i*5*s); ctx.stroke(); }
     ctx.restore();
+  } else if(id === 'list'){
+    ctx.save(); ctx.translate(x,y); ctx.rotate(-0.06);
+    softShadow(true, 3);
+    fillRR(-11*s, -14*s, 22*s, 28*s, 2*s, '#fffdf4');
+    softShadow(false);
+    ctx.strokeStyle = 'rgba(90,60,120,0.6)'; ctx.lineWidth = 1.2*s;
+    for(let i=0;i<4;i++){ ctx.beginPath(); ctx.moveTo(-6*s, -7*s+i*5*s); ctx.lineTo(7*s, -7*s+i*5*s); ctx.stroke(); }
+    ell(-8.5*s, -7*s, 1.2*s, 1.2*s, C('pinkDeep'));
+    ell(-8.5*s, 3*s, 1.2*s, 1.2*s, C('pinkDeep'));
+    txt('✎', 6*s, 10*s, 8*s, {color:'#8a6420'});
+    ctx.restore();
+  } else if(id === 'receipt'){
+    ctx.save(); ctx.translate(x,y); ctx.rotate(0.08);
+    fillRR(-9*s, -13*s, 18*s, 26*s, 1*s, '#f4fbff');
+    ctx.strokeStyle = 'rgba(47,143,224,0.55)'; ctx.lineWidth = 1.1*s;
+    for(let i=0;i<3;i++){ ctx.beginPath(); ctx.moveTo(-5*s, -6*s+i*5*s); ctx.lineTo(5*s, -6*s+i*5*s); ctx.stroke(); }
+    txt('🪙', 0, 8*s, 7*s);
+    /* zigzag bottom */
+    ctx.beginPath(); ctx.moveTo(-9*s, 13*s);
+    for(let i=0;i<6;i++) ctx.lineTo(-9*s+(i+0.5)*3*s, (i%2?13:15)*s);
+    ctx.lineTo(9*s, 13*s); ctx.strokeStyle='#bcd8ee'; ctx.stroke();
+    ctx.restore();
+  } else if(id === 'mud'){
+    ell(x, y+2*s, 12*s, 8*s, '#8a6a4a', 0.9);
+    ell(x-4*s, y-2*s, 6*s, 4*s, '#7a5a3a', 0.9);
+    drawClueIcon('bootprint', x+2*s, y, 0.55);
+  } else if(id === 'star'){
+    star(x, y, 11*s, C('gold'), 0.2);
+    star(x, y, 5*s, '#fff3c9', 0.2);
   } else if(id === 'paw'){
     ell(x, y+3*s, 7*s, 6*s, C('gold'));
     for(let i=0;i<3;i++) ell(x-6*s+i*6*s, y-6*s, 2.6*s, 3*s, C('gold'));
@@ -1545,8 +1654,8 @@ const CASES = [
   ],
   emptyLines:['Just dust bunnies!','Nothing here… yet.','Nope. Keep looking!','Hmm, nothing suspicious.','Empty. The plot thickens!'],
   suspects:[
-    { id:'max', name:'Max', role:'the delivery boy',
-      look:{skin:3, hair:'bob', hairColor:'#2b2b33', outfit:'hoodie', outfitColor:'#5a8fd8', acc:'none', accColor:''},
+    { id:'max', name:'Max', role:'the delivery boy', home:'depot',
+      look:{skin:3, hair:'bob', hairColor:'#2b2b33', outfit:'hoodie', outfitColor:'#5a8fd8', acc:'none', accColor:'', boy:true, eyes:'round', mouth:'grin'},
       motive:'Mrs. Plum still owes him last week’s pocket money.',
       hello:'Oh! Um, hi detective. I just deliver the flour, honest!',
       innocentGiggle:'What?! Not me! I don’t even LIKE frosting. …Okay, I love frosting. But I didn’t do it!',
@@ -1557,7 +1666,7 @@ const CASES = [
         {id:'m2', text:'I never even went behind the counter. Pinky promise!',
          press:'The counter is for bakers only. I follow the rules!'}
       ]},
-    { id:'rosie', name:'Rosie', role:'the bakery helper',
+    { id:'rosie', name:'Rosie', role:'the bakery helper', home:'choir',
       look:{skin:0, hair:'braids', hairColor:'#a3502e', outfit:'overalls', outfitColor:'#ff8fc7', acc:'flower', accColor:'#ffd166'},
       motive:'She knows the secret recipe book is worth a LOT of coins.',
       hello:'Hello detective! Isn’t it awful? Poor, poor Mrs. Plum!',
@@ -1569,8 +1678,8 @@ const CASES = [
         {id:'r2', text:'I’d never peek in the secret book… well, maybe once. But never EVER steal it!',
          press:'It fell open by itself! I only saw the page about sprinkles!'}
       ]},
-    { id:'bruno', name:'Bruno Butterhorn', role:'rival baker', grown:true,
-      look:{skin:2, hair:'curly', hairColor:'#7a5230', outfit:'sweater', outfitColor:'#4e9e5f', acc:'none', accColor:''},
+    { id:'bruno', name:'Bruno Butterhorn', role:'rival baker', home:'butterhorn', grown:true,
+      look:{skin:2, hair:'curly', hairColor:'#7a5230', outfit:'sweater', outfitColor:'#4e9e5f', acc:'none', accColor:'', boy:true, mustache:'#5a3d24', eyes:'sleepy', mouth:'shy'},
       motive:'Has lost the Bake-Off to Mrs. Plum five years in a row.',
       hello:'Bruno Butterhorn, of Butterhorn Breads. I am a VERY busy man, detective.',
       protest:'How DARE you! I demand proper PROOF!',
@@ -1588,6 +1697,77 @@ const CASES = [
          press:'…Although her rainbow cake IS annoyingly, maddeningly magnificent.',
          pressNote:'Bruno is very jealous of the rainbow cake recipe.'}
       ]}
+  ],
+  /* ---- v2: leads point at city locations ---- */
+  leads:{
+    bootprint:{q:'Whose muddy boots are these?', unlocks:['depot']},
+    fabric:{q:'Who in town wears GREEN like this?', unlocks:['tailor']},
+    flyer:{q:'Who wants to BEAT Mrs. Plum?', unlocks:['townhall']}
+  },
+  /* documents & statements gathered around town */
+  evidence:{
+    signup:  {name:'Bake-Off sign-up list', icon:'list',
+      desc:'This year’s entries: Mrs. Plum, Bruno Butterhorn… and Rosie?!'},
+    gossip:  {name:'Five straight losses', icon:'note',
+      desc:'Town Hall gossip: Bruno has lost the Bake-Off to Mrs. Plum FIVE years in a row.'},
+    receipt: {name:'Apron receipt', icon:'receipt',
+      desc:'“1 green baker’s apron — sold to Butterhorn Breads.” The SAME green as the torn fabric!'},
+    mudmatch:{name:'Muddy depot yard', icon:'mud',
+      desc:'The depot mud matches the boot print — and Bruno stomped through it at closing time, heading up Maple Street!'},
+    tomsays: {name:'Old Tom’s statement', icon:'note',
+      desc:'“Max loaded his bike right in front of me till dark.” Max couldn’t have done it. ✔'},
+    melodysays:{name:'Gold-star attendance', icon:'star',
+      desc:'“Rosie sang until eight — she even earned her gold star.” Rosie couldn’t have done it. ✔'}
+  },
+  locations:[
+    { id:'townhall', name:'Town Hall', icon:'🏛️', mapX:330, mapY:196, set:'hall', deco:'#7cc4ff',
+      npcs:[{ id:'ledger', name:'Ms. Ledger', role:'town clerk', grown:true,
+        look:{skin:0, hair:'buns', hairColor:'#8a8a95', outfit:'sweater', outfitColor:'#4fb8ff', acc:'glasses', accColor:'#4a3b63', eyes:'gentle', mouth:'tiny'},
+        talk:[
+          {sp:'npc', mood:'smile', text:'A detective! How thrilling. How may Town Hall help?'},
+          {sp:'me',  mood:'ooh',   text:'Someone scribbled “BEAT PLUM!” on this Bake-Off flyer. Who entered this year?'},
+          {sp:'npc', mood:'ooh',   text:'The sign-up list? Right here, dear: Mrs. Plum, Bruno Butterhorn… and little Rosie!'},
+          {sp:'npc', mood:'giggle',text:'Between us — Bruno has lost to Mrs. Plum FIVE years straight. He was NOT gracious about it.'}
+        ],
+        needsClue:'flyer', gives:['signup','gossip'], names:['bruno','rosie'] }]},
+    { id:'tailor', name:'Stitch & Thread', icon:'🧵', mapX:96, mapY:420, set:'shop', deco:'#9b6dff',
+      npcs:[{ id:'button', name:'Mr. Button', role:'the tailor', grown:true,
+        look:{skin:1, hair:'bob', hairColor:'#7a7a85', outfit:'sweater', outfitColor:'#9b6dff', acc:'glasses', accColor:'#4a3b63', boy:true, mustache:'#7a7a85', eyes:'sleepy', mouth:'tiny'},
+        talk:[
+          {sp:'npc', mood:'smile', text:'Welcome, welcome! Buttons, bows, mending for all of Maple Falls.'},
+          {sp:'me',  mood:'ooh',   text:'Mr. Button, do you know this green cloth? It was snagged on a window latch.'},
+          {sp:'npc', mood:'shock', text:'Know it? I WOVE it! Finest apron green. I only ever sold ONE apron in this cloth…'},
+          {sp:'npc', mood:'ooh',   text:'…here is the receipt. “One green baker’s apron — Butterhorn Breads.”'}
+        ],
+        needsClue:'fabric', gives:['receipt'] }]},
+    { id:'depot', name:'Delivery Depot', icon:'📦', mapX:352, mapY:342, set:'yard', deco:'#f0a832',
+      npcs:[{ id:'tom', name:'Old Tom', role:'lives next door', grown:true,
+        look:{skin:2, hair:'curly', hairColor:'#e8e8ee', outfit:'overalls', outfitColor:'#8a6a4a', acc:'none', accColor:'', boy:true, mustache:'#e8e8ee', eyes:'sleepy', mouth:'shy'},
+        talk:[
+          {sp:'npc', mood:'smile', text:'Evenin’, detective. Watched this street forty years, I have.'},
+          {sp:'me',  mood:'ooh',   text:'Old Tom — did you see Max the delivery boy yesterday evening?'},
+          {sp:'npc', mood:'happy', text:'Aye! Lad loaded his bike right in front of me till dark. Waved at him myself.'},
+          {sp:'me',  mood:'ooh',   text:'And this muddy boot print — mud like the yard here?'},
+          {sp:'npc', mood:'ooh',   text:'That’s depot mud alright. And oh — BRUNO stomped straight through our yard at closing time, marching up Maple Street!'}
+        ],
+        needsClue:'bootprint', gives:['tomsays','mudmatch'], names:['max'], clears:'max' }]},
+    { id:'choir', name:'Choir Hall', icon:'🎶', mapX:300, mapY:492, set:'hall', deco:'#ff5fae',
+      npcs:[{ id:'melody', name:'Miss Melody', role:'choir teacher', grown:true,
+        look:{skin:4, hair:'wavy', hairColor:'#2b2b33', outfit:'dress', outfitColor:'#a78bfa', acc:'headband', accColor:'#ffd166', eyes:'gentle', mouth:'grin'},
+        talk:[
+          {sp:'npc', mood:'giggle',text:'Do-re-mi! A visitor! Are you joining the choir, dear?'},
+          {sp:'me',  mood:'smile', text:'Not today! Miss Melody — was Rosie at practice yesterday evening?'},
+          {sp:'npc', mood:'happy', text:'Every single minute! She sang until eight and earned her gold star. My best little songbird.'}
+        ],
+        gives:['melodysays'], clears:'rosie' }]},
+    { id:'butterhorn', name:'Butterhorn Breads', icon:'🥖', mapX:140, mapY:566, set:'bakery2', deco:'#4e9e5f', npcs:[] }
+  ],
+  truth:{ bruno:{ motive:'gossip', means:'receipt', opp:'mudmatch' } },
+  gather:[
+    {sp:'me',   mood:'smile', text:'Mrs. Plum, Max, Rosie, Mr. Butterhorn — thank you all for coming back to Sprinkle Bakery.'},
+    {sp:'me',   mood:'ooh',   text:'I have followed every lead in Maple Falls… and I am ready to name the thief.'},
+    {sp:'bruno',mood:'nervous', text:'Th-this is highly irregular! Some of us have BREAD to bake!'},
+    {sp:'me',   mood:'smile', text:'Oh, it won’t take long, Mr. Butterhorn. It won’t take long at all.'}
   ],
   culprit:'bruno', provingClue:'fabric',
   accuseIntro:[
@@ -1620,16 +1800,24 @@ const GEAR = {
    ============================================================ */
 let cp = null;      // current case progress
 function cpSave(){ save.caseProg = cp; persist(); }
-function startCase(n, replay){
+function beginCase(n, replay){
   const c = caseByLevel(n); if(!c) return;
   if(save.caseProg && save.caseProg.level === n && !replay){
     cp = save.caseProg;
+    /* upgrade older mid-case saves */
+    cp.leads = cp.leads || {}; cp.locs = cp.locs || {}; cp.people = cp.people || {};
+    cp.ev = cp.ev || {}; cp.pins = cp.pins || {}; cp.metNpc = cp.metNpc || {};
   } else {
     cp = { level:n, found:{}, opened:{}, inspected:{}, notes:[], pressed:{}, broken:{},
            curSt:{}, cracked:{}, cleared:{}, hintsUsed:0, wrongAccuse:0, wrongPresent:0,
-           talked:{}, arrived:false, fpUsed:false };
+           talked:{}, arrived:false, fpUsed:false,
+           leads:{}, locs:{}, people:{}, ev:{}, pins:{}, metNpc:{}, gathered:false };
     cpSave();
   }
+  state = 'city';
+}
+function enterScene(){
+  const c = curCase(); if(!c) return;
   spotAnim = {};
   for(const id in cp.opened) spotAnim[id] = 1;
   camX = 0; zoomMode = false; xrayOn = false; micOn = false;
@@ -1638,6 +1826,80 @@ function startCase(n, replay){
   if(!cp.arrived){
     startDlg(c.arrive.map(fmtLine), ()=>{ cp.arrived = true; cpSave(); });
   }
+}
+/* ---- v2 investigation helpers ---- */
+function locById(id){ const c = curCase(); return c && c.locations.find(l=>l.id===id); }
+function evInfo(id){
+  const c = curCase(); if(!c) return null;
+  const cl = c.clues.find(x=>x.id===id);
+  if(cl) return {id, name:cl.name, icon:cl.id, desc:cl.desc};
+  const e = c.evidence[id];
+  return e ? {id, name:e.name, icon:e.icon, desc:e.desc} : null;
+}
+function addEvidence(id){
+  if(cp.ev[id]) return false;
+  cp.ev[id] = 1; cpSave(); return true;
+}
+function addPerson(pid){
+  if(cp.people[pid]) return false;
+  cp.people[pid] = 1;
+  const c = curCase();
+  const s = c.suspects.find(x=>x.id===pid);
+  if(s){
+    cp.notes.push('📌 Person of interest: ' + s.name + ' (' + s.role + ')');
+    if(s.home && !cp.locs[s.home]){
+      cp.locs[s.home] = 1;
+      const L = locById(s.home);
+      if(L) cp.notes.push('🗺 ' + L.name + ' is now on the map.');
+    }
+  }
+  cpSave(); return true;
+}
+function unlockLocsFor(clueId){
+  const c = curCase();
+  const lead = c.leads && c.leads[clueId];
+  if(!lead) return;
+  cp.leads[clueId] = 1;
+  for(const lid of lead.unlocks){
+    if(!cp.locs[lid]){ cp.locs[lid] = 1; const L = locById(lid); if(L) cp.notes.push('🗺 New place to visit: ' + L.name + '!'); }
+  }
+  cpSave();
+}
+function knownPeople(){
+  const c = curCase(); if(!c) return [];
+  return c.suspects.filter(s=>cp.people[s.id]);
+}
+function pinsOf(pid){ return cp.pins[pid] || {}; }
+function fullyPinned(pid){
+  const pn = pinsOf(pid);
+  return pn.motive && pn.means && pn.opp;
+}
+function boardSuspect(){
+  return knownPeople().find(s=>fullyPinned(s.id)) || null;
+}
+function gatherReady(){
+  const c = curCase();
+  return c && fullyPinned(c.culprit) && cp.cracked[c.culprit];
+}
+function locHasNews(L){
+  /* does this location still have something to do? */
+  const c = curCase();
+  for(const n of L.npcs){ if(!cp.metNpc[n.id]) return true; }
+  const sus = c.suspects.find(s=>cp.people[s.id] && s.home === L.id);
+  if(sus && !cp.cracked[sus.id] && !cp.cleared[sus.id] && fullyPinned(sus.id)) return true;
+  if(sus && !cp.talked[sus.id]) return true;
+  return false;
+}
+function nextThread(){
+  const c = curCase(); if(!c) return '';
+  if(!allCluesFound()) return 'Search ' + c.place + ' — ' + (c.clues.length - cluesFound()) + ' clue' + (c.clues.length-cluesFound()>1?'s':'') + ' still hidden!';
+  const openLoc = c.locations.find(L=>cp.locs[L.id] && locHasNews(L));
+  if(openLoc) return 'Visit ' + openLoc.name + ' on the city map!';
+  const unpinned = knownPeople().filter(s=>!cp.cleared[s.id] && !fullyPinned(s.id));
+  if(unpinned.length) return 'Pin Motive, Means & Opportunity on the Mystery Board!';
+  if(!culpritCracked()){ const sus = boardSuspect(); if(sus) return 'Question ' + sus.name + ' at ' + (locById(sus.home)||{}).name + ' — break their story!'; }
+  if(gatherReady() && !cp.gathered) return 'Gather everyone from the Mystery Board! ⚖';
+  return 'Follow your nose, detective!';
 }
 function curCase(){ return cp ? caseByLevel(cp.level) : null; }
 function clueDone(id){ return cp && cp.found[id]; }
@@ -1680,6 +1942,7 @@ const TYPE_SPEED = 42;
 function fmtLine(ln){ return ln; }
 function speakerInfo(sp){
   const c = curCase() || caseByLevel(save.levelReached) || CASES[0];
+  if(sp === 'npc' && dlg && dlg.npc) return { name:dlg.npc.name, look:dlg.npc.look, grown:dlg.npc.grown };
   if(sp === 'me'){
     const sel = CHARACTERS[save.selected];
     return { name: (sel && !sel.critter) ? sel.name() : (PLAYER_TAG || 'Detective'),
@@ -1692,7 +1955,7 @@ function speakerInfo(sp){
   }
   return { name:'???', look:null };
 }
-function startDlg(lines, onDone){ dlg = { lines, i:0, t0:time, onDone }; }
+function startDlg(lines, onDone, npc){ dlg = { lines, i:0, t0:time, onDone, npc }; }
 function dlgAdvance(){
   if(!dlg) return;
   const ln = dlg.lines[dlg.i];
@@ -1837,14 +2100,14 @@ function drawOffice(){
     if(t >= 1){
       clientWalk = null;
       state = 'briefing';
-      startDlg(c.intro.map(fmtLine), ()=>{ state = 'travel'; });
+      startDlg(c.intro.map(fmtLine), ()=>{ beginCase(clientWalk ? clientWalk.level : save.levelReached); floaty('The bakery is marked on your map! 🗺', W/2, 160, C('pinkDeep'), 16); });
     }
   } else {
     const lvl = nextCaseLevel();
     const resume = save.caseProg && caseByLevel(save.caseProg.level);
     if(resume){
-      drawButton('🔍 Continue case: ' + caseByLevel(save.caseProg.level).title, 40, 662, W-80, 54, ()=>{
-        startTrans(()=>startCase(save.caseProg.level));
+      drawButton('🗺 Continue case: ' + caseByLevel(save.caseProg.level).title, 40, 662, W-80, 54, ()=>{
+        startTrans(()=>beginCase(save.caseProg.level));
       }, {size:15});
     } else if(lvl){
       const knock2 = Math.sin(time*3) > 0.86;
@@ -1866,8 +2129,8 @@ function drawBriefing(){
   drawOfficeRoom();
   const cc = caseByLevel(save.levelReached) || CASES[0];
   /* client + player stand behind the desk */
-  drawDetective(122, 706, cc.client.look, 1.02, {grown:cc.client.grown, mood: dlg ? dlg.lines[dlg.i].mood : 'smile'});
-  drawActiveDetective(362, 706, 1.0, {ph:3});
+  drawDetective(62, 640, cc.client.look, 0.95, {grown:cc.client.grown, mood: dlg ? dlg.lines[dlg.i].mood : 'smile'});
+  drawActiveDetective(420, 640, 0.92, {ph:3});
   fillRR(80, 540, 320, 100, 14, '#c99be0');
   fillRR(80, 616, 320, 24, 8, '#b184cc');
   /* case title card */
@@ -1882,55 +2145,431 @@ function drawBriefing(){
 /* ============================================================
    TRAVEL MAP
    ============================================================ */
-const MAP_STOPS = [
-  {icon:'🧁', name:'Sprinkle Bakery', x:120, y:610},
-  {icon:'🏠', name:'Cozy Cottage',    x:300, y:560},
-  {icon:'🌳', name:'Sunny Park',      x:170, y:470},
-  {icon:'🏫', name:'Maple School',    x:340, y:420},
-  {icon:'🐹', name:'Pet Palace',      x:150, y:330},
-  {icon:'🌷', name:'Rose Garden',     x:330, y:280},
-  {icon:'📚', name:'Little Library',  x:160, y:200},
-  {icon:'🧸', name:'Toy Shop',        x:340, y:150},
-  {icon:'🍳', name:'Big Kitchen',     x:220, y:90}
-];
-function drawTravel(){
-  ctx.fillStyle = vGrad(0,0,H,'#cfe8ff','#d8f2df');
-  ctx.fillRect(0,0,W,H);
-  drawAmbientSparkles();
-  ell(70, 80, 30, 30, '#fff3c9');
-  txt('Maple Street', W/2, 44, 30, {bold:true, color:C('purpleDeep')});
-  txt('tap where the mystery happened!', W/2, 76, 15, {color:C('inkSoft')});
-  /* winding road */
-  ctx.strokeStyle = '#f5e3c8'; ctx.lineWidth = 34; ctx.lineCap='round'; ctx.lineJoin='round';
-  ctx.beginPath(); ctx.moveTo(MAP_STOPS[0].x, MAP_STOPS[0].y);
-  for(let i=1;i<MAP_STOPS.length;i++) ctx.lineTo(MAP_STOPS[i].x, MAP_STOPS[i].y);
-  ctx.stroke();
-  ctx.strokeStyle = 'rgba(226,105,158,0.5)'; ctx.lineWidth = 3; ctx.setLineDash([12,12]);
-  ctx.beginPath(); ctx.moveTo(MAP_STOPS[0].x, MAP_STOPS[0].y);
-  for(let i=1;i<MAP_STOPS.length;i++) ctx.lineTo(MAP_STOPS[i].x, MAP_STOPS[i].y);
-  ctx.stroke(); ctx.setLineDash([]);
-  const c = curCase() || caseByLevel(save.levelReached) || CASES[0];
-  MAP_STOPS.forEach((st, i)=>{
-    const active = st.name === c.place;
-    const bob2 = active ? Math.sin(time*4)*7 : 0;
-    if(active){ ell(st.x, st.y+26, 30, 9, 'rgba(255,143,199,0.5)'); }
-    softShadow(true, 8);
-    ell(st.x, st.y - bob2, 30, 30, active ? '#fff' : 'rgba(255,255,255,0.6)');
-    softShadow(false);
-    txt(active ? st.icon : '🔒', st.x, st.y - bob2 + 1, active ? 26 : 18, {alpha: active?1:0.6});
-    if(active){
-      const ring = (time*1.2)%1;
-      ctx.strokeStyle = 'rgba(255,143,199,'+(1-ring)+')'; ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.arc(st.x, st.y-bob2, 32+ring*22, 0, Math.PI*2); ctx.stroke();
-      txt(st.name, st.x, st.y+46, 14, {bold:true, color:C('pinkDeep')});
-      uiButtons.push({x:st.x-44, y:st.y-44, w:88, h:88, cb:()=>{
-        startTrans(()=>startCase(c.n, false));
-      }});
-    }
+/* ============================================================
+   MAPLE FALLS — the city map (hub of the investigation)
+   ============================================================ */
+function drawBuilding(x, y, label, icon, col, st){
+  /* st: 'locked' | 'open' | 'alert' | 'done' */
+  const locked = st === 'locked';
+  const bw = 84, bh = 62;
+  softShadow(true, 8);
+  fillRR(x-bw/2, y-bh/2, bw, bh, 10, locked ? '#cfc4de' : '#fffdfe');
+  softShadow(false);
+  /* roof */
+  ctx.beginPath(); ctx.moveTo(x-bw/2-6, y-bh/2+4);
+  ctx.lineTo(x, y-bh/2-22); ctx.lineTo(x+bw/2+6, y-bh/2+4);
+  ctx.closePath(); ctx.fillStyle = locked ? '#b9addO'.replace('O','0') : col; ctx.fill();
+  /* door + windows */
+  fillRR(x-9, y+4, 18, 26, 6, locked ? '#b9add0' : shade(col, 0.8));
+  ell(x-24, y-2, 8, 8, locked ? '#dcd4ea' : '#d8ecff');
+  ell(x+24, y-2, 8, 8, locked ? '#dcd4ea' : '#d8ecff');
+  txt(locked ? '🔒' : icon, x, y-bh/2-2, 17);
+  txt(label, x, y+bh/2+14, 11.5, {bold:true, color: locked ? '#a99cc4' : C('ink')});
+  if(st === 'alert'){
+    const bob2 = Math.sin(time*5)*4;
+    ell(x+34, y-bh/2-14+bob2, 12, 12, C('pink'));
+    txt('❗', x+34, y-bh/2-13+bob2, 14, {bold:true, color:'#fff'});
+  }
+  if(st === 'done') txt('✔', x+34, y-bh/2-10, 15, {bold:true, color:'#3f9e6a'});
+}
+function drawCity(){
+  setMusic('cozy');
+  const c = curCase();
+  /* grass + river + roads */
+  ctx.fillStyle = vGrad(0, 0, H, '#cdedd6', '#b3e0c2'); ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = 'rgba(124,196,255,0.6)';
+  ctx.beginPath(); ctx.moveTo(W-130, -10);
+  ctx.quadraticCurveTo(W-40, 160, W-90, 320);
+  ctx.quadraticCurveTo(W-140, 470, W-40, H+10);
+  ctx.lineTo(W+10, H+10); ctx.lineTo(W+10, -10); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#f5e7cf'; ctx.lineWidth = 26; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.beginPath(); ctx.moveTo(70, 130); ctx.lineTo(150, 300); ctx.lineTo(96, 440); ctx.lineTo(140, 580); ctx.lineTo(300, 512); ctx.lineTo(352, 362); ctx.lineTo(330, 216); ctx.lineTo(150, 300); ctx.stroke();
+  ctx.strokeStyle = 'rgba(226,105,158,0.35)'; ctx.lineWidth = 2.5; ctx.setLineDash([10,10]);
+  ctx.beginPath(); ctx.moveTo(70, 130); ctx.lineTo(150, 300); ctx.lineTo(96, 440); ctx.lineTo(140, 580); ctx.lineTo(300, 512); ctx.lineTo(352, 362); ctx.lineTo(330, 216); ctx.lineTo(150, 300); ctx.stroke();
+  ctx.setLineDash([]);
+  /* park trees */
+  [[226,392],[258,420],[210,442],[420,120],[440,560]].forEach(t=>{
+    ell(t[0], t[1]+12, 12, 5, 'rgba(60,120,80,0.25)');
+    fillRR(t[0]-3, t[1]-4, 6, 14, 2, '#9a6b4a');
+    ell(t[0], t[1]-12, 15, 13, '#6ab475');
+    ell(t[0]-9, t[1]-4, 10, 9, '#7cc487');
+    ell(t[0]+9, t[1]-5, 10, 9, '#5ba368');
   });
-  drawButton('⬅ Office', 20, H-64, 120, 46, ()=>{ state='office'; }, {size:15, c1:'#fff', c2:'#efe6ff', ink:C('purpleDeep')});
+  txt('🗺 Maple Falls', W/2, 40, 28, {bold:true, color:C('purpleDeep'), outline:'#fff'});
+  txt(nextThread(), W/2, 72, 13, {bold:true, color:C('pinkDeep'), outline:'#fff'});
+  /* fixed stops: office + crime scene */
+  drawBuilding(70, 140, 'Your Office', '🕵️', '#9b6dff', 'open');
+  uiButtons.push({x:70-46, y:140-56, w:92, h:100, cb:()=>{ startTrans(()=>{ state='office'; }); }});
+  const sceneNews = !allCluesFound() || (gatherReady() && !cp.gathered);
+  drawBuilding(150, 300, c.place, '🧁', '#ff5fae', !allCluesFound() ? 'alert' : 'done');
+  uiButtons.push({x:150-46, y:300-56, w:92, h:100, cb:()=>{ startTrans(enterScene); }});
+  /* case locations */
+  for(const L of c.locations){
+    const unlocked = !!cp.locs[L.id];
+    const st = !unlocked ? 'locked' : locHasNews(L) ? 'alert' : 'done';
+    drawBuilding(L.mapX, L.mapY, unlocked ? L.name : '???', L.icon, L.deco || '#7cc4ff', st);
+    if(unlocked){
+      uiButtons.push({x:L.mapX-46, y:L.mapY-56, w:92, h:100, cb:()=>{ startTrans(()=>{ visitLoc(L.id); }); }});
+    } else {
+      uiButtons.push({x:L.mapX-46, y:L.mapY-56, w:92, h:100, cb:()=>{ SFX.hmm(); floaty('Find a lead that points here…', L.mapX, L.mapY-64, C('purpleDeep'), 13); }});
+    }
+  }
+  /* future-case locked facades */
+  drawBuilding(420, 216, '???', '🏫', '#8fe3c0', 'locked');
+  drawBuilding(60, 640, '???', '📚', '#ffd166', 'locked');
+  drawBuilding(400, 660, '???', '🐹', '#ff9ed2', 'locked');
+  drawButton('🧵 Mystery Board', W/2-105, H-64, 210, 50, ()=>{ state='board'; }, {size:15, c1:'#cdb9ff', c2:'#a78bfa'});
+  drawButton('📔', W-70, H-64, 52, 50, ()=>{ journalOpen = true; journalTab='case'; }, {size:18, r:18, c1:'#fff', c2:'#efe6ff'});
+  if(journalOpen) drawJournal();
+  drawDlg();
 }
 
+/* ============================================================
+   LOCATION VISITS — witnesses live in their own places
+   ============================================================ */
+let curLoc = null, talkFrom = 'scene';
+function visitLoc(id){
+  curLoc = id;
+  state = 'visit';
+}
+function drawVisitSet(L){
+  /* simple interior/exterior sets, W-wide, no panning */
+  const col = L.deco || '#7cc4ff';
+  if(L.set === 'yard'){
+    ctx.fillStyle = vGrad(0, 0, HORIZON, '#bfe4ff', '#e6f4ff'); ctx.fillRect(0, 0, W, HORIZON);
+    ell(84, 74, 26, 26, '#fff3c9');
+    ctx.fillStyle = vGrad(0, HORIZON, H-HORIZON, '#d9c9a8', '#c2ad85'); ctx.fillRect(0, HORIZON, W, H-HORIZON);
+    /* fence */
+    for(let k=0;k<12;k++){ fillRR(k*44+6, HORIZON-84, 18, 86, 4, '#c99a66'); }
+    fillRR(-10, HORIZON-64, W+20, 12, 0, '#b9884f');
+    fillRR(-10, HORIZON-30, W+20, 10, 0, '#b9884f');
+    /* crates + sacks */
+    box3d(40, 430, 90, 80, 18, '#e8b04a', '#f0c069', 8);
+    box3d(70, 380, 70, 60, 14, '#d99f3e', '#f0c069', 8);
+    txt('📦', 86, 470, 30);
+    /* the muddy patch */
+    ell(300, 600, 110, 40, '#8a6a4a', 0.8);
+    ell(280, 590, 60, 22, '#7a5a3a', 0.9);
+    drawClueIcon('bootprint', 300, 596, 1.3);
+    /* parked delivery bike */
+    ctx.strokeStyle = '#5b4488'; ctx.lineWidth = 5;
+    ctx.beginPath(); ctx.arc(370, 470, 24, 0, 7); ctx.stroke();
+    ctx.beginPath(); ctx.arc(430, 470, 24, 0, 7); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(370, 470); ctx.lineTo(398, 428); ctx.lineTo(430, 470); ctx.moveTo(398, 428); ctx.lineTo(388, 420); ctx.stroke();
+    fillRR(354, 418, 30, 20, 5, '#ff5fae');
+  } else if(L.set === 'shop'){
+    ctx.fillStyle = vGrad(0, 0, HORIZON, '#efe0ff', '#e2ccff'); ctx.fillRect(0, 0, W, HORIZON);
+    floorPlanks(0, '#e8d9f2', '#d7bfe8', '#ffffff');
+    /* fabric roll shelves */
+    for(let sh=0; sh<2; sh++){
+      softShadow(true, 6); fillRR(30, 90+sh*100, 260, 10, 4, '#b184cc'); softShadow(false);
+      for(let k=0;k<6;k++){
+        fillRR(40+k*42, 46+sh*100, 30, 44, 6, [C('pink'),C('purple'),C('blue'),C('mint'),C('gold'),'#4e9e5f'][k]);
+        ell(55+k*42, 46+sh*100, 15, 6, shade([C('pink'),C('purple'),C('blue'),C('mint'),C('gold'),'#4e9e5f'][k],1.2));
+      }
+    }
+    /* sewing counter + mannequin */
+    box3d(300, 220, 150, 76, 18, '#c99be0', '#e0c3f0', 10);
+    txt('🧵', 375, 258, 26);
+    fillRR(330, 420, 12, 120, 5, '#b184cc');
+    ell(336, 400, 30, 44, '#e2ccff');
+    fillRR(306, 356, 60, 30, 12, '#4e9e5f');
+    txt('the famous apron green!', 336, 560, 11, {color:C('inkSoft')});
+  } else if(L.set === 'bakery2'){
+    ctx.fillStyle = vGrad(0, 0, HORIZON, '#e8e2cf', '#d9d0b5'); ctx.fillRect(0, 0, W, HORIZON);
+    floorPlanks(0, '#d9c9a8', '#c9b28a', '#efe6d0');
+    /* bread shelves */
+    for(let sh=0; sh<2; sh++){
+      softShadow(true, 6); fillRR(40, 110+sh*90, 240, 10, 4, '#9a6b4a'); softShadow(false);
+      for(let k=0;k<4;k++){ ell(70+k*60, 96+sh*90, 24, 13, '#c9913e'); ell(70+k*60, 92+sh*90, 20, 9, '#e0ad5f'); }
+    }
+    /* green awning + oven */
+    for(let k=0;k<6;k++){ ctx.beginPath(); ctx.moveTo(k*80, 0); ctx.lineTo(k*80+40, 0); ctx.lineTo(k*80+20, 30); ctx.closePath(); ctx.fillStyle = k%2 ? '#4e9e5f' : '#e8f4e0'; ctx.fill(); }
+    box3d(310, 220, 140, 130, 20, '#8a8a95', '#b9b9c4', 12);
+    ell(380, 280, 34, 26, '#5d4a78');
+    ell(380, 280, 26, 18, '#ffca7a', 0.5);
+    txt('🥖 BUTTERHORN BREADS 🥖', W/2, 322, 13, {bold:true, color:'#4e9e5f'});
+  } else { /* hall */
+    ctx.fillStyle = vGrad(0, 0, HORIZON, shade(col, 1.35), shade(col, 1.1)); ctx.fillRect(0, 0, W, HORIZON);
+    floorPlanks(0, '#efe6f2', '#ddd0e2', '#ffffff');
+    /* columns */
+    for(const cx3 of [60, 420]){
+      softShadow(true, 8);
+      fillRR(cx3-16, 60, 32, HORIZON-90, 8, '#fffdfe');
+      softShadow(false);
+      fillRR(cx3-24, 48, 48, 16, 6, '#fffdfe');
+      fillRR(cx3-24, HORIZON-36, 48, 16, 6, '#fffdfe');
+    }
+    /* banner */
+    softShadow(true, 8);
+    fillRR(120, 60, 240, 56, 14, col);
+    softShadow(false);
+    txt(L.id === 'choir' ? '🎶 SING YOUR HEART OUT 🎶' : '🏛 MAPLE FALLS TOWN HALL', W/2, 90, 13, {bold:true, color:'#fff'});
+    /* desk */
+    box3d(150, 210, 180, 80, 20, '#c99be0', '#e0c3f0', 10);
+    if(L.id === 'choir'){ txt('🎹', 110, 260, 30); txt('🎵', 380, 180, 22); }
+    else txt('📜', 380, 250, 26);
+  }
+  /* vignette */
+  const vg2 = ctx.createRadialGradient(W/2, H/2, H*0.45, W/2, H/2, H*0.78);
+  vg2.addColorStop(0, 'rgba(60,30,80,0)'); vg2.addColorStop(1, 'rgba(60,30,80,0.13)');
+  ctx.fillStyle = vg2; ctx.fillRect(0, 0, W, H);
+}
+function npcMeet(L, n){
+  const needs = n.needsClue && !cp.found[n.needsClue];
+  if(needs){
+    startDlg([{sp:'npc', mood:'smile', text:'Hello, detective! Come back if you find something I can help with.'}], null, n);
+    return;
+  }
+  startDlg(n.talk.map(fmtLine), ()=>{
+    if(cp.metNpc[n.id]) return;
+    cp.metNpc[n.id] = 1;
+    let delay = 0;
+    (n.gives || []).forEach(evId=>{
+      if(addEvidence(evId)){ cp.notes.push('🧾 Evidence: ' + evInfo(evId).name); }
+    });
+    (n.names || []).forEach(pid=>{ addPerson(pid); });
+    if(n.clears){
+      cp.cleared[n.clears] = 1;
+      const sc = curCase().suspects.find(x=>x.id===n.clears);
+      if(sc) { cp.notes.push('✔ CLEARED: ' + sc.name + ' couldn’t have done it.'); floaty('✔ ' + sc.name + ' is CLEARED!', W/2, 200, '#3f9e6a', 20); SFX.chime(); }
+    }
+    cpSave();
+    if((n.gives||[]).length){
+      popup = { type:'evidence', evIds:(n.gives||[]).slice(), idx:0 };
+      SFX.coin();
+    }
+    if((n.names||[]).length){
+      floaty('📌 New person of interest — check the Board!', W/2, 240, C('pinkDeep'), 15);
+    }
+  }, n);
+}
+function drawVisit(){
+  setMusic('sleuth');
+  const L = locById(curLoc);
+  if(!L){ state = 'city'; return; }
+  drawVisitSet(L);
+  /* header */
+  softShadow(true, 8);
+  fillRR(12, 12, W-24, 48, 18, 'rgba(255,255,255,0.92)');
+  softShadow(false);
+  drawButton('⬅', 18, 17, 38, 38, ()=>{ startTrans(()=>{ state='city'; }); }, {size:16, c1:'#fff', c2:'#efe6ff', ink:C('purpleDeep'), r:13});
+  txt(L.icon + ' ' + L.name, W/2, 36, 16, {bold:true});
+  /* witnesses */
+  L.npcs.forEach((n, i)=>{
+    const x = 150 + i*160, y = 620;
+    drawDetective(x, y, n.look, n.grown ? 0.9 : 1.0, {grown:n.grown, ph:i*2, mood: dlg && dlg.npc === n ? (dlg.lines[dlg.i].sp==='npc' ? dlg.lines[dlg.i].mood : 'smile') : 'smile'});
+    softShadow(true, 6);
+    fillRR(x-62, y+14, 124, 44, 12, 'rgba(255,255,255,0.94)');
+    softShadow(false);
+    txt(n.name, x, y+31, 13, {bold:true});
+    txt(n.role, x, y+48, 10.5, {color:C('inkSoft')});
+    if(!cp.metNpc[n.id]){ const b2=Math.sin(time*4)*5; txt('💬', x+44, y-150+b2, 20); }
+    uiButtons.push({x:x-64, y:y-160, w:128, h:230, cb:()=>{ if(!dlg) npcMeet(L, n); }});
+  });
+  /* the suspect who lives here */
+  const sus = curCase().suspects.find(s=>s.home === L.id && cp.people[s.id]);
+  if(sus){
+    const x = L.npcs.length ? 330 : 240, y = 620;
+    const mood = cp.cracked[sus.id] ? 'cracked' : cp.talked[sus.id] ? suspectMood(sus) : 'smile';
+    drawDetective(x, y, sus.look, sus.grown ? 0.92 : 1.0, {grown:sus.grown, mood, ph:5});
+    softShadow(true, 6);
+    fillRR(x-62, y+14, 124, 44, 12, fullyPinned(sus.id) ? '#fff4d6' : 'rgba(255,255,255,0.94)');
+    softShadow(false);
+    txt(sus.name, x, y+31, 12.5, {bold:true});
+    txt(fullyPinned(sus.id) ? '⚠ SUSPECT' : sus.role, x, y+48, 10.5, {bold:fullyPinned(sus.id), color: fullyPinned(sus.id) ? C('pinkDeep') : C('inkSoft')});
+    drawButton('🤨 Question ' + sus.name.split(' ')[0], W/2-110, H-64, 220, 50, ()=>{
+      talkSel = sus.id; talkFrom = 'visit';
+      if(!cp.talked[sus.id]){
+        cp.talked[sus.id] = true;
+        cp.notes.push('🗣 ' + sus.name + ' — motive: ' + sus.motive);
+        cpSave();
+        startDlg([{sp:sus.id, mood:'smile', text:sus.hello}]);
+      }
+      state = 'talk';
+    }, {size:14, c1:'#a9d7ff', c2:'#7cc4ff'});
+  }
+  drawButton('📔', W-70, H-64, 52, 50, ()=>{ journalOpen = true; journalTab='evidence'; }, {size:18, r:18, c1:'#fff', c2:'#efe6ff'});
+  drawButton('🧵', W-128, H-64, 52, 50, ()=>{ state='board'; }, {size:18, r:18, c1:'#cdb9ff', c2:'#a78bfa'});
+  if(journalOpen) drawJournal();
+  if(popup) drawPopup();
+  drawDlg();
+}
+
+/* ============================================================
+   THE MYSTERY BOARD — pin Motive, Means & Opportunity
+   ============================================================ */
+let evPicker = null;   // {pid, slot}
+const SLOTS = [['motive','MOTIVE','Why would they?'], ['means','MEANS','How could they?'], ['opp','OPPORTUNITY','Could they be there?']];
+function drawBoard(){
+  setMusic('sleuth');
+  /* cork background */
+  ctx.fillStyle = vGrad(0, 0, H, '#e8b878', '#d9a25f'); ctx.fillRect(0, 0, W, H);
+  ctx.save(); ctx.globalAlpha = 0.08;
+  for(let i=0;i<160;i++){ ctx.fillStyle = i%2 ? '#000' : '#fff'; ctx.fillRect((i*67)%W, (i*113)%H, 2, 2); }
+  ctx.restore();
+  fillRR(10, 10, W-20, H-20, 18, 'rgba(0,0,0,0.06)');
+  txt('🧵 MYSTERY BOARD', W/2, 44, 26, {bold:true, color:'#5b3a1a'});
+  txt('a SUSPECT needs Motive + Means + Opportunity', W/2, 74, 12.5, {color:'#7a5a34', bold:true});
+  const ppl = knownPeople();
+  if(!ppl.length){
+    fillRR(60, 200, W-120, 140, 16, 'rgba(255,255,255,0.85)');
+    txt('No persons of interest yet.', W/2, 250, 16, {bold:true, color:'#7a5a34'});
+    txt('Follow your leads around the city!', W/2, 280, 13, {color:'#9a7a54'});
+  }
+  ppl.forEach((s2, i)=>{
+    const y = 96 + i*182;
+    const suspect = fullyPinned(s2.id), cleared2 = cp.cleared[s2.id];
+    /* card */
+    ctx.save(); ctx.translate(W/2, y+80); ctx.rotate(i%2 ? 0.012 : -0.012); ctx.translate(-W/2, -(y+80));
+    softShadow(true, 10);
+    fillRR(24, y, W-48, 168, 8, cleared2 ? '#eef8f0' : '#fffdf4');
+    softShadow(false);
+    ell(38, y+6, 4.5, 4.5, C('pinkDeep'));
+    ell(W-38, y+6, 4.5, 4.5, C('pinkDeep'));
+    drawPortrait(72, y+52, 36, {look:s2.look}, cleared2 ? 'happy' : suspect ? 'nervous' : 'smile');
+    txt(s2.name, 122, y+30, 16, {bold:true, align:'left', color:'#4a3018'});
+    txt(s2.role + '  ·  ' + ((locById(s2.home)||{}).name || ''), 122, y+50, 11, {align:'left', color:'#9a7a54'});
+    if(cleared2){
+      ctx.save(); ctx.translate(W/2+60, y+52); ctx.rotate(-0.12);
+      ctx.strokeStyle = '#3f9e6a'; ctx.lineWidth = 3.5;
+      rr(-74, -20, 148, 40, 8); ctx.stroke();
+      txt('CLEARED ✔', 0, 0, 20, {bold:true, color:'#3f9e6a'});
+      ctx.restore();
+    } else {
+      /* the three slots */
+      SLOTS.forEach((sl, k)=>{
+        const sx2 = 34 + k*140, sy2 = y+92;
+        const pinned = pinsOf(s2.id)[sl[0]];
+        fillRR(sx2, sy2, 128, 62, 10, pinned ? '#fff4d6' : 'rgba(0,0,0,0.05)');
+        ctx.strokeStyle = pinned ? C('goldDeep') : 'rgba(90,60,30,0.3)';
+        ctx.lineWidth = 2; ctx.setLineDash(pinned ? [] : [5,4]);
+        rr(sx2, sy2, 128, 62, 10); ctx.stroke(); ctx.setLineDash([]);
+        txt(sl[1], sx2+64, sy2+13, 9.5, {bold:true, color: pinned ? C('goldDeep') : '#9a7a54'});
+        if(pinned){
+          const info2 = evInfo(pinned);
+          drawClueIcon(info2.icon, sx2+22, sy2+38, 0.85);
+          wrapLines(info2.name, 9.5, 84).slice(0,2).forEach((l2,li)=> txt(l2, sx2+78, sy2+32+li*11, 9.5, {bold:true, color:'#4a3018'}));
+        } else {
+          txt('+', sx2+64, sy2+38, 22, {bold:true, color:'#b99a74'});
+          uiButtons.push({x:sx2, y:sy2, w:128, h:62, cb:()=>{
+            if(!Object.keys(cp.ev).length && !cluesFound()){ SFX.hmm(); floaty('Collect evidence first!', W/2, sy2, '#fff', 14); return; }
+            evPicker = { pid:s2.id, slot:sl[0], label:sl[1], q:sl[2] };
+          }});
+        }
+      });
+      if(suspect){
+        ctx.save(); ctx.translate(W/2, y+8); ctx.rotate(0.02);
+        txt('⚠ SUSPECT!', W/2 + 96, y+22, 15, {bold:true, color:C('pinkDeep')});
+        ctx.restore();
+        /* strings from slots to portrait */
+        ctx.strokeStyle = 'rgba(226,66,154,0.55)'; ctx.lineWidth = 2;
+        SLOTS.forEach((sl,k)=>{ ctx.beginPath(); ctx.moveTo(34+k*140+64, y+92); ctx.lineTo(72, y+80); ctx.stroke(); });
+      }
+    }
+    ctx.restore();
+  });
+  /* gather call-to-action */
+  if(gatherReady() && !cp.gathered){
+    const gl = 0.6 + Math.sin(time*4)*0.3;
+    drawButton('⚖ Gather everyone at ' + curCase().place + '!', 40, H-118, W-80, 52, ()=>{ startTrans(startGather); }, {size:15, c1:'#ffe3a3', c2:'#ffd166', ink:'#7a5a12'});
+    ctx.strokeStyle = 'rgba(255,209,102,'+gl+')'; ctx.lineWidth = 3.5;
+    rr(38, H-120, W-76, 56, 28); ctx.stroke();
+  } else if(boardSuspect() && !culpritCracked()){
+    txt('Now QUESTION your suspect — break their story!', W/2, H-96, 13.5, {bold:true, color:'#5b3a1a'});
+  }
+  drawButton('⬅ City', 20, H-60, 110, 46, ()=>{ state='city'; }, {size:15, c1:'#fff', c2:'#efe6ff', ink:C('purpleDeep')});
+  drawButton('📔 Journal', W-150, H-60, 130, 46, ()=>{ journalOpen = true; journalTab='evidence'; }, {size:14, c1:'#cdb9ff', c2:'#a78bfa'});
+  if(evPicker) drawEvPicker();
+  if(journalOpen) drawJournal();
+  drawDlg();
+}
+function drawEvPicker(){
+  ctx.fillStyle = 'rgba(60,40,90,0.55)'; ctx.fillRect(0, 0, W, H);
+  const c = curCase();
+  const ids = [...c.clues.filter(cl=>cp.found[cl.id]).map(cl=>cl.id), ...Object.keys(cp.ev)];
+  const cols = 3, rows = Math.ceil(ids.length/cols);
+  const bw = 380, bh = 150 + rows*118, bx = (W-bw)/2, by = Math.max(30, (H-bh)/2 - 20);
+  softShadow(true, 20);
+  fillRR(bx, by, bw, bh, 24, '#fff');
+  softShadow(false);
+  txt(evPicker.label + ' — ' + evPicker.q, W/2, by+34, 15, {bold:true, color:C('purpleDeep')});
+  txt('pick the evidence that proves it', W/2, by+56, 12, {color:C('inkSoft')});
+  ids.forEach((id2, i)=>{
+    const col = i%cols, row = Math.floor(i/cols);
+    const x = bx + 22 + col*116, y = by + 76 + row*118;
+    const info2 = evInfo(id2);
+    fillRR(x, y, 104, 104, 12, C('purplePale'));
+    drawClueIcon(info2.icon, x+52, y+36, 1.15);
+    wrapLines(info2.name, 10, 94).slice(0,2).forEach((l2,li)=> txt(l2, x+52, y+72+li*12, 10, {bold:true}));
+    uiButtons.push({x, y, w:104, h:104, cb:()=>{ tryPin(evPicker.pid, evPicker.slot, id2); }});
+  });
+  drawButton('Cancel', W/2-64, by+bh-50, 128, 38, ()=>{ evPicker = null; }, {size:14, c1:'#fff', c2:'#efe6ff', ink:C('purpleDeep')});
+}
+function tryPin(pid, slot, evId){
+  const c = curCase();
+  const truth = (c.truth[pid] || {})[slot];
+  if(truth === evId){
+    cp.pins[pid] = cp.pins[pid] || {};
+    cp.pins[pid][slot] = evId;
+    cp.notes.push('📌 Pinned ' + slot.toUpperCase() + ' on ' + (c.suspects.find(x=>x.id===pid)||{}).name + ': ' + evInfo(evId).name);
+    cpSave();
+    evPicker = null;
+    SFX.stamp(); sparkBurst(W/2, H/2, C('gold'), 16);
+    if(fullyPinned(pid)){
+      SFX.sting(); shake = 0.4;
+      const s2 = c.suspects.find(x=>x.id===pid);
+      floaty('⚠ ' + s2.name + ' is now a SUSPECT!', W/2, 200, '#fff', 20);
+      cp.notes.push('⚠ SUSPECT: ' + s2.name + ' has motive, means AND opportunity!');
+      cpSave();
+    }
+  } else {
+    cp.wrongPresent++;
+    cpSave();
+    SFX.hmm();
+    floaty('Hmm… does that really prove it?', W/2, H/2-40, '#fff', 15);
+    if(cp.wrongPresent >= 3){
+      floaty('Tip: read each evidence card in the Journal…', W/2, H/2, '#ffd6ea', 13);
+    }
+  }
+}
+
+/* ============================================================
+   THE GATHERING — a proper Poirot finale
+   ============================================================ */
+let gatherT = 0;
+function startGather(){
+  cp.gathered = true; cpSave();
+  gatherT = 0;
+  state = 'gather';
+}
+function drawGather(){
+  setMusic('tense');
+  gatherT += lastDt;
+  drawSceneWorld(0);
+  ctx.fillStyle = 'rgba(45,25,70,0.35)'; ctx.fillRect(0, 0, W, H);
+  txt('THE GATHERING', W/2, 60, 26, {bold:true, color:'#fff', outline:'rgba(45,25,70,0.6)'});
+  const c = curCase();
+  const folks = [{look:c.client.look, grown:c.client.grown}, ...knownPeople().map(s2=>({look:s2.look, grown:s2.grown, id:s2.id}))];
+  folks.forEach((f, i)=>{
+    const t = Math.min(1, Math.max(0, (gatherT - i*0.45) / 0.9));
+    if(t <= 0) return;
+    const e = 1 - Math.pow(1-t, 2.2);
+    const tx2 = W + 60 - (W + 60 - (88 + i*104)) * e;
+    const mood = f.id === c.culprit ? 'nervous' : 'smile';
+    drawDetective(tx2, 596, f.look, f.grown ? 0.8 : 0.88, {grown:f.grown, walk:t<1, mood, ph:i});
+  });
+  drawActiveDetective(W/2, 730, 1.0, {pose:'point', ph:9});
+  if(gatherT > folks.length*0.45 + 1.1 && !dlg && !cp.gatherTalked){
+    cp.gatherTalked = true; cpSave();
+    startDlg(c.gather.map(fmtLine), ()=>{
+      cp.accuseIntroDone = true; cpSave();
+      state = 'accuse'; accusePick = null;
+    });
+  }
+  if(cp.gatherTalked && !dlg && state === 'gather'){ state = 'accuse'; accusePick = null; }
+  drawDlg();
+}
 /* ============================================================
    CASEBOOK (level select)
    ============================================================ */
@@ -1963,7 +2602,7 @@ function drawCasebook(){
     }
     uiButtons.push({x, y, w:cw2, h:ch2, cb:()=>{
       if(caseByLevel(n) && (n <= save.levelReached)){
-        startTrans(()=>startCase(n, !!save.solved[n]));
+        startTrans(()=>beginCase(n, !!save.solved[n]));
       } else if(n <= save.levelReached || !caseByLevel(n)){
         SFX.hmm(); floaty('Coming soon!', x+cw2/2, y, C('purpleDeep'), 15);
       } else { SFX.hmm(); floaty('Solve case '+save.levelReached+' first!', W/2, y, C('pinkDeep'), 15); }
@@ -2013,7 +2652,7 @@ function drawShop(){
 let popup = null;             // {type:'clue'|'herring', ...}
 let lastFind = 0, nextHint = 45, hintPulse = null;
 let micPing = null;
-let journalOpen = false, journalTab = 'clues';
+let journalOpen = false, journalTab = 'evidence';
 let shake = 0;
 
 function hintDelay(){
@@ -2167,6 +2806,7 @@ function tapSpot(s, p){
 function collectClue(cl, p){
   cp.found[cl.id] = true;
   cp.notes.push('🔎 Found: ' + cl.name);
+  unlockLocsFor(cl.id);
   cpSave();
   lastFind = time; nextHint = hintDelay();
   SFX.chime();
@@ -2188,14 +2828,30 @@ function drawPopup(){
     sparkle4(W/2-44, by+140, 5, C('pink'), 0.7+Math.cos(time*3)*0.3);
     txt(cl.name, W/2, by+176, 20, {bold:true});
     wrapLines(cl.desc, 14, bw-50).slice(0,3).forEach((l,i)=> txt(l, W/2, by+202+i*19, 14, {color:C('inkSoft')}));
+    const lead = curCase().leads && curCase().leads[cl.id];
+    if(lead) txt('🗺 NEW LEAD: ' + lead.q, W/2, by+258, 12.5, {bold:true, color:C('blueDeep')});
     drawButton('Got it! 📔', W/2-80, by+bh-52, 160, 42, ()=>{
       popup = null;
+      if(lead) floaty('New place unlocked on the city map! 🗺', W/2, H/2, C('blueDeep'), 16);
       if(allCluesFound()){
-        floaty('All clues found! Question the suspects! 🗣', W/2, H/2, C('pinkDeep'), 18);
+        floaty('All clues found! Follow your leads in the city! 🗺', W/2, H/2-40, C('pinkDeep'), 17);
         cp.notes.push('⭐ All clues collected!');
         cpSave();
         SFX.fanfare();
       }
+    });
+  } else if(popup.type === 'evidence'){
+    const evId = popup.evIds[popup.idx];
+    const info2 = evInfo(evId);
+    txt('🧾 EVIDENCE! 🧾', W/2, by+36, 22, {bold:true, color:C('blueDeep')});
+    ell(W/2, by+110, 46, 46, C('bluePale'));
+    drawClueIcon(info2.icon, W/2, by+110, 1.8);
+    sparkle4(W/2+40, by+76, 7, C('gold'), 0.7+Math.sin(time*4)*0.3);
+    txt(info2.name, W/2, by+176, 19, {bold:true});
+    wrapLines(info2.desc, 13.5, bw-50).slice(0,4).forEach((l,i)=> txt(l, W/2, by+200+i*18, 13.5, {color:C('inkSoft')}));
+    drawButton(popup.idx < popup.evIds.length-1 ? 'Next ▶' : 'To the Board! 🧵', W/2-90, by+bh-52, 180, 42, ()=>{
+      if(popup.idx < popup.evIds.length-1){ popup.idx++; SFX.tap(); }
+      else popup = null;
     });
   } else {
     const h = popup.h;
@@ -2213,7 +2869,7 @@ function drawSceneHUD(c){
   softShadow(true, 8);
   fillRR(12, 12, W-24, 48, 18, 'rgba(255,255,255,0.92)');
   softShadow(false);
-  drawButton('⬅', 18, 17, 38, 38, ()=>{ startTrans(()=>{ state='office'; }); }, {size:16, c1:'#fff', c2:'#efe6ff', ink:C('purpleDeep'), r:13});
+  drawButton('⬅', 18, 17, 38, 38, ()=>{ startTrans(()=>{ state='city'; }); }, {size:16, c1:'#fff', c2:'#efe6ff', ink:C('purpleDeep'), r:13});
   txt(c.place, W/2 - 26, 36, 15, {bold:true});
   const found = cluesFound(), total = c.clues.length;
   fillRR(W-120, 18, 96, 36, 14, found===total ? '#fff4d6' : C('purplePale'));
@@ -2250,21 +2906,9 @@ function drawSceneHUD(c){
     }, {size:18, r:16, c1:'#ffe3a3', c2:'#ffd166'});
   }
   /* bottom bar */
-  const ready = allCluesFound() && culpritCracked();
-  drawButton('🗣 Suspects', 16, H-64, 142, 50, ()=>{ state='talk'; talkSel = null; }, {size:15, c1:'#a9d7ff', c2:'#7cc4ff'});
-  drawButton('📔 Journal', 168, H-64, 142, 50, ()=>{ journalOpen = true; journalTab='clues'; }, {size:15, c1:'#cdb9ff', c2:'#a78bfa'});
-  drawButton('⚖ Accuse!', 322, H-64, 142, 50, ()=>{ enterAccuse(); }, {size:15,
-    disabled: !ready,
-    disabledCb: ()=>{
-      SFX.hmm();
-      floaty(!allCluesFound() ? 'Find ALL the clues first!' : 'Someone is still hiding a lie… present clues!', W/2, H-100, C('pinkDeep'), 16);
-    },
-    c1:'#ffb3a3', c2:'#ff8f8f'});
-  if(ready){
-    const gl = 0.5 + Math.sin(time*4)*0.4;
-    ctx.strokeStyle = 'rgba(255,209,102,'+gl+')'; ctx.lineWidth = 3;
-    rr(320, H-66, 146, 54, 27); ctx.stroke();
-  }
+  drawButton('🗺 City map', 16, H-64, 142, 50, ()=>{ startTrans(()=>{ state='city'; }); }, {size:15, c1:'#a9d7ff', c2:'#7cc4ff'});
+  drawButton('📔 Journal', 168, H-64, 142, 50, ()=>{ journalOpen = true; journalTab='evidence'; }, {size:15, c1:'#cdb9ff', c2:'#a78bfa'});
+  drawButton('🧵 Board', 322, H-64, 142, 50, ()=>{ state='board'; }, {size:15, c1:'#cdb9ff', c2:'#a78bfa'});
 }
 function tutorialOverlays(){
   if(dlg || popup || journalOpen) return;
@@ -2313,14 +2957,15 @@ function suspectMood(s){
 }
 function drawJournal(){
   ctx.fillStyle = 'rgba(60,40,90,0.5)'; ctx.fillRect(0,0,W,H);
-  const bx = 24, by = 70, bw = W-48, bh = H-170;
+  const bx = 24, by = 60, bw = W-48, bh = H-150;
   softShadow(true, 20);
   fillRR(bx, by, bw, bh, 24, '#fffdf6');
   softShadow(false);
   fillRR(bx, by, bw, 62, 24, C('purplePale'));
   fillRR(bx, by+40, bw, 24, 0, C('purplePale'));
-  txt('📔 Detective Journal', bx+bw/2, by+30, 21, {bold:true, color:C('purpleDeep')});
-  const tabs = [['clues','🔎 Clues'],['suspects','🕵️ Suspects'],['notes','📝 Notes']];
+  txt('📔 Detective Journal', bx+bw/2, by+24, 20, {bold:true, color:C('purpleDeep')});
+  txt('👉 ' + nextThread(), bx+bw/2, by+48, 11.5, {bold:true, color:C('pinkDeep')});
+  const tabs = [['evidence','🧾 Evidence'],['people','📌 People'],['case','🗺 Case']];
   tabs.forEach((t, i)=>{
     const tx = bx + 18 + i*(bw-36)/3, tw = (bw-36)/3 - 8;
     drawButton(t[1], tx, by+70, tw, 38, ()=>{ journalTab = t[0]; }, {size:13, r:14,
@@ -2328,48 +2973,64 @@ function drawJournal(){
       ink: journalTab===t[0] ? '#fff' : C('purpleDeep')});
   });
   const c = curCase();
-  const cy0 = by + 124;
-  if(journalTab === 'clues'){
-    c.clues.forEach((cl, i)=>{
-      const y = cy0 + i*118;
-      fillRR(bx+18, y, bw-36, 106, 16, cp.found[cl.id] ? '#fff' : '#f3eee6');
-      ctx.strokeStyle = 'rgba(124,92,191,0.2)'; ctx.lineWidth = 2; rr(bx+18, y, bw-36, 106, 16); ctx.stroke();
-      if(cp.found[cl.id]){
-        ell(bx+62, y+52, 32, 32, C('purplePale'));
-        drawClueIcon(cl.id, bx+62, y+52, 1.35);
-        txt(cl.name, bx+108, y+26, 16, {bold:true, align:'left'});
-        wrapLines(cl.desc, 12.5, bw-160).slice(0,3).forEach((l,li)=> txt(l, bx+108, y+50+li*17, 12.5, {align:'left', color:C('inkSoft')}));
-      } else {
-        txt('?', bx+62, y+54, 40, {bold:true, color:'#d8cbb8'});
-        txt('Clue not found yet…', bx+108, y+52, 15, {align:'left', color:'#b8ab98'});
-      }
+  const cy0 = by + 122;
+  if(journalTab === 'evidence'){
+    const ids = [...c.clues.filter(cl=>cp.found[cl.id]).map(cl=>cl.id), ...Object.keys(cp.ev)];
+    if(!ids.length) txt('No evidence yet. Go snoop!', bx+bw/2, cy0+40, 15, {color:'#b8ab98'});
+    ids.slice(0,9).forEach((id2, i)=>{
+      const col = i%3, row = Math.floor(i/3);
+      const x = bx + 20 + col*((bw-40)/3), y = cy0 + row*150, cw3 = (bw-40)/3 - 8;
+      const info2 = evInfo(id2);
+      fillRR(x, y, cw3, 138, 14, '#fff');
+      ctx.strokeStyle = 'rgba(124,92,191,0.2)'; ctx.lineWidth = 2; rr(x, y, cw3, 138, 14); ctx.stroke();
+      drawClueIcon(info2.icon, x+cw3/2, y+38, 1.15);
+      wrapLines(info2.name, 10.5, cw3-14).slice(0,2).forEach((l2,li)=> txt(l2, x+cw3/2, y+80+li*13, 10.5, {bold:true}));
+      uiButtons.push({x, y, w:cw3, h:138, cb:()=>{ popup = { type:'evidence', evIds:[id2], idx:0 }; }});
     });
-  } else if(journalTab === 'suspects'){
-    c.suspects.forEach((s, i)=>{
+  } else if(journalTab === 'people'){
+    const ppl = knownPeople();
+    if(!ppl.length) txt('No persons of interest yet.\nFollow leads around Maple Falls!', bx+bw/2, cy0+40, 14, {color:'#b8ab98'});
+    ppl.forEach((s2, i)=>{
       const y = cy0 + i*118;
-      const talked = cp.talked[s.id];
-      fillRR(bx+18, y, bw-36, 106, 16, '#fff');
+      fillRR(bx+18, y, bw-36, 106, 16, cp.cleared[s2.id] ? '#eef8f0' : '#fff');
       ctx.strokeStyle = 'rgba(124,92,191,0.2)'; ctx.lineWidth = 2; rr(bx+18, y, bw-36, 106, 16); ctx.stroke();
-      drawPortrait(bx+62, y+52, 34, {look:s.look}, talked ? suspectMood(s) : 'smile');
-      txt(s.name, bx+110, y+22, 16, {bold:true, align:'left'});
-      txt(s.role, bx+110, y+41, 12, {align:'left', color:C('inkSoft')});
-      if(talked){
-        wrapLines('Motive: ' + s.motive, 11.5, bw-170).slice(0,2).forEach((l,li)=> txt(l, bx+110, y+60+li*15, 11.5, {align:'left', color:C('purpleDeep')}));
-        if(cp.cleared[s.id]) txt('🖐️ prints say: INNOCENT ✔', bx+110, y+94, 12, {align:'left', bold:true, color:'#3f9e6a'});
-        else if(cp.cracked[s.id]) txt('💥 story CRACKED!', bx+110, y+94, 12, {align:'left', bold:true, color:C('pinkDeep')});
-        else if(suspectMood(s)==='nervous') txt('😰 getting nervous…', bx+110, y+94, 12, {align:'left', bold:true, color:C('goldDeep')});
-        else txt('😌 calm', bx+110, y+94, 12, {align:'left', color:C('inkSoft')});
+      drawPortrait(bx+62, y+52, 34, {look:s2.look}, cp.cleared[s2.id] ? 'happy' : cp.cracked[s2.id] ? 'cracked' : 'smile');
+      txt(s2.name, bx+110, y+22, 16, {bold:true, align:'left'});
+      txt(s2.role + '  ·  ' + ((locById(s2.home)||{}).name||''), bx+110, y+41, 11, {align:'left', color:C('inkSoft')});
+      if(cp.cleared[s2.id]){
+        txt('CLEARED ✔ — couldn’t have done it', bx+110, y+68, 12.5, {align:'left', bold:true, color:'#3f9e6a'});
       } else {
-        txt('Not questioned yet…', bx+110, y+66, 13, {align:'left', color:'#b8ab98'});
+        const pn = pinsOf(s2.id);
+        [['motive','M'],['means','Me'],['opp','O']].forEach((sl,k)=>{
+          const px2 = bx+112+k*66;
+          fillRR(px2, y+58, 58, 24, 10, pn[sl[0]] ? '#fff4d6' : 'rgba(0,0,0,0.05)');
+          txt((pn[sl[0]] ? '✔ ' : '· ') + sl[1], px2+29, y+70, 11, {bold:true, color: pn[sl[0]] ? C('goldDeep') : C('inkSoft')});
+        });
+        if(cp.cracked[s2.id]) txt('💥 story CRACKED!', bx+110, y+94, 12, {align:'left', bold:true, color:C('pinkDeep')});
+        else if(fullyPinned(s2.id)) txt('⚠ SUSPECT — break their story!', bx+110, y+94, 12, {align:'left', bold:true, color:C('pinkDeep')});
       }
     });
   } else {
-    if(!cp.notes.length) txt('No notes yet. Go snoop!', bx+bw/2, cy0+40, 15, {color:'#b8ab98'});
-    cp.notes.slice(-14).forEach((n, i)=>{
-      txt('• ' + n, bx+30, cy0 + 8 + i*26, 13.5, {align:'left', color:C('ink')});
+    /* case tab: leads + notes */
+    let ly = cy0;
+    txt('LEADS', bx+30, ly+6, 12, {align:'left', bold:true, color:C('inkSoft')}); ly += 22;
+    let anyLead = false;
+    for(const clId in (c.leads||{})){
+      if(!cp.found[clId]) continue;
+      anyLead = true;
+      const lead = c.leads[clId];
+      const done = lead.unlocks.every(lid=>{ const L = locById(lid); return L && cp.locs[lid] && !locHasNews(L); });
+      txt((done ? '✔ ' : '❗ ') + lead.q, bx+30, ly, 12.5, {align:'left', bold:true, color: done ? '#3f9e6a' : C('blueDeep')}); ly += 22;
+    }
+    if(!anyLead){ txt('Find clues to open leads…', bx+30, ly, 12.5, {align:'left', color:'#b8ab98'}); ly += 22; }
+    ly += 8;
+    txt('NOTES', bx+30, ly, 12, {align:'left', bold:true, color:C('inkSoft')}); ly += 20;
+    cp.notes.slice(-11).forEach(n=>{
+      wrapLines('• ' + n, 12, bw-60).slice(0,2).forEach(l2=>{ txt(l2, bx+30, ly, 12, {align:'left', color:C('ink')}); ly += 18; });
     });
   }
-  drawButton('Close ✖', bx+bw/2-70, by+bh-56, 140, 42, ()=>{ journalOpen = false; }, {size:15});
+  drawButton('Close ✖', bx+bw/2-70, by+bh-54, 140, 42, ()=>{ journalOpen = false; }, {size:15});
+  if(popup) drawPopup();
 }
 
 /* ============================================================
@@ -2390,39 +3051,15 @@ function isRevealed(s, t){
 }
 function drawTalk(){
   setMusic('sleuth');
-  drawSceneWorld(camX);
+  if(talkFrom === 'visit' && locById(curLoc)) drawVisitSet(locById(curLoc));
+  else drawSceneWorld(camX);
   ctx.fillStyle = 'rgba(74,59,99,0.55)'; ctx.fillRect(0,0,W,H);
   const c = curCase();
   if(!talkSel){
-    txt('Who do you want to question?', W/2, 60, 21, {bold:true, color:'#fff'});
-    c.suspects.forEach((s, i)=>{
-      const x = 90 + i*150, y = 420;
-      const mood = cp.talked[s.id] ? suspectMood(s) : 'smile';
-      drawDetective(x, y, s.look, s.grown ? 0.78 : 0.88, {grown:s.grown, mood, ph:i*2, still:false});
-      softShadow(true, 8);
-      fillRR(x-64, y+24, 128, 54, 14, 'rgba(255,255,255,0.94)');
-      softShadow(false);
-      txt(s.name, x, y+42, 14, {bold:true});
-      txt(s.role, x, y+62, 11, {color:C('inkSoft')});
-      if(cp.cleared[s.id]) txt('INNOCENT ✔', x, y+8, 13, {bold:true, color:'#8fe3c0'});
-      if(cp.cracked[s.id]) txt('💥', x+48, y-120, 22);
-      uiButtons.push({x:x-70, y:y-170, w:140, h:250, cb:()=>{
-        talkSel = s.id;
-        if(!cp.talked[s.id]){
-          cp.talked[s.id] = true;
-          cp.notes.push('🗣 ' + s.name + ' — motive: ' + s.motive);
-          cpSave();
-          startDlg([{sp:s.id, mood:'smile', text:s.hello}]);
-        }
-      }});
-    });
-    drawButton('📔 Journal', 168, H-64, 142, 50, ()=>{ journalOpen = true; }, {size:15, c1:'#cdb9ff', c2:'#a78bfa'});
-    drawButton('⬅ Back to snooping', 16, H-64, 142, 50, ()=>{ state='scene'; }, {size:13, c1:'#fff', c2:'#efe6ff', ink:C('purpleDeep')});
-    const ready = allCluesFound() && culpritCracked();
-    drawButton('⚖ Accuse!', 322, H-64, 142, 50, ()=>{ enterAccuse(); }, {size:15, disabled:!ready,
-      disabledCb:()=>{ SFX.hmm(); floaty(!allCluesFound() ? 'Find ALL the clues first!' : 'Break their story with clues first!', W/2, H-100, '#fff', 16); },
-      c1:'#ffb3a3', c2:'#ff8f8f'});
-  } else {
+    state = (talkFrom === 'visit' && curLoc) ? 'visit' : 'city';
+    return;
+  }
+  {
     const s = c.suspects.find(x=>x.id === talkSel);
     const sts = visibleStatements(s);
     if(cp.curSt[s.id] === undefined) cp.curSt[s.id] = 0;
@@ -2495,7 +3132,7 @@ function presentClue(s, st, clId){
     }
     startDlg(lines, ()=>{
       if(st.becomes){ cp.curSt[s.id] = 0; cpSave(); }
-      if(st.final){ floaty('💥 ' + s.name + ' is CRACKED! You can accuse now!', W/2, 200, '#fff', 17); }
+      if(st.final){ floaty(fullyPinned(s.id) ? '💥 CRACKED! Gather everyone from the Board! ⚖' : '💥 CRACKED! Pin the proof on the Mystery Board!', W/2, 200, '#fff', 16); }
     });
   } else {
     cp.wrongPresent++;
@@ -2544,12 +3181,9 @@ function drawCluePicker(){
    ============================================================ */
 let accusePick = null;
 function enterAccuse(){
-  if(!(allCluesFound() && culpritCracked())) return;
+  if(!(gatherReady() && cp.gathered)) return;
   accusePick = null;
-  if(!cp.accuseIntroDone){
-    state = 'accuse';
-    startDlg(curCase().accuseIntro.map(fmtLine), ()=>{ cp.accuseIntroDone = true; cpSave(); });
-  } else state = 'accuse';
+  state = 'accuse';
 }
 function drawAccuse(){
   setMusic('tense');
@@ -2733,6 +3367,46 @@ function validateCases(){
     }
     const culp = c.suspects.find(s=>s.id === c.culprit);
     if(culp && !culp.testimony.some(t=>t.final)) errs.push('case '+c.n+': culprit has no final lie');
+    /* ---- v2: leads / locations / evidence / truth graph ---- */
+    const locIds = c.locations.map(L=>L.id);
+    for(const clId in (c.leads||{})){
+      if(!clueIds.includes(clId)) errs.push('case '+c.n+': lead for unknown clue '+clId);
+      for(const lid of c.leads[clId].unlocks)
+        if(!locIds.includes(lid)) errs.push('case '+c.n+': lead '+clId+' unlocks unknown loc '+lid);
+    }
+    const evIds = [...clueIds, ...Object.keys(c.evidence||{})];
+    const givenEv = {}, namedPeople = {}, clearedPeople = {};
+    for(const L of c.locations){
+      for(const n of L.npcs){
+        for(const e of (n.gives||[])){
+          if(!evIds.includes(e)) errs.push('case '+c.n+': npc '+n.id+' gives unknown evidence '+e);
+          givenEv[e] = 1;
+        }
+        for(const pid of (n.names||[])){
+          if(!c.suspects.find(x=>x.id===pid)) errs.push('case '+c.n+': npc '+n.id+' names unknown person '+pid);
+          namedPeople[pid] = 1;
+        }
+        if(n.clears){ clearedPeople[n.clears] = 1; namedPeople[n.clears] = namedPeople[n.clears] || 1; }
+        if(n.needsClue && !clueIds.includes(n.needsClue)) errs.push('case '+c.n+': npc '+n.id+' needsClue unknown '+n.needsClue);
+      }
+    }
+    /* every suspect must be discoverable and either clearable or pinnable */
+    for(const su of c.suspects){
+      if(!namedPeople[su.id] && !c.locations.some(L=>L.npcs.some(n=>(n.names||[]).includes(su.id))))
+        errs.push('case '+c.n+': person '+su.id+' is never named by any witness');
+      if(su.home && !locIds.includes(su.home)) errs.push('case '+c.n+': person '+su.id+' home unknown loc '+su.home);
+      if(su.id === c.culprit){
+        const tr = (c.truth||{})[su.id] || {};
+        for(const slot of ['motive','means','opp']){
+          if(!tr[slot]) errs.push('case '+c.n+': culprit missing truth.'+slot);
+          else if(!clueIds.includes(tr[slot]) && !givenEv[tr[slot]])
+            errs.push('case '+c.n+': culprit '+slot+' evidence '+tr[slot]+' is never obtainable');
+        }
+      } else if(!clearedPeople[su.id]){
+        errs.push('case '+c.n+': innocent '+su.id+' can never be cleared');
+      }
+    }
+    if(!(c.gather||[]).length) errs.push('case '+c.n+': no gather lines');
   }
   return errs;
 }
@@ -2741,11 +3415,26 @@ window.__mmm = {
   get state(){ return state; },
   set state(v){ state = v; },
   get cp(){ return cp; },
-  goCase(n){ startCase(n, true); dlg = null; cp.arrived = true; },
+  goCase(n){ beginCase(n, true); dlg = null; cp.arrived = true; enterScene(); dlg = null; },
   findAll(){ const c = curCase(); if(!c) return; c.clues.forEach(cl=>{ cp.found[cl.id] = true; }); cpSave(); },
   crack(){ const c = curCase(); if(!c) return; const s = c.suspects.find(x=>x.id===c.culprit);
            s.testimony.forEach(t=>{ if(t.lieBrokenBy) cp.broken[t.id] = 1; if(t.final) cp.cracked[s.id] = 1; }); cpSave(); },
-  solve(){ const c = curCase(); if(!c) return; this.findAll(); this.crack(); doAccuse(c.culprit, c.provingClue); dlg && (dlg.i = dlg.lines.length-1); },
+  followAll(){ const c = curCase(); if(!c) return;
+    c.clues.forEach(cl=>unlockLocsFor(cl.id));
+    for(const L of c.locations) for(const n of L.npcs){
+      cp.metNpc[n.id] = 1;
+      (n.gives||[]).forEach(e=>{ cp.ev[e] = 1; });
+      (n.names||[]).forEach(pid=>addPerson(pid));
+      if(n.clears) cp.cleared[n.clears] = 1;
+    }
+    cpSave(); },
+  pinAll(){ const c = curCase(); if(!c) return;
+    for(const pid in (c.truth||{})){ cp.pins[pid] = Object.assign({}, c.truth[pid]); cp.people[pid] = 1; }
+    cpSave(); },
+  solve(){ const c = curCase(); if(!c) return;
+    this.findAll(); this.followAll(); this.pinAll(); this.crack();
+    cp.gathered = true; cp.gatherTalked = true; cp.accuseIntroDone = true; cpSave();
+    doAccuse(c.culprit, c.provingClue); dlg && (dlg.i = dlg.lines.length-1); },
   finish(){ while(dlg) dlgAdvance(); },
   give(n){ save.coins += n; persist(); },
   ownAll(){ Object.keys(GEAR).forEach(id=>save.gear[id]=true); persist(); },
@@ -2805,7 +3494,10 @@ function tick(ts){
       case 'casebook': drawCasebook(); break;
       case 'shop':     drawShop(); break;
       case 'briefing': drawBriefing(); break;
-      case 'travel':   drawTravel(); break;
+      case 'city':     drawCity(); break;
+      case 'visit':    drawVisit(); break;
+      case 'board':    drawBoard(); break;
+      case 'gather':   drawGather(); break;
       case 'scene':    drawScene(); break;
       case 'talk':     drawTalk(); break;
       case 'accuse':   drawAccuse(); break;
