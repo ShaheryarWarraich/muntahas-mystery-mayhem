@@ -1571,7 +1571,7 @@ function drawSchool(cx){
   fillRR(bx2(120), 70, 340, 170, 12, '#c99a66');
   softShadow(false);
   fillRR(bx2(132), 82, 316, 146, 8, '#2e6b52');
-  txt(v.board1 || 'DHA Model School', bx2(290), 120, 17, {bold:true, color:'#eaf6ee'});
+  txt(v.board1 || 'TNS Beaconhouse', bx2(290), 120, 17, {bold:true, color:'#eaf6ee'});
   txt(v.board2 || 'Art Week!  ✏️ 🎨', bx2(290), 156, 14, {color:'#cfe8d8'});
   ctx.strokeStyle = 'rgba(234,246,238,0.4)'; ctx.lineWidth = 2;
   ctx.beginPath(); ctx.moveTo(bx2(160), 190); ctx.lineTo(bx2(420), 190); ctx.stroke();
@@ -2338,7 +2338,7 @@ const CASES = [
     signup:  {name:'Bake-Off sign-up list', icon:'list',
       desc:'This year’s entries: Auntie Parveen, Bruno Butterhorn… and Zainab?!'},
     gossip:  {name:'Five straight losses', icon:'note',
-      desc:'DHA Office gossip: Bruno has lost the Bake-Off to Auntie Parveen FIVE years in a row.'},
+      desc:'School office gossip: Bruno has lost the Bake-Off to Auntie Parveen FIVE years in a row.'},
     receipt: {name:'Apron receipt', icon:'receipt',
       desc:'“1 green baker’s apron — sold to Butterhorn Breads.” The SAME green as the torn fabric!'},
     mudmatch:{name:'Muddy depot yard', icon:'mud',
@@ -2349,12 +2349,12 @@ const CASES = [
       desc:'“Zainab sang until eight — she even earned her gold star.” Zainab couldn’t have done it. ✔'}
   },
   locations:[
-    { id:'townhall', name:'DHA Office', icon:'🏛️', mapX:330, mapY:196, set:'hall', deco:'#7cc4ff', banner:'🏛 DHA LAHORE OFFICE',
-      npcs:[{ id:'ledger', name:'Auntie Nasreen', role:'office clerk', grown:true,
+    { id:'townhall', name:'TNS Beaconhouse', icon:'🏫', mapX:330, mapY:196, set:'hall', deco:'#7cc4ff', banner:'🏫 TNS BEACONHOUSE — SCHOOL OFFICE',
+      npcs:[{ id:'ledger', name:'Auntie Nasreen', role:'school office incharge', grown:true,
         look:{skin:1, hair:'buns', hairColor:'#8a8a95', outfit:'shalwar', outfitColor:'#4fb8ff', acc:'glasses', accColor:'#ffd166', eyes:'gentle', mouth:'tiny'},
         talk:[
-          {sp:'npc', mood:'smile', text:'A detective! How thrilling, beta. How may the DHA Office help?'},
-          {sp:'me',  mood:'ooh',   text:'Someone scribbled “BEAT PLUM!” on this Bake-Off flyer. Who entered this year?'},
+          {sp:'npc', mood:'smile', text:'A detective! How thrilling, beta. How may the school office help?'},
+          {sp:'me',  mood:'ooh',   text:'Someone scribbled “BEAT PARVEEN!” on this Bake-Off flyer. Who entered this year?'},
           {sp:'npc', mood:'ooh',   text:'The sign-up list? Right here, jaani: Auntie Parveen, Bruno Butterhorn… and little Zainab!'},
           {sp:'npc', mood:'giggle',text:'Between us — Bruno has lost to Auntie Parveen FIVE years straight. He was NOT gracious about it.'}
         ],
@@ -2461,9 +2461,9 @@ const CASES = [
       look:{skin:1, hair:'pigtails', hairColor:'#4a3320', outfit:'dress', outfitColor:'#4fb8ff', acc:'bow', accColor:'#ffd166', eyes:'sparkle', mouth:'smile'},
       motive:'She wanted Sir Squeakums for her scrapbook photos.',
       hello:'Salaam! Isn’t Sultan the saddest little cat today?',
-      innocentGiggle:'ME? I was gluing my scrapbook at the DHA Office craft table! Auntie Nasreen saw!',
+      innocentGiggle:'ME? I was gluing my scrapbook at the school office craft table! Auntie Nasreen saw!',
       testimony:[
-        {id:'a1', text:'I was at the DHA Office craft table until dinner.',
+        {id:'a1', text:'I was at the school office craft table until dinner.',
          press:'Auntie Nasreen lent me her special glitter glue. I still have sparkly fingers!',
          pressNote:'Alina says Auntie Nasreen can vouch for her.'},
         {id:'a2', text:'I only photographed Sir Squeakums. Photos are not stealing!',
@@ -2506,8 +2506,8 @@ const CASES = [
           {sp:'npc', mood:'sad',   text:'Poor Mano cries for a toy every night. Hamza counted his pocket money and went home sad.'}
         ],
         gives:['kittencry'], names:['hamza'] }]},
-    { id:'townhall', name:'DHA Office', icon:'🏛️', mapX:352, mapY:342, set:'hall', deco:'#7cc4ff', banner:'🏛 DHA LAHORE OFFICE',
-      npcs:[{ id:'ledger', name:'Auntie Nasreen', role:'office clerk', grown:true,
+    { id:'townhall', name:'TNS Beaconhouse', icon:'🏫', mapX:352, mapY:342, set:'hall', deco:'#7cc4ff', banner:'🏫 TNS BEACONHOUSE — SCHOOL OFFICE',
+      npcs:[{ id:'ledger', name:'Auntie Nasreen', role:'school office incharge', grown:true,
         look:LOOKS.nasreen,
         talk:[
           {sp:'npc', mood:'smile', text:'Back again, detective beta! Craft week is keeping us all busy.'},
@@ -2546,8 +2546,8 @@ const CASES = [
 },
 
 /* ================= CASE 3 — The Paint Mix-Up ================= */
-{ n:3, title:'The Paint Mix-Up', scene:'school', place:'DHA Model School',
-  variant:{ board1:'DHA Model School', board2:'Mural Week! 🎨' },
+{ n:3, title:'The Paint Mix-Up', scene:'school', place:'TNS Art Room',
+  variant:{ board1:'TNS Beaconhouse', board2:'Mural Week! 🎨' },
   client:{ id:'imran', name:'Sir Imran', grown:true,
     look:{skin:3, hair:'bob', hairColor:'#2b2b33', outfit:'sweater', outfitColor:'#e2429a', acc:'glasses', accColor:'#4a3b63', boy:true, eyes:'gentle', mouth:'smile'} },
   intro:[
@@ -2596,9 +2596,9 @@ const CASES = [
       hello:'Salaam! Is my mural safe?! Tell me the dinosaur corner survived!',
       innocentGiggle:'Me?! Ruin my OWN mural? I would never! Auntie Nasreen stamped my library card at closing!',
       testimony:[
-        {id:'d1', text:'I was at the DHA Office getting my art prize form stamped.',
+        {id:'d1', text:'I was at the school office getting my art prize form stamped.',
          press:'Auntie Nasreen stamped it twice because I asked nicely. TWICE.',
-         pressNote:'Daniyal was at the DHA Office at closing time.'},
+         pressNote:'Daniyal was at the school office at closing time.'},
         {id:'d2', text:'More dinosaurs would improve it. But sabotage? Never!',
          press:'A T-rex in the corner. That’s all I asked for. ONE T-rex.'}
       ]},
@@ -2629,8 +2629,8 @@ const CASES = [
       desc:'Chacha Khalid: “Past closing, a girl with a sparkly headband slipped through the school gate. Glitter in the moonlight!”'}
   },
   locations:[
-    { id:'townhall', name:'DHA Office', icon:'🏛️', mapX:330, mapY:196, set:'hall', deco:'#7cc4ff', banner:'🏛 DHA LAHORE OFFICE',
-      npcs:[{ id:'ledger', name:'Auntie Nasreen', role:'office clerk', grown:true, look:LOOKS.nasreen,
+    { id:'townhall', name:'TNS Beaconhouse', icon:'🏫', mapX:330, mapY:196, set:'hall', deco:'#7cc4ff', banner:'🏫 TNS BEACONHOUSE — SCHOOL OFFICE',
+      npcs:[{ id:'ledger', name:'Auntie Nasreen', role:'school office incharge', grown:true, look:LOOKS.nasreen,
         talk:[
           {sp:'npc', mood:'smile', text:'The mural vote? Oh, what drama, beta. What DRAMA.'},
           {sp:'npc', mood:'ooh',   text:'Mahnoor lost by three votes. She tore her name off the list and stormed off like a monsoon.'},
@@ -2851,7 +2851,7 @@ const CASES = [
       testimony:[
         {id:'mu1', text:'I delivered papers till sunset, then went straight home for dinner.',
          press:'Auntie Nasreen is my last stop. She always complains the paper is late. It is ON TIME.',
-         pressNote:'Munna’s route ended at the DHA Office.'},
+         pressNote:'Munna’s route ended at TNS Beaconhouse.'},
         {id:'mu2', text:'That gnome DOES stare. But I stare back. We have an understanding.',
          press:'Every morning. Eye to painted eye. Nobody blinks.'}
       ]},
@@ -2861,9 +2861,9 @@ const CASES = [
       hello:'Salaam! I sculpt! Mostly cats. Sir Chippy was going to be my first gnome.',
       innocentGiggle:'I only sketch him! Auntie Nasreen watched me draw at the office till closing!',
       testimony:[
-        {id:'s1', text:'I was sketching statues at the DHA Office until it closed.',
+        {id:'s1', text:'I was sketching statues at the school office until it closed.',
          press:'Auntie Nasreen kept peeking at my sketchbook. She says my cats look like samosas.',
-         pressNote:'Sana sketched at the DHA Office till closing.'},
+         pressNote:'Sana sketched at the school office till closing.'},
         {id:'s2', text:'Chippy has a PERFECT nose for clay. I would never risk chipping him!',
          press:'You cannot sculpt from a stolen model. The guilt ruins the clay.'}
       ]}
@@ -2882,8 +2882,8 @@ const CASES = [
       desc:'Auntie Gul: “Crushed prize petals? Only one lane is lined with those roses — Rana Lane. The trail leads HOME, detective.”'}
   },
   locations:[
-    { id:'townhall', name:'DHA Office', icon:'🏛️', mapX:330, mapY:196, set:'hall', deco:'#7cc4ff', banner:'🏛 DHA LAHORE OFFICE',
-      npcs:[{ id:'ledger', name:'Auntie Nasreen', role:'office clerk', grown:true, look:LOOKS.nasreen,
+    { id:'townhall', name:'TNS Beaconhouse', icon:'🏫', mapX:330, mapY:196, set:'hall', deco:'#7cc4ff', banner:'🏫 TNS BEACONHOUSE — SCHOOL OFFICE',
+      npcs:[{ id:'ledger', name:'Auntie Nasreen', role:'school office incharge', grown:true, look:LOOKS.nasreen,
         talk:[
           {sp:'me',  mood:'ooh',   text:'Auntie Nasreen — a trowel engraved “R.S.” Ring any bells?'},
           {sp:'npc', mood:'ooh',   text:'Rana Sahab! He filed a complaint about Farhat’s “unfair lucky gnome.” Five lost cups will do that to a man.'},
@@ -3122,19 +3122,19 @@ const CASES = [
   ],
   leads:{
     eraser:{q:'Whose eraser is marked “H”?', unlocks:['school']},
-    inkmark:{q:'Who writes in violet ink?', unlocks:['townhall']},
+    inkmark:{q:'Who writes in violet ink?', unlocks:['jalalsons']},
     crease:{q:'Who saw planes and porch visitors?', unlocks:['depot']}
   },
   evidence:{
     contestfear:{name:'The postponement plea', icon:'note',
       desc:'Miss Amna: “Hira begged me to postpone the reading — said her essay needed one more night to become the best.”'},
     inkmatch:{name:'The violet ink bottle', icon:'receipt',
-      desc:'Auntie Nasreen: “Violet ink? I sell one bottle a month — Hira bought one YESTERDAY. Very particular about violet.”'},
+      desc:'Uncle Javed at Jalal Sons: “Violet ink? We stock one bottle a month — Hira bought it YESTERDAY. Very particular girl.”'},
     porchsight:{name:'The porch sighting', icon:'note',
       desc:'Chacha Khalid: “Planes from the roof all evening — and later, the essay girl slipping onto Omar’s porch, quiet as a cat.”'}
   },
   locations:[
-    { id:'school', name:'DHA Model School', icon:'🏫', mapX:330, mapY:196, set:'hall', deco:'#4fb8ff', banner:'🏫 DHA MODEL SCHOOL',
+    { id:'school', name:'TNS Beaconhouse', icon:'🏫', mapX:330, mapY:196, set:'hall', deco:'#4fb8ff', banner:'🏫 TNS BEACONHOUSE',
       npcs:[{ id:'amna', name:'Miss Amna', role:'class teacher', grown:true, look:LOOKS.amna,
         talk:[
           {sp:'npc', mood:'smile', text:'The essay contest! Such talent this year. Such DRAMA.'},
@@ -3142,11 +3142,13 @@ const CASES = [
           {sp:'npc', mood:'happy', text:'Shayan? He wiped boards in detention till dark. Every board. He has strong opinions about pie charts now.'}
         ],
         gives:['contestfear'], names:['hira','shayan'], clears:'shayan' }]},
-    { id:'townhall', name:'DHA Office', icon:'🏛️', mapX:352, mapY:342, set:'hall', deco:'#7cc4ff', banner:'🏛 DHA LAHORE OFFICE',
-      npcs:[{ id:'ledger', name:'Auntie Nasreen', role:'office clerk', grown:true, look:LOOKS.nasreen,
+    { id:'jalalsons', name:'Jalal Sons', icon:'🛒', mapX:352, mapY:342, set:'shop', deco:'#2c9e6a',
+      npcs:[{ id:'javed', name:'Uncle Javed', role:'Jalal Sons shopkeeper', grown:true,
+        look:{skin:2, hair:'bob', hairColor:'#3a3a45', outfit:'sweater', outfitColor:'#2c9e6a', acc:'none', accColor:'', boy:true, mustache:'#3a3a45', eyes:'round', mouth:'smile'},
         talk:[
-          {sp:'me',  mood:'ooh',   text:'Auntie Nasreen — who in DHA writes in VIOLET ink?'},
-          {sp:'npc', mood:'ooh',   text:'One bottle a month, that is all I sell — and Hira bought one just yesterday. Very particular girl.'}
+          {sp:'npc', mood:'smile', text:'Welcome to Jalal Sons! Groceries, stationery, toffees — we have EVERYTHING, detective.'},
+          {sp:'me',  mood:'ooh',   text:'Uncle Javed — who in DHA writes in VIOLET ink?'},
+          {sp:'npc', mood:'ooh',   text:'Violet ink! We stock one bottle a month, top shelf — and Hira bought it just yesterday. Very particular girl.'}
         ],
         gives:['inkmatch'] }]},
     { id:'depot', name:'Speedy Couriers', icon:'📦', mapX:96, mapY:420, set:'yard', deco:'#f0a832',
@@ -3176,7 +3178,7 @@ const CASES = [
 },
 
 /* ================= CASE 8 — The Swapped Lunchboxes ================= */
-{ n:8, title:'The Swapped Lunchboxes', scene:'school', place:'DHA Model School',
+{ n:8, title:'The Swapped Lunchboxes', scene:'school', place:'TNS Food Festival',
   variant:{ board1:'Family Food Festival!', board2:'Star Dish: Auntie Bushra’s Biryani 🍚' },
   bonus:{ spot:'cubby2' },
   client:{ id:'bushra', name:'Auntie Bushra', grown:true,
@@ -3227,9 +3229,9 @@ const CASES = [
       hello:'Salaam! Is there… is there any biryani left? Asking for me.',
       innocentGiggle:'I WISH I took it! But I was taste-testing jam at Auntie Nasreen’s stall! Officially!',
       testimony:[
-        {id:'t1', text:'I was official jam taste-tester at the DHA Office stall all morning.',
+        {id:'t1', text:'I was official jam taste-tester at the school fair stall all morning.',
          press:'Eleven jams. My tongue was purple till lunch. Auntie Nasreen has photos.',
-         pressNote:'Taimur was jam-testing at the DHA Office.'},
+         pressNote:'Taimur was jam-testing at the school fair.'},
         {id:'t2', text:'If I HAD the biryani, detective, would I look this hungry?',
          press:'Look at me. This is the face of a boy who ate eleven jams and ZERO biryani.'}
       ]},
@@ -3276,8 +3278,8 @@ const CASES = [
           {sp:'npc', mood:'happy', text:'Chacha Majeed? He borrowed my hose and watered the courtyard all morning. Spray technique: excellent.'}
         ],
         gives:['rockbucket'], names:['majeed'], clears:'majeed' }]},
-    { id:'townhall', name:'DHA Office', icon:'🏛️', mapX:330, mapY:196, set:'hall', deco:'#7cc4ff', banner:'🏛 DHA LAHORE OFFICE',
-      npcs:[{ id:'ledger', name:'Auntie Nasreen', role:'office clerk', grown:true, look:LOOKS.nasreen,
+    { id:'townhall', name:'TNS Beaconhouse', icon:'🏫', mapX:330, mapY:196, set:'hall', deco:'#7cc4ff', banner:'🏫 TNS BEACONHOUSE — SCHOOL OFFICE',
+      npcs:[{ id:'ledger', name:'Auntie Nasreen', role:'school office incharge', grown:true, look:LOOKS.nasreen,
         talk:[
           {sp:'npc', mood:'ooh',   text:'The menu-committee pin? Only canteen staff wear those, beta. And the registry shows Shakeela’s daal — seven straight second places.'},
           {sp:'npc', mood:'giggle',text:'Taimur? Eleven jams at my stall. His tongue went PURPLE. I have photos for the newsletter.'}
@@ -3385,7 +3387,7 @@ const CASES = [
       desc:'Chacha Khalid: “Past midnight — a tall boy in a blue scarf hurrying along Parveen’s hedge, jingling like a money box.”'}
   },
   locations:[
-    { id:'school', name:'DHA Model School', icon:'🏫', mapX:330, mapY:196, set:'hall', deco:'#4fb8ff', banner:'🏫 DHA MODEL SCHOOL',
+    { id:'school', name:'TNS Beaconhouse', icon:'🏫', mapX:330, mapY:196, set:'hall', deco:'#4fb8ff', banner:'🏫 TNS BEACONHOUSE',
       npcs:[{ id:'amna', name:'Miss Amna', role:'class teacher', grown:true, look:LOOKS.amna,
         talk:[
           {sp:'npc', mood:'ooh',   text:'Danish? He runs a recess snack stand. Yesterday he promised “famous naan khatai, Rs.20, limited stock.”'},
@@ -3491,11 +3493,11 @@ const CASES = [
       look:LOOKS.yaqoob,
       motive:'Nibbles’ squeaky wheel keeps the whole street awake.',
       hello:'Salaam, detective sahiba. Yes, yes — the wheel squeaks. No, I did not hamster-nap anyone.',
-      innocentGiggle:'At the council meeting I SLEPT, sahiba! Nasreen says I snored through three agenda items!',
+      innocentGiggle:'At the school committee meeting I SLEPT, sahiba! Nasreen says I snored through three agenda items!',
       testimony:[
-        {id:'ty1', text:'I attended the DHA council meeting and… rested my eyes through most of it.',
+        {id:'ty1', text:'I attended the school committee meeting and… rested my eyes through most of it.',
          press:'Auntie Nasreen kept minutes. My snores are IN the minutes.',
-         pressNote:'Chacha Khalid slept through the council meeting.'},
+         pressNote:'Chacha Khalid slept through the committee meeting.'},
         {id:'ty2', text:'That wheel! Squeak-squeak at three in the morning! But the little captain… he waves at me.',
          press:'Every dawn. A tiny wave. We are, against my will, friends.'}
       ]}
@@ -3530,10 +3532,10 @@ const CASES = [
           {sp:'npc', mood:'happy', text:'Sameer? He held Naagin’s tail at measuring till late. Ninety-one certified centimetres.'}
         ],
         gives:['mysteryentry'], names:['sameer'], clears:'sameer' }]},
-    { id:'townhall', name:'DHA Office', icon:'🏛️', mapX:352, mapY:342, set:'hall', deco:'#7cc4ff', banner:'🏛 DHA LAHORE OFFICE',
-      npcs:[{ id:'ledger', name:'Auntie Nasreen', role:'office clerk', grown:true, look:LOOKS.nasreen,
+    { id:'townhall', name:'TNS Beaconhouse', icon:'🏫', mapX:352, mapY:342, set:'hall', deco:'#7cc4ff', banner:'🏫 TNS BEACONHOUSE — SCHOOL OFFICE',
+      npcs:[{ id:'ledger', name:'Auntie Nasreen', role:'school office incharge', grown:true, look:LOOKS.nasreen,
         talk:[
-          {sp:'npc', mood:'giggle',text:'Chacha Khalid at the council meeting? Beta, he snored through THREE agenda items. It is in the minutes. Officially.'}
+          {sp:'npc', mood:'giggle',text:'Chacha Khalid at the committee meeting? Beta, he snored through THREE agenda items. It is in the minutes. Officially.'}
         ],
         names:['tomS'], clears:'tomS' }]},
     { id:'chaikhokha', name:'Chacha’s Chai Khokha', icon:'☕', mapX:300, mapY:492, set:'yard', deco:'#c96a4a',
