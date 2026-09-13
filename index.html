@@ -3678,7 +3678,7 @@ function nextThread(){
   const unpinned = knownPeople().filter(s=>!cp.cleared[s.id] && !fullyPinned(s.id));
   if(unpinned.length) return 'Pin Motive, Means & Opportunity on the Mystery Board!';
   if(!culpritCracked()){ const sus = boardSuspect(); if(sus) return 'Question ' + sus.name + ' at ' + (locById(sus.home)||{}).name + ' — break their story!'; }
-  if(gatherReady() && !cp.gathered) return 'Gather everyone from the Mystery Board! ⚖';
+  if(gatherReady()) return 'Gather everyone from the Mystery Board! ⚖';
   return 'Follow your nose, detective!';
 }
 function curCase(){ return cp ? caseByLevel(cp.level) : null; }
@@ -3990,7 +3990,7 @@ function drawCity(){
   /* fixed stops: office + crime scene */
   drawBuilding(70, 140, 'Your Office', '🕵️', '#9b6dff', 'open');
   uiButtons.push({x:70-46, y:140-56, w:92, h:100, cb:()=>{ startTrans(()=>{ state='office'; }); }});
-  const sceneNews = !allCluesFound() || (gatherReady() && !cp.gathered);
+  const sceneNews = !allCluesFound() || gatherReady();
   drawBuilding(150, 300, c.place, '🧁', '#ff5fae', !allCluesFound() ? 'alert' : 'done');
   uiButtons.push({x:150-46, y:300-56, w:92, h:100, cb:()=>{ startTrans(enterScene); }});
   /* case locations */
@@ -4301,7 +4301,7 @@ function drawBoard(){
     ctx.restore();
   });
   /* gather call-to-action */
-  if(gatherReady() && !cp.gathered){
+  if(gatherReady()){
     const gl = 0.6 + Math.sin(time*4)*0.3;
     drawButton('⚖ Gather everyone at ' + curCase().place + '!', 40, H-118, W-80, 52, ()=>{ startTrans(startGather); }, {size:15, c1:'#ffe3a3', c2:'#ffd166', ink:'#7a5a12'});
     ctx.strokeStyle = 'rgba(255,209,102,'+gl+')'; ctx.lineWidth = 3.5;
@@ -4374,8 +4374,11 @@ function tryPin(pid, slot, evId){
    ============================================================ */
 let gatherT = 0;
 function startGather(){
-  cp.gathered = true; cpSave();
+  cp.gathered = true;
+  cp.gatherTalked = false;    /* replay the summons if the gathering is re-entered */
+  cpSave();
   gatherT = 0;
+  accusePick = null;
   state = 'gather';
 }
 function drawGather(){
