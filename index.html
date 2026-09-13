@@ -3808,19 +3808,19 @@ function drawOfficeRoom(){
   for(let k=0;k<9;k++) ctx.fillRect(k*60+14, 0, 22, HORIZON-52);
   fillRR(-10, HORIZON-52, W+20, 56, 0, '#c3aee8');
   floorPlanks(0, '#e8d9f2', '#d7bfe8', '#ffffff');
-  /* window: evening Maple Street */
+  /* window: evening over DHA (sits clear of the door) */
   softShadow(true, 10);
-  fillRR(310, 60, 148, 176, 14, '#fff');
+  fillRR(252, 60, 126, 176, 14, '#fff');
   softShadow(false);
-  fillRR(318, 68, 132, 160, 10, vGrad(318,68,160,'#8a7ad4','#e2699e'));
-  ctx.save(); rr(318, 68, 132, 160, 10); ctx.clip();
-  ell(420, 96, 17, 17, '#fff3c9');
+  fillRR(260, 68, 110, 160, 10, vGrad(260,68,160,'#8a7ad4','#e2699e'));
+  ctx.save(); rr(260, 68, 110, 160, 10); ctx.clip();
+  ell(342, 96, 15, 15, '#fff3c9');
   ctx.fillStyle = 'rgba(60,40,90,0.85)';
-  [[318,180,34,48],[356,196,30,32],[390,172,36,56],[430,190,26,38]].forEach(b=>ctx.fillRect(b[0],b[1],b[2],b[3]));
-  for(let i=0;i<7;i++){ if(Math.sin(time*0.7+i*2)>-0.5) ell(330+i*18, 190+((i*29)%40), 2.4, 2.6, '#ffd166', 0.9); }
+  [[260,182,30,46],[292,198,24,30],[318,174,30,54],[350,192,20,36]].forEach(b=>ctx.fillRect(b[0],b[1],b[2],b[3]));
+  for(let i=0;i<6;i++){ if(Math.sin(time*0.7+i*2)>-0.5) ell(270+i*16, 192+((i*29)%36), 2.2, 2.4, '#ffd166', 0.9); }
   ctx.restore();
   ctx.strokeStyle = '#fff'; ctx.lineWidth = 5;
-  ctx.beginPath(); ctx.moveTo(384, 68); ctx.lineTo(384, 228); ctx.moveTo(318, 148); ctx.lineTo(450, 148); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(315, 68); ctx.lineTo(315, 228); ctx.moveTo(260, 148); ctx.lineTo(370, 148); ctx.stroke();
   /* corkboard */
   softShadow(true, 8);
   fillRR(36, 70, 210, 150, 12, '#e8b04a');
@@ -3871,13 +3871,10 @@ function drawOfficeRoom(){
 function drawOffice(){
   setMusic('cozy');
   drawOfficeRoom();
-  /* player at desk */
-  drawActiveDetective(240, 560, 0.92, {ph:0});
-  /* re-draw desk front over legs */
-  fillRR(80, 540, 320, 100, 14, '#c99be0');
-  fillRR(80, 616, 320, 24, 8, '#b184cc');
+  /* player standing at the front of her desk — feet on the floor, shoes visible */
+  drawActiveDetective(135, 653, 0.95, {ph:0});
   txt('☕ ' + ((PLAYER_TAG||'Detective')) + '’s Detective Agency', 20, 34, 18, {bold:true, color:C('purpleDeep'), align:'left'});
-  txt('🪙 ' + save.coins, 46, 70, 18, {bold:true, color:C('goldDeep'), align:'left'});
+  txt('🪙 ' + save.coins, 22, 62, 16, {bold:true, color:C('goldDeep'), align:'left', outline:'#fff'});
   drawMuteButtons();
   /* client walking in */
   if(clientWalk){
@@ -3885,7 +3882,7 @@ function drawOffice(){
     const t = Math.min(1, clientWalk.t);
     const e = 1 - Math.pow(1-t, 2.4);
     const c = caseByLevel(clientWalk.level);
-    const cx2 = (W-70) + (130-(W-70))*e, cy2 = 470 + 236*e, sc = 0.62 + 0.40*e;
+    const cx2 = (W-70) + (280-(W-70))*e, cy2 = 470 + 230*e, sc = 0.62 + 0.40*e;
     drawDetective(cx2, cy2, c.client.look, sc, {grown:c.client.grown, walk:t<1, mood: t<1?'smile':'shock'});
     if(t >= 1){
       clientWalk = null;
