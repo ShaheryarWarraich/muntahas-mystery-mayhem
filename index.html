@@ -1453,7 +1453,7 @@ const BAKERY_SPOTS = [
   {id:'ovenDoor',    layer:1,    wx:688, y:508, w:104, h:84, type:'open', label:'the oven'},
   {id:'sugarSack',   layer:1,    wx:836, y:566, w:66,  h:72, type:'open', label:'the sugar sack'},
   {id:'rugCorner',   layer:1,    wx:858, y:678, w:92,  h:62, type:'lift', label:'the rug corner'},
-  {id:'plantPot',    layer:1,    wx:936, y:600, w:60,  h:66, type:'lift', label:'the plant pot'},
+  {id:'plantPot',    layer:1,    wx:936, y:584, w:60,  h:66, type:'lift', label:'the plant pot'},
   {id:'shelfBox',    layer:0.85, wx:148, y:54,  w:76,  h:50, type:'open', label:'the shelf box'},
   {id:'flourJar',    layer:0.85, wx:258, y:116, w:60,  h:70, type:'open', label:'the flour jar'},
   {id:'menuBoard',   layer:0.85, wx:452, y:104, w:134, h:116,type:'plain',label:'the menu board'},
@@ -1718,7 +1718,7 @@ function drawPetshop(cx){
 /* ---- hiding-spot tables for the generic scenes ---- */
 const COTTAGE_SPOTS = [
   {id:'sofaCushL',  layer:1, wx:360, y:475, w:78, h:52, type:'lift', cover:'cushion', col:'#f7a8cf', label:'the left cushion'},
-  {id:'sofaCushR',  layer:1, wx:470, y:475, w:78, h:52, type:'lift', cover:'cushion', col:'#cdb9ff', label:'the right cushion'},
+  {id:'sofaCushR',  layer:1, wx:462, y:475, w:72, h:52, type:'lift', cover:'cushion', col:'#cdb9ff', label:'the right cushion'},
   {id:'rugMid',     layer:1, wx:180, y:640, w:130, h:70, type:'lift', cover:'rug', col:'#cdb9ff', label:'the rug corner'},
   {id:'toyBasket',  layer:1, wx:640, y:590, w:86, h:70, type:'open', cover:'basket', label:'the toy basket'},
   {id:'sideDrawer', layer:1, wx:820, y:560, w:92, h:56, type:'slide', cover:'drawer', col:'#c99be0', label:'the drawer'},
@@ -1731,18 +1731,18 @@ const COTTAGE_SPOTS = [
   {id:'teaTrolley', layer:1, wx:110, y:560, w:96, h:60, type:'open', cover:'box', col:'#c99be0', label:'the side table'}
 ];
 const SCHOOL_SPOTS = [
-  {id:'deskLidA',   layer:1, wx:120, y:520, w:96, h:58, type:'open', cover:'box', col:'#d4a877', label:'a desk lid'},
+  {id:'deskLidA',   layer:1, wx:40,  y:548, w:96, h:58, type:'open', cover:'box', col:'#d4a877', label:'a desk lid'},
   {id:'deskLidB',   layer:1, wx:300, y:560, w:96, h:58, type:'open', cover:'box', col:'#c99a66', label:'a desk lid'},
   {id:'teacherDrawer',layer:1, wx:600, y:540, w:96, h:56, type:'slide', cover:'drawer', col:'#c99be0', label:'the teacher’s drawer'},
   {id:'easelCanvas',layer:1, wx:160, y:470, w:86, h:96, type:'plain', cover:'painting', decor:true, col:'#d8ecff', col2:'#ff5fae', label:'the easel'},
-  {id:'paintJar',   layer:1, wx:480, y:600, w:56, h:64, type:'open', cover:'jar', col:'#e4d0f5', col2:'#4fb8ff', label:'the paint jar'},
+  {id:'paintJar',   layer:1, wx:494, y:600, w:56, h:64, type:'open', cover:'jar', col:'#e4d0f5', col2:'#4fb8ff', label:'the paint jar'},
   {id:'cubby1',     layer:1, wx:770, y:590, w:84, h:60, type:'open', cover:'box', col:'#a9d7ff', label:'a cubby'},
   {id:'cubby2',     layer:1, wx:880, y:620, w:84, h:60, type:'open', cover:'box', col:'#ffd6ea', label:'a cubby'},
   {id:'backpack',   layer:1, wx:390, y:660, w:80, h:80, type:'open', cover:'bag', col:'#8fd4ab', tag:'', label:'a backpack'},
   {id:'chalkTray',  layer:0.85, wx:150, y:236, w:280, h:22, type:'plain', label:'the chalk tray'},
   {id:'globeSpot',  layer:1, wx:820, y:440, w:70, h:80, type:'plain', label:'the globe'},
   {id:'lunchCrate', layer:1, wx:60, y:640, w:92, h:66, type:'open', cover:'basket', label:'the lunch crate'},
-  {id:'plantSchool',layer:1, wx:950, y:560, w:60, h:70, type:'lift', cover:'pot', label:'the plant'}
+  {id:'plantSchool',layer:1, wx:950, y:556, w:60, h:44, type:'lift', cover:'pot', label:'the plant'}
 ];
 const LIBRARY_SPOTS = [
   {id:'bigTome',    layer:1, wx:520, y:432, w:76, h:40, type:'slide', cover:'book', col:'#7a4fd8', col2:'#e2429a', label:'the big atlas shelf'},
@@ -1755,16 +1755,16 @@ const LIBRARY_SPOTS = [
   {id:'scrollBasket',layer:1, wx:60, y:640, w:86, h:64, type:'open', cover:'basket', label:'the scroll basket'},
   {id:'lampTable',  layer:1, wx:520, y:520, w:90, h:40, type:'plain', label:'the reading table'},
   {id:'stepStool',  layer:1, wx:800, y:640, w:80, h:44, type:'open', cover:'chest', col:'#a97c4f', label:'the step stool'},
-  {id:'displayCase2',layer:1, wx:790, y:452, w:110, h:60, type:'plain', label:'the glass case'}
+  {id:'displayCase2',layer:1, wx:782, y:452, w:94,  h:60, type:'plain', label:'the glass case'}
 ];
 const PARK_SPOTS = [
   {id:'bushA',      layer:1, wx:90,  y:560, w:100, h:80, type:'lift', cover:'bush', label:'a bush'},
   {id:'bushB',      layer:1, wx:860, y:520, w:100, h:80, type:'lift', cover:'bush', col:'#5ba368', label:'a bush'},
-  {id:'stoneBig',   layer:1, wx:220, y:620, w:86, h:60, type:'lift', cover:'stone', label:'the big stone'},
+  {id:'stoneBig',   layer:1, wx:214, y:620, w:78, h:60, type:'lift', cover:'stone', label:'the big stone'},
   {id:'benchSeat',  layer:1, wx:120, y:452, w:130, h:44, type:'plain', label:'under the bench'},
   {id:'wheelbarrow',layer:1, wx:700, y:560, w:110, h:70, type:'open', cover:'box', col:'#c96a4a', label:'the wheelbarrow'},
   {id:'fountainRim',layer:1, wx:390, y:470, w:180, h:60, type:'plain', label:'the fountain rim'},
-  {id:'flowerBedA', layer:1, wx:560, y:590, w:150, h:56, type:'plain', label:'the flower bed'},
+  {id:'flowerBedA', layer:1, wx:556, y:590, w:114, h:56, type:'plain', label:'the flower bed'},
   {id:'picnicMat',  layer:1, wx:320, y:660, w:120, h:64, type:'lift', cover:'mat', col:'#ff9ed2', label:'the picnic mat'},
   {id:'logPile',    layer:1, wx:940, y:640, w:96, h:60, type:'open', cover:'basket', col:'#9a6b4a', label:'the log pile'},
   {id:'birdhouse',  layer:0.85, wx:760, y:180, w:60, h:60, type:'plain', label:'the birdhouse'},
@@ -3593,6 +3593,7 @@ function beginCase(n, replay){
            leads:{}, locs:{}, people:{}, ev:{}, pins:{}, metNpc:{}, gathered:false };
     cpSave();
   }
+  popup = null; journalOpen = false; cluePicker = null; evPicker = null; talkSel = null;
   state = 'city';
 }
 function enterScene(){
@@ -3826,6 +3827,10 @@ function drawOfficeRoom(){
   softShadow(false);
   fillRR(44, 78, 194, 134, 8, '#f5d9a0');
   txt('MYSTERY BOARD', 141, 94, 13, {bold:true, color:'#8a6420'});
+  uiButtons.push({x:36, y:70, w:210, h:150, cb:()=>{
+    if(cp){ state = 'board'; SFX.tap(); }
+    else { SFX.hmm(); floaty('Take a case first, detective!', 141, 60, C('purpleDeep'), 13); }
+  }});
   const pins = [[70,120],[130,112],[190,124],[95,168],[165,172]];
   ctx.strokeStyle = 'rgba(226,105,158,0.8)'; ctx.lineWidth = 1.6;
   for(let i=0;i<pins.length-1;i++){ ctx.beginPath(); ctx.moveTo(pins[i][0],pins[i][1]); ctx.lineTo(pins[i+1][0],pins[i+1][1]); ctx.stroke(); }
@@ -4301,8 +4306,12 @@ function drawBoard(){
     drawButton('⚖ Gather everyone at ' + curCase().place + '!', 40, H-118, W-80, 52, ()=>{ startTrans(startGather); }, {size:15, c1:'#ffe3a3', c2:'#ffd166', ink:'#7a5a12'});
     ctx.strokeStyle = 'rgba(255,209,102,'+gl+')'; ctx.lineWidth = 3.5;
     rr(38, H-120, W-76, 56, 28); ctx.stroke();
-  } else if(boardSuspect() && !culpritCracked()){
-    txt('Now QUESTION your suspect — break their story!', W/2, H-96, 13.5, {bold:true, color:'#5b3a1a'});
+  } else {
+    /* always spell out the next step right here on the board */
+    softShadow(true, 8);
+    fillRR(30, H-124, W-60, 40, 14, 'rgba(255,255,255,0.8)');
+    softShadow(false);
+    txt('👉 ' + nextThread(), W/2, H-104, 13, {bold:true, color:'#5b3a1a'});
   }
   drawButton('⬅ City', 20, H-60, 110, 46, ()=>{ state='city'; }, {size:15, c1:'#fff', c2:'#efe6ff', ink:C('purpleDeep')});
   drawButton('📔 Journal', W-150, H-60, 130, 46, ()=>{ journalOpen = true; journalTab='evidence'; }, {size:14, c1:'#cdb9ff', c2:'#a78bfa'});
@@ -5189,7 +5198,14 @@ function validateCases(){
   const errs = [];
   for(const c of CASES){
     if(!SCENES[c.scene]){ errs.push('case '+c.n+': unknown scene '+c.scene); continue; }
-    const spotIds = SCENES[c.scene].spots.map(s=>s.id);
+    const scSpots = SCENES[c.scene].spots;
+    for(let i=0;i<scSpots.length;i++) for(let j=i+1;j<scSpots.length;j++){
+      const a = scSpots[i], b = scSpots[j];
+      if((a.layer||1) !== (b.layer||1)) continue;
+      if(!(a.wx+a.w+8 < b.wx-8 || b.wx+b.w+8 < a.wx-8 || a.y+a.h+8 < b.y-8 || b.y+b.h+8 < a.y-8))
+        errs.push(c.scene+': spot tap-zones overlap: '+a.id+' / '+b.id);
+    }
+    const spotIds = scSpots.map(s=>s.id);
     if(c.bonus && !spotIds.includes(c.bonus.spot)) errs.push('case '+c.n+': bonus spot missing '+c.bonus.spot);
     const used = {};
     for(const cl of c.clues){
